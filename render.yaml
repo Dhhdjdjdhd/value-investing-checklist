@@ -1,0 +1,20 @@
+# Render Blueprint — Next.js 단일 서비스 배포
+# Render 대시보드에서 "New → Blueprint"로 이 리포를 연결하면 아래 설정으로 배포됨.
+#
+# 단일 서비스인 이유: 화면(React)과 API(Route Handler)를 Next.js 한 앱이 모두 처리한다.
+# 프론트/백을 나누면 서버가 2개가 되고 CORS·API URL 관리가 따라붙는다 — 이 규모엔 불필요.
+# rootDir 없음: 리포 루트가 곧 앱이다.
+
+services:
+  - type: web
+    name: value-investing-checklist
+    runtime: node
+    plan: free
+    region: singapore # 한국에서 가장 가까운 무료 리전
+    branch: main
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20.11.1"
+      # PORT는 Render가 자동 주입 — next start가 그대로 읽는다. 직접 지정하지 말 것.

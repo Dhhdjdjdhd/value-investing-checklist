@@ -1,0 +1,25 @@
+# 의존성
+node_modules/
+
+# Next.js 빌드 산출물
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# 환경변수
+.env
+.env.local
+
+# 개인 자산 정보 — 공개 저장소이므로 절대 커밋 금지
+# (실제 보유 종목·수량·매수단가가 들어있는 파일들)
+content/private/
+포트폴리오_*.xml
+포트폴리오_*.html
+*포트폴리오_현황*.md
+
+# OS/에디터
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

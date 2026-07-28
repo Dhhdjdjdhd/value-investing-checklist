@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이크로소프트(MSFT) 가치투자 분석 보고서 — 2026.07.26 · 판정: 관망 ($385 대기)</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --seq-250: #86b6ef; --seq-450: #2a78d6;
+    --status-good: #0ca30c; --status-warning: #fab219; --status-serious: #ec835a; --status-critical: #d03b3b;
+    --delta-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  h2 .w { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 6px; }
+  p.body { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 10px; }
+  p.body strong { color: var(--text-primary); }
+  .hero { display: flex; flex-wrap: wrap; gap: 24px; }
+  .hero-score { flex: 0 0 auto; text-align: center; padding: 8px 28px 8px 8px; border-right: 1px solid var(--gridline); }
+  .hero-score .num { font-size: 64px; font-weight: 800; line-height: 1.05; }
+  .hero-score .den { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+  .hero-score .label { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; max-width: 150px; }
+  .hero-main { flex: 1 1 320px; min-width: 280px; }
+  .verdict { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--status-warning); border-radius: 999px; padding: 4px 14px; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--status-warning); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .fact { border-top: 2px solid var(--gridline); padding-top: 8px; }
+  .fact .k { font-size: 12px; color: var(--text-muted); }
+  .fact .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fact .d { font-size: 12px; color: var(--text-secondary); }
+  .meter-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .meter-row .name { font-size: 14px; font-weight: 600; }
+  .meter-row .name small { display: block; font-weight: 400; font-size: 11.5px; color: var(--text-muted); }
+  .track { height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--seq-450); border-radius: 5px; }
+  .meter-row .val { font-size: 14px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .meter-row .val small { font-weight: 400; color: var(--text-muted); }
+  ul.check { list-style: none; }
+  ul.check li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--gridline); font-size: 14px; color: var(--text-secondary); align-items: baseline; }
+  ul.check li:last-child { border-bottom: none; }
+  .tag { flex: 0 0 auto; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+  .tag.pass { color: var(--status-good); border: 1px solid var(--status-good); }
+  .tag.warn { color: var(--status-serious); border: 1px solid var(--status-serious); }
+  .tag.fail { color: var(--status-critical); border: 1px solid var(--status-critical); }
+  ul.check b { color: var(--text-primary); font-weight: 600; }
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .chart-box { position: relative; }
+  svg text { font-family: inherit; }
+  .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
+  .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  details { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  details summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  .table-scroll { overflow-x: auto; }
+  .up { color: var(--delta-good); font-weight: 600; }
+  .warn-txt { color: var(--status-serious); font-weight: 600; }
+  .range-wrap { padding: 46px 10px 52px; }
+  .range-track { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--seq-250), var(--seq-450)); }
+  .marker { position: absolute; top: -40px; transform: translateX(-50%); text-align: center; }
+  .marker .lbl { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; }
+  .marker .prc { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .marker .tick { width: 2px; height: 14px; background: var(--baseline); margin: 2px auto 0; }
+  .marker.below { top: auto; bottom: -48px; }
+  .marker.below .tick { margin: 0 auto 2px; }
+  .marker.now .tick { background: var(--text-primary); width: 3px; height: 20px; }
+  .marker.now .prc, .marker.now .lbl { color: var(--text-primary); font-weight: 800; }
+  .range-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  .src { font-size: 12.5px; color: var(--text-muted); }
+  .src a { color: var(--series-1); text-decoration: none; }
+  .src li { margin-bottom: 4px; }
+  .disclaimer { border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+  .notice { border: 1.5px solid var(--status-warning); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">가치투자 체크리스트 기반 종목 분석 · 2026년 7월 26일</div>
+  <h1>마이크로소프트 <span style="color:var(--text-muted);font-weight:600">Microsoft Corp. · NASDAQ: MSFT</span></h1>
+  <div class="sub">전 세계 기업 업무 인프라(윈도우·오피스·애저)의 지배자 — AI 설비투자 우려로 고점 대비 −30% 조정. "항상 비싸다"는 통념이 깨진 구간에서 분석</div>
+</header>
+
+<div class="notice">⚠️ <b>데이터 시점 주의:</b> FY2026(6월 결산) 연간 확정 실적이 <b>7월 말(며칠 내) 발표 예정</b> — 이 분석은 3분기까지 실적 + TTM 기준. <b>발표 직후 내재가치·목표가 갱신 필수.</b></div>
+
+<!-- 종합 판정 -->
+<section class="card">
+  <div class="hero">
+    <div class="hero-score">
+      <div class="num">78<span class="den">/100</span></div>
+      <div class="label">종합 평가 점수 (참고용 — 판정은 점수가 아니라 관문 방식) · 알파벳과 동점</div>
+    </div>
+    <div class="hero-main">
+      <div class="verdict"><span class="dot"></span>판정: 관망 — 목표 매수가 $385 (현재가 대비 −4%)</div>
+      <p class="body"><strong>사업의 질은 표본 최고(해자 4개 유형)인데 안전마진이 3.2%p 모자랍니다.</strong> −30% 조정의 원인은 2026년 설비투자 ~$190B(+61%)가 FCF를 잠식하기 시작한 것 — <strong>알파벳과 동형의 "투자 사이클" 할인</strong>이며 사업 잠식이 아닙니다(애저 AI 연환산 $37B가 회수의 증거). 안전마진 +16.8%로 기준(20%) 근소 미달 — <strong>$385부터 매수 가능 구간.</strong> 알파벳($284 대기)과 논제가 겹치므로 둘 다 도달 시 하나를 고르거나 절반씩이 합리적입니다.</p>
+      <div class="facts">
+        <div class="fact"><div class="k">현재 주가 (2026.7)</div><div class="v">$400.06</div><div class="d">시가총액 약 $2.84조 · 고점 대비 −30%</div></div>
+        <div class="fact"><div class="k">Forward PER</div><div class="v">20.6배</div><div class="d">GF Value $565 (참고)</div></div>
+        <div class="fact"><div class="k">2026 CapEx 계획</div><div class="v">~$190B</div><div class="d">+61% — 분기 FCF 감소 시작</div></div>
+        <div class="fact"><div class="k">목표 매수가</div><div class="v">$385</div><div class="d">기본 $481 × 0.8 · 현재가 −4%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 점수 -->
+<section class="card">
+  <h2>항목별 점수 <span class="w">참고용 — 매수 판정은 관문(통과/조건부/탈락)으로 한다</span></h2>
+  <div class="meter-row"><div class="name">① 사업의 질<small>가중치 30% · 통과 (⚠️1) — 표본 최고</small></div><div class="track"><div class="fill" style="width:93%"></div></div><div class="val">28<small> / 30</small></div></div>
+  <div class="meter-row"><div class="name">② 경영진<small>가중치 20% · 통과 (⚠️1)</small></div><div class="track"><div class="fill" style="width:80%"></div></div><div class="val">16<small> / 20</small></div></div>
+  <div class="meter-row"><div class="name">③ 재무 건전성<small>가중치 25% · 조건부 통과 (알파벳 동형)</small></div><div class="track"><div class="fill" style="width:76%"></div></div><div class="val">19<small> / 25</small></div></div>
+  <div class="meter-row"><div class="name">④ 밸류에이션<small>가중치 25% · 근소 미달</small></div><div class="track"><div class="fill" style="width:60%"></div></div><div class="val">15<small> / 25</small></div></div>
+</section>
+
+<!-- 1단계 -->
+<section class="card">
+  <h2>① 사업의 질 <span class="w">28/30 — 통과 (⚠️ 1개) · 해자 4개 유형 = 표본 최다</span></h2>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>전환 비용 — 최강급.</b> 전 세계 기업의 업무가 오피스·윈도우·엔터프라이즈 계약 위에서 돌아감. MS를 떠나려면 회사 전체를 재교육·재구축해야 함.</span></li>
+    <li><span class="tag pass">통과</span><span><b>네트워크 효과.</b> Teams·GitHub·오피스 파일 포맷의 상호운용성 — 모두가 쓰기 때문에 모두가 쓴다.</span></li>
+    <li><span class="tag pass">통과</span><span><b>규모 — 애저.</b> 글로벌 3대 클라우드이자 AI 인프라 공급자. AI 열풍의 "곡괭이 장수" 포지션 (알파벳 클라우드와 동일 논리).</span></li>
+    <li><span class="tag pass">통과</span><span><b>가격 결정력.</b> M365 인상 + Copilot 추가 과금을 이탈 없이 관철 중.</span></li>
+    <li><span class="tag warn">주의</span><span><b>예측 가능성 — AI capex 회수 (체크리스트 5번째 항목의 판정).</b> 사업 잠식이 아니라 투자 회수의 불확실성 — 알파벳과 동형. 애저 AI 연환산 $37B run rate가 회수의 초기 증거. (⚠️ 1개 → 무조건 통과 유지)</span></li>
+  </ul>
+</section>
+
+<!-- 2단계 -->
+<section class="card">
+  <h2>② 경영진 <span class="w">16/20 — 통과 (⚠️ 1개)</span></h2>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>사티아 나델라 — 검증된 자본배분.</b> 클라우드 전환 결단, GitHub·LinkedIn 인수 성공 — 10년간의 실적으로 증명된 경영진.</span></li>
+    <li><span class="tag pass">통과</span><span><b>주주환원 일관성.</b> 배당 + 자사주 매입 꾸준.</span></li>
+    <li><span class="tag warn">주의</span><span><b>OpenAI 관계의 복잡성.</b> 최대 파트너이자 잠재 경쟁자. <b>$250B 애저 지출 커밋은 매출 가시성인 동시에 단일 상대방 신용 리스크</b> — R2로 감시.</span></li>
+  </ul>
+</section>
+
+<!-- 3단계 -->
+<section class="card">
+  <h2>③ 재무 건전성 <span class="w">19/25 — 조건부 통과 (⚠️ 2개: FCF·CapEx — 알파벳 동형)</span></h2>
+  <div class="table-scroll">
+  <table>
+    <tr><th>지표</th><th>수치</th><th>기준</th><th>판정</th></tr>
+    <tr><td>ROE</td><td>약 30%대</td><td>15% 이상</td><td class="up">통과</td></tr>
+    <tr><td>장기부채 상환능력</td><td>부채 ~$45B ÷ 순이익 ~$110B = <b>0.4배</b></td><td>≤ 3~4배</td><td class="up">통과</td></tr>
+    <tr><td>이익 추세</td><td>순이익 $25.5B(FY17) → $101.8B(FY25) — 연 19%</td><td>10년 우상향</td><td class="up">통과</td></tr>
+    <tr><td>FCF</td><td>3Q26 분기 FCF <b>$15.8B (전년 $20.3B에서 −22%)</b></td><td>≈ 순이익</td><td class="warn-txt">주의 — capex 잠식 시작</td></tr>
+    <tr><td>CapEx</td><td>2026년 계획 <b>~$190B (+61%)</b>, 분기 $30.9B(+84%)</td><td>과도하지 않음</td><td class="warn-txt">주의 — 사상 최대 투자 사이클</td></tr>
+    <tr><td>1달러 테스트 (10년)</td><td>시총 증가 ≈$2.3조 — 여유 통과</td><td>유보 $1 → $1 이상</td><td class="up">통과</td></tr>
+  </table>
+  </div>
+
+  <div style="margin-top:22px">
+    <div class="chart-title">매출 · 순이익 10년 추이 (FY17~FY26E, 6월 결산)</div>
+    <div class="chart-sub">단위: 10억 달러(B). FY18 순이익 급감은 세제개편 일회성 · FY26은 추정 (연간 확정치 7월 말 발표)</div>
+    <div class="legend"><span><span class="sw" style="background:var(--series-1)"></span>매출</span><span><span class="sw" style="background:var(--series-2)"></span>순이익</span></div>
+    <div class="chart-box" id="chart-rev"></div>
+    <details><summary>데이터 표로 보기</summary><div class="table-scroll"><table id="rev-table"></table></div></details>
+  </div>
+</section>
+
+<!-- 4단계 -->
+<section class="card">
+  <h2>④ 밸류에이션 <span class="w">15/25 — 근소 미달 (안전마진 +16.8%)</span></h2>
+  <p class="body">기준 EPS: TTM 약 $17.6. 2단계 DCF:</p>
+  <div class="range-wrap">
+    <div class="range-track">
+      <div class="marker" style="left:7.1%"><div class="lbl">보수 (회수 부진)</div><div class="prc">$352</div><div class="tick"></div></div>
+      <div class="marker" style="left:48.7%"><div class="lbl">기본 (애저 성장 지속)</div><div class="prc">$481</div><div class="tick"></div></div>
+      <div class="marker" style="left:91.6%"><div class="lbl">낙관 (AI 수혜 본격화)</div><div class="prc">$614</div><div class="tick"></div></div>
+      <div class="marker now below" style="left:22.6%"><div class="tick"></div><div class="prc">$400.06</div><div class="lbl">현재 주가 — 목표 $385까지 −4%</div></div>
+    </div>
+    <div class="range-foot"><span>$330</span><span>내재가치 추정 범위 (양끝은 표시 눈금일 뿐)</span><span>$640</span></div>
+  </div>
+  <div class="table-scroll" style="margin-top:14px">
+  <table>
+    <tr><th>시나리오</th><th>가정 (EPS 성장률 1~5년 / 6~10년)</th><th>내재가치</th><th>안전마진<br>(가치−주가)÷가치</th><th>안전마진 20% 매수가</th></tr>
+    <tr><td>보수</td><td>+8% / +5%, 할인율 9.5%</td><td>$352</td><td class="warn-txt">−14%</td><td>$282</td></tr>
+    <tr><td><b>기본</b></td><td>+12% / +7%, 할인율 9%</td><td><b>$481</b></td><td class="warn-txt"><b>+16.8%</b> — 기준 20% 근소 미달</td><td><b>$385</b></td></tr>
+    <tr><td>낙관</td><td>+15% / +8%, 할인율 8.5%</td><td>$614</td><td class="up">+35%</td><td>$491</td></tr>
+  </table>
+  </div>
+  <ul class="check" style="margin-top:14px">
+    <li><span class="tag warn">주의</span><span><b>3.2%p 차이로 미달 — "거의 다 왔다"의 함정 주의.</b> 규칙은 규칙: $385 도달 전 매수는 체계 위반. 급락으로 도달하면 급락 이유(R1~R3)부터 확인.</span></li>
+    <li><span class="tag pass">참고</span><span><b>GuruFocus GF Value $565</b> — 우리 기본($481)~낙관($614) 사이. 우리가 시장 추정보다 보수적이라는 교차 확인.</span></li>
+  </ul>
+</section>
+
+<!-- 리스크 & 결론 -->
+<section class="card">
+  <div class="grid2">
+    <div>
+      <h2>최대 리스크 3가지 (사전 부검)</h2>
+      <ul class="check">
+        <li><span class="tag fail">R1</span><span><b>AI capex 회수 실패 → FCF 장기 훼손.</b> <b>관찰:</b> 애저 성장률·AI run rate, FCF (분기). <b>임계값: 애저 +20% 미만 감속 + FCF 역성장 지속 → 경보.</b></span></li>
+        <li><span class="tag fail">R2</span><span><b>OpenAI 단일 상대방 리스크.</b> $250B 커밋의 상대방 신용 + 경쟁 전환 가능성. <b>관찰:</b> OpenAI 재무·계약 변경 뉴스 (수시).</span></li>
+        <li><span class="tag fail">R3</span><span><b>오피스 좌석 모델 잠식 (세일즈포스 동형).</b> AI 에이전트가 좌석 수를 줄이는 경우. <b>관찰:</b> M365 좌석·ARPU (분기). <b>임계값: 좌석 역성장 → 경보.</b></span></li>
+      </ul>
+    </div>
+    <div>
+      <h2>결론 및 실행 계획</h2>
+      <p class="body"><strong>판정: 관망 — 목표 매수가 $385 (−4%).</strong> 품질은 표본 최고, 가격만 3.2%p 부족. 알파벳($284, −11% 필요)보다 목표가에 훨씬 가까움.</p>
+      <p class="body">도달 시 (02 §2):<br>
+      — 확신도 <strong>"보통"</strong> (재무 조건부 + 안전마진 30% 미만)<br>
+      — 목표 비중 5~10%, 1회차 목표의 1/3~1/2<br>
+      — <strong>알파벳과 논제 중복(AI capex 사이클)</strong> — 둘 다 도달 시 하나를 고르거나 절반씩, AI 테마 합산 상한 안에서</p>
+      <p class="body"><strong>최우선 일정: 7월 말 FY2026 연간 실적 발표</strong> — 직후 기준 EPS·내재가치·목표가 갱신. capex 가이던스와 애저 성장률이 R1 판정 재료.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 출처 -->
+<section class="card">
+  <h2>데이터 출처 (2026.07.26 조사)</h2>
+  <ul class="src">
+    <li>밸류에이션: <a href="https://www.gurufocus.com/term/forward-pe-ratio/MSFT">GuruFocus (fwd PER 20.6 · GF Value $565)</a> · <a href="https://stockanalysis.com/stocks/msft/statistics/">StockAnalysis</a></li>
+    <li>CapEx·AI: <a href="https://finance.yahoo.com/markets/stocks/articles/microsofts-capex-spending-2026-23-135000219.html">Yahoo (capex $190B, 예상 대비 +23%)</a> · <a href="https://valueaddvc.com/blog/microsoft-190b-ai-capex-in-2026-azures-37b-run-rate-and-the-250b-openai-deal">ValueAddVC (애저 AI $37B · OpenAI $250B)</a> · <a href="https://www.globaldatacenterhub.com/p/microsoft-q3-fy2026-the-190b-capex">Global Data Center Hub (3Q FY26)</a></li>
+    <li>FCF 압박: <a href="https://finance.yahoo.com/markets/stocks/articles/microsoft-spending-billions-ai-investors-153500229.html">Yahoo (분기 FCF $15.8B로 감소)</a></li>
+  </ul>
+  <div class="disclaimer">⚠️ 개인 학습·리서치용이며 투자 권유가 아닙니다. FY2026 연간 확정 실적(7월 말) 발표 전 분석 — 발표 직후 갱신 필요. FY26 수치는 추정입니다.</div>
+</section>
+
+</div>
+<script>
+(function () {
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  function vbar(x, y, w, h, r) { if (h <= r) r = Math.max(0, h - 0.5);
+    return `M${x},${y + h} L${x},${y + r} Q${x},${y} ${x + r},${y} L${x + w - r},${y} Q${x + w},${y} ${x + w},${y + r} L${x + w},${y + h} Z`; }
+  const years = ['FY17','FY18','FY19','FY20','FY21','FY22','FY23','FY24','FY25','FY26E'];
+  const revenue = [96.6,110.4,125.8,143.0,168.1,198.3,211.9,245.1,281.7,320];
+  const income  = [25.5,16.6,39.2,44.3,61.3,72.7,72.4,88.1,101.8,115];
+  const W = 900, H = 340, padL = 50, padR = 10, padT = 14, padB = 30;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const yMax = 350;
+  const yPix = v => padT + plotH - (v / yMax) * plotH;
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="마이크로소프트 매출과 순이익 FY17부터 FY26 추정까지 막대 차트">`;
+  for (let g = 0; g <= 350; g += 70) {
+    const y = yPix(g);
+    s += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${css('--gridline')}" stroke-width="1"/>`;
+    s += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="${css('--text-muted')}" font-variant-numeric="tabular-nums">${g}</text>`;
+  }
+  const groupW = plotW / years.length, barW = 24, gap = 2;
+  const bars = [];
+  years.forEach((yr, i) => {
+    const cx = padL + groupW * i + groupW / 2;
+    const x1 = cx - barW - gap / 2, x2 = cx + gap / 2;
+    const yR = yPix(revenue[i]), yI = yPix(income[i]);
+    s += `<path d="${vbar(x1, yR, barW, yPix(0) - yR, 4)}" fill="${css('--series-1')}"/>`;
+    s += `<path d="${vbar(x2, yI, barW, yPix(0) - yI, 4)}" fill="${css('--series-2')}"/>`;
+    s += `<text x="${cx}" y="${H - 10}" text-anchor="middle" font-size="11" fill="${css('--text-muted')}">${yr}</text>`;
+    bars.push({ x: cx, yr, rev: revenue[i], inc: income[i] });
+  });
+  s += `<text x="${bars[9].x - gap / 2 - barW / 2}" y="${yPix(320) - 6}" text-anchor="middle" font-size="11.5" font-weight="700" fill="${css('--text-secondary')}">320</text>`;
+  s += `<text x="${bars[9].x + gap / 2 + barW / 2}" y="${yPix(115) - 6}" text-anchor="middle" font-size="11.5" font-weight="700" fill="${css('--text-secondary')}">115</text>`;
+  s += `<line x1="${padL}" y1="${yPix(0)}" x2="${W - padR}" y2="${yPix(0)}" stroke="${css('--baseline')}" stroke-width="1"/>`;
+  s += `</svg>`;
+  const box = document.getElementById('chart-rev');
+  box.innerHTML = s;
+  const tip = document.createElement('div'); tip.className = 'tooltip'; box.appendChild(tip);
+  box.querySelector('svg').addEventListener('mousemove', e => {
+    const rect = box.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) / rect.width * W;
+    let best = 0, bd = 1e9;
+    bars.forEach((b, i) => { const d = Math.abs(b.x - mx); if (d < bd) { bd = d; best = i; } });
+    const b = bars[best];
+    tip.innerHTML = `<b>${b.yr}</b><br>매출 <b>$${b.rev.toFixed(1)}B</b><br>순이익 <b>$${b.inc.toFixed(1)}B</b> <span style="color:${css('--text-muted')}">(이익률 ${(b.inc / b.rev * 100).toFixed(0)}%)</span>`;
+    tip.style.opacity = 1;
+    tip.style.left = Math.min(b.x / W * rect.width + 14, rect.width - 150) + 'px';
+    tip.style.top = '20px';
+  });
+  box.querySelector('svg').addEventListener('mouseleave', () => tip.style.opacity = 0);
+  let t = '<tr><th>연도</th>' + years.map(y => `<th>${y}</th>`).join('') + '</tr>';
+  t += '<tr><td>매출 ($B)</td>' + revenue.map(v => `<td>${v.toFixed(1)}</td>`).join('') + '</tr>';
+  t += '<tr><td>순이익 ($B)</td>' + income.map(v => `<td>${v.toFixed(1)}</td>`).join('') + '</tr>';
+  document.getElementById('rev-table').innerHTML = t;
+})();
+</script>
+</body>
+</html>

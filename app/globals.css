@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 전역 충돌 방지를 위해 마크다운 렌더 영역 스타일은 모두 .vic-doc 하위로만 정의한다 */
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-paper text-ink;
+  font-family:
+    Pretendard,
+    -apple-system,
+    'Malgun Gothic',
+    sans-serif;
+  word-break: keep-all; /* 한글 어절 단위 줄바꿈 */
+}
+
+/* ── 분석 문서 본문 ──────────────────────────────
+   문서가 곧 상품이므로 장문 가독성을 우선한다. */
+
+.vic-doc {
+  @apply text-[15px] leading-[1.85] text-ink;
+}
+
+.vic-doc h1 {
+  @apply mb-5 mt-0 text-2xl font-bold text-navy;
+}
+
+.vic-doc h2 {
+  @apply mb-3 mt-10 border-b border-line pb-2 text-xl font-bold text-navy;
+}
+
+.vic-doc h3 {
+  @apply mb-2 mt-7 text-base font-bold text-navy;
+}
+
+.vic-doc p {
+  @apply my-3;
+}
+
+.vic-doc ul,
+.vic-doc ol {
+  @apply my-3 pl-5;
+}
+
+.vic-doc ul {
+  @apply list-disc;
+}
+
+.vic-doc ol {
+  @apply list-decimal;
+}
+
+.vic-doc li {
+  @apply my-1;
+}
+
+/* 체크리스트 항목 — [x] / [ ] 는 목록 마커를 지운다 */
+.vic-doc li:has(> input[type='checkbox']) {
+  @apply list-none -ml-5;
+}
+
+.vic-doc input[type='checkbox'] {
+  @apply mr-2 align-middle accent-pass;
+}
+
+.vic-doc strong {
+  @apply font-bold text-navy;
+}
+
+.vic-doc a {
+  @apply text-navy-soft underline underline-offset-2;
+}
+
+.vic-doc code {
+  @apply rounded bg-paper-2 px-1.5 py-0.5 text-[13px];
+}
+
+/* 인용 — 원칙 문서의 경고·주의 블록에 주로 쓰인다 */
+.vic-doc blockquote {
+  @apply my-4 rounded-r border-l-[3px] border-gold bg-paper-2 px-4 py-3 text-[14px] text-ink-2;
+}
+
+.vic-doc blockquote p {
+  @apply my-1;
+}
+
+.vic-doc hr {
+  @apply my-8 border-line;
+}
+
+/* ── 표 ──────────────────────────────
+   분석 문서의 핵심 자료가 전부 표다. 좁은 화면에서 가로 스크롤. */
+
+.vic-doc .vic-table-wrap {
+  @apply my-5 overflow-x-auto;
+}
+
+.vic-doc table {
+  @apply w-full border-collapse text-[14px];
+}
+
+.vic-doc th,
+.vic-doc td {
+  @apply border border-line px-3 py-2 text-left align-top;
+}
+
+.vic-doc th {
+  @apply bg-paper-2 font-bold text-navy;
+  white-space: nowrap;
+}
+
+.vic-doc td {
+  @apply bg-white;
+}
