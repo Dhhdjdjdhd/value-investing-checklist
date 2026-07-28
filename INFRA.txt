@@ -1,0 +1,132 @@
+================================================================
+ 가치투자 체크리스트 — 인프라 정보
+ 최종 정리: 2026-07-28
+================================================================
+
+■ 한 줄 요약
+  Next.js 단일 서비스를 Render에 배포. 프론트/백 분리 없음(서버 1개).
+  Render 무료 플랜은 15분 미사용 시 슬립 → UptimeRobot이 주기적으로 깨움.
+
+
+────────────────────────────────────────────────────────────────
+1. 저장소 (GitHub)
+────────────────────────────────────────────────────────────────
+  URL       https://github.com/Dhhdjdjdhd/value-investing-checklist
+  브랜치    main
+  공개범위  Public  ※ 주의 — 커밋한 내용은 누구나 볼 수 있음
+  로컬경로  D:\01.가치투자 체크리스트\valueInvestingChecklist
+
+  ※ 공개범위 변경: 저장소 → Settings → 맨 아래 Danger Zone
+    → "Change repository visibility"
+
+
+────────────────────────────────────────────────────────────────
+2. 배포 (Render)
+────────────────────────────────────────────────────────────────
+  서비스명   value-investing-checklist
+  공개 URL   https://value-investing-checklist.onrender.com
+  플랜       Free / 리전 singapore / Node 20.11.1
+
+  [대시보드 바로가기]
+  서비스     https://dashboard.render.com/web/srv-d9k569bm8hqs73bm85ng
+  로그       https://dashboard.render.com/web/srv-d9k569bm8hqs73bm85ng/logs
+  환경변수   https://dashboard.render.com/web/srv-d9k569bm8hqs73bm85ng/env
+  이벤트     https://dashboard.render.com/web/srv-d9k569bm8hqs73bm85ng/events
+  Blueprint  https://dashboard.render.com/blueprint/exs-d9k4g3qjobas738072u0
+
+  [배포 방식]
+  render.yaml(저장소 루트)을 Render가 읽어서 배포하는 Blueprint 방식.
+  main 브랜치에 push하면 자동 재배포됨.
+
+  buildCommand : npm install && npm run build
+  startCommand : npm start
+  healthCheck  : /api/health
+  PORT         : Render가 자동 주입 (직접 지정하지 말 것)
+
+  ※ render.yaml을 고친 뒤에는 Blueprint → Syncs 에서 동기화해야 반영됨
+
+
+────────────────────────────────────────────────────────────────
+3. 슬립 방지 (UptimeRobot)  ★ 자주 까먹는 부분
+────────────────────────────────────────────────────────────────
+  대시보드   https://dashboard.uptimerobot.com/monitors
+
+  Render 무료 플랜은 15분간 요청이 없으면 인스턴스가 잠든다.
+  잠들면 첫 접속이 매우 느려지거나 404(x-render-routing: no-server)가 뜬다.
+  → UptimeRobot이 주기적으로 /api/health 를 호출해서 깨어있게 유지한다.
+
+  [등록 설정]
+  Monitor Type : HTTP(s)
+  URL          : https://value-investing-checklist.onrender.com/api/health
+  Interval     : 10분  (Render 슬립이 15분이므로 그보다 짧게)
+
+  [같은 계정에 등록된 다른 모니터]
+  momcare-api-9qr2.onrender.com/api/health   (모니터 ID 803471731)
+
+
+────────────────────────────────────────────────────────────────
+4. 헬스체크 엔드포인트
+────────────────────────────────────────────────────────────────
+  주소   https://value-investing-checklist.onrender.com/api/health
+  소스   app/api/health/route.ts
+
+  정상 응답 예시:
+    {"status":"ok","time":"2026. 7. 28. 오후 4:12:30","uptime":143}
+
+  ※ uptime(초)이 계속 작은 값이면 인스턴스가 재시작을 반복 중이라는 뜻.
+    로그를 확인할 것.
+
+
+────────────────────────────────────────────────────────────────
+5. 로컬 실행
+────────────────────────────────────────────────────────────────
+  cd "D:\01.가치투자 체크리스트\valueInvestingChecklist"
+
+  npm install        (최초 1회)
+  npm run dev        개발 서버 → http://localhost:3000
+  npm run build      프로덕션 빌드 (배포와 동일 조건)
+  npm start          빌드 결과 실행
+
+  중지: Ctrl + C
+  로컬 Node 버전: v24.11.0 / 배포는 20.11.1
+
+
+────────────────────────────────────────────────────────────────
+6. 배포 절차
+────────────────────────────────────────────────────────────────
+  1) 로컬에서 npm run build 로 빌드 통과 확인
+  2) git add . && git commit -m "메시지" && git push
+  3) Render가 자동 감지해서 재배포 (Events 탭에서 진행 확인)
+  4) 배포 후 /api/health 로 정상 여부 확인
+
+
+────────────────────────────────────────────────────────────────
+7. 문제 생겼을 때
+────────────────────────────────────────────────────────────────
+  [증상] 접속하면 404, 헤더에 x-render-routing: no-server
+   → 앱 오류가 아니라 인스턴스가 없는 상태(슬립/재시작/배포중).
+     UptimeRobot 모니터가 살아있는지 먼저 확인.
+
+  [증상] 배포는 됐는데 특정 파일만 404
+   → 그 파일이 커밋됐는지 확인: git ls-files <경로>
+     GitHub 웹에서도 실제로 있는지 확인.
+
+  [증상] 빌드 실패
+   → Render 로그의 npm install / npm run build 구간을 볼 것.
+     로컬에서 npm run build 를 돌려 재현되는지 먼저 확인.
+
+  [Render 강제 재배포]
+   대시보드 우측 상단 Manual Deploy
+   → "Clear build cache & deploy" (빌드 캐시 문제일 때)
+
+
+────────────────────────────────────────────────────────────────
+8. 참고 — momcare 프로젝트 (다른 방식의 사례)
+────────────────────────────────────────────────────────────────
+  로컬     D:\98.시간제육아도우미\momcare
+  저장소   https://github.com/Dhhdjdjdhd/98.-
+  Render   https://dashboard.render.com/web/srv-d96856d8nd3s73b0gsc0
+  프론트   Vercel (98-two.vercel.app)
+
+  momcare는 백엔드(NestJS)=Render, 프론트(Next.js)=Vercel 로 서버가 2개.
+  이 프로젝트는 Next.js 하나로 합쳐서 서버 1개 — 슬립도 한 번만 관리하면 됨.

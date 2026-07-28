@@ -14,7 +14,9 @@ services:
     branch: main
     buildCommand: npm install && npm run build
     startCommand: npm start
-    healthCheckPath: /api/health # 배포 성공 판정 + 외부 모니터링이 찌를 주소
+    # healthCheckPath는 넣지 않는다.
+    # 이 경로가 200을 주지 못하면 Render가 배포를 "완료"로 판정하지 않고 무한 대기한다.
+    # 슬립 방지(UptimeRobot)는 이 설정과 무관하게 /api/health를 직접 호출하면 되므로 필요 없다.
     envVars:
       - key: NODE_VERSION
         value: "20.11.1"
