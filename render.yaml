@@ -14,6 +14,7 @@ services:
     branch: main
     buildCommand: npm install && npm run build
     startCommand: npm start
+    healthCheckPath: /api/health # 배포 성공 판정 + 외부 모니터링이 찌를 주소
     envVars:
       - key: NODE_VERSION
         value: "20.11.1"
