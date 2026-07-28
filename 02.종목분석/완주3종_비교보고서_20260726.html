@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>완주 3종 비교 — 코파트 · 인튜잇 · 마이크로소프트 (2026.07.26)</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --seq-250: #86b6ef; --seq-450: #2a78d6;
+    --status-good: #0ca30c; --status-warning: #fab219; --status-serious: #ec835a; --status-critical: #d03b3b;
+    --delta-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --seq-450: #3987e5; --delta-good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --seq-450: #3987e5; --delta-good: #0ca30c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 26px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  h2 .w { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 6px; }
+  h3 { font-size: 15.5px; font-weight: 700; margin: 4px 0 8px; }
+  p.body { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 10px; }
+  p.body strong { color: var(--text-primary); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  .table-scroll { overflow-x: auto; }
+  .up { color: var(--delta-good); font-weight: 600; }
+  .warn-txt { color: var(--status-serious); font-weight: 600; }
+  .bad { color: var(--status-critical); font-weight: 600; }
+  .verdict { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 3px 12px; font-size: 13px; font-weight: 700; }
+  .verdict .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .v-buy { border: 1.5px solid var(--status-good); } .v-buy .dot { background: var(--status-good); }
+  .v-wait { border: 1.5px solid var(--status-warning); } .v-wait .dot { background: var(--status-warning); }
+  .meter-row { display: grid; grid-template-columns: 130px 1fr 80px; gap: 10px; align-items: center; margin-bottom: 8px; }
+  .meter-row .name { font-size: 13px; font-weight: 600; }
+  .track { height: 9px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--seq-450); border-radius: 5px; }
+  .meter-row .val { font-size: 13px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .range-wrap { padding: 44px 10px 50px; }
+  .range-track { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--seq-250), var(--seq-450)); }
+  .marker { position: absolute; top: -38px; transform: translateX(-50%); text-align: center; }
+  .marker .lbl { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+  .marker .prc { font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .marker .tick { width: 2px; height: 13px; background: var(--baseline); margin: 2px auto 0; }
+  .marker.below { top: auto; bottom: -46px; }
+  .marker.below .tick { margin: 0 auto 2px; }
+  .marker.now .tick { background: var(--text-primary); width: 3px; height: 18px; }
+  .marker.now .prc, .marker.now .lbl { color: var(--text-primary); font-weight: 800; }
+  .range-foot { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 6px; font-variant-numeric: tabular-nums; }
+  ul.check { list-style: none; }
+  ul.check li { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--gridline); font-size: 13.5px; color: var(--text-secondary); align-items: baseline; }
+  ul.check li:last-child { border-bottom: none; }
+  .tag { flex: 0 0 auto; font-size: 11.5px; font-weight: 700; border-radius: 4px; padding: 1px 7px; white-space: nowrap; }
+  .tag.pass { color: var(--status-good); border: 1px solid var(--status-good); }
+  .tag.warn { color: var(--status-serious); border: 1px solid var(--status-serious); }
+  ul.check b { color: var(--text-primary); font-weight: 600; }
+  .src { font-size: 12.5px; color: var(--text-muted); }
+  .src a { color: var(--series-1); text-decoration: none; }
+  .src li { margin-bottom: 4px; }
+  .disclaimer { border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+  .notice { border: 1.5px solid var(--status-warning); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">가치투자 체크리스트 · 완주 분석 3종 비교 · 2026년 7월 26일</div>
+  <h1>코파트 · 인튜잇 · 마이크로소프트</h1>
+  <div class="sub">Finviz 전수 스크리닝(미국 상장 ~1만 종목) → 간이 관문 → 완주 1군 3종. 상세 근거는 각 템플릿(md) 참조 — 이 문서는 비교·결정용.</div>
+</header>
+
+<div class="notice">⚠️ <b>핵심 요약:</b> 셋 다 관문을 통과했고 그중 <b>둘(코파트·인튜잇)은 이미 목표 매수가 아래</b>에 있습니다. 단, 인튜잇·MSFT는 기존 매수가능/관망 종목(세일즈포스·알파벳)과 <b>같은 "AI 공포" 테마</b>라 합산 상한 안에서 서로 경쟁합니다. 코파트만 비(非)AI 테마 — 분산 관점에서 유일하게 귀한 자리입니다.</div>
+
+<!-- 종합 비교 -->
+<section class="card">
+  <h2>한눈 비교 <span class="w">점수는 참고용 — 판정은 관문 방식</span></h2>
+  <div class="table-scroll">
+  <table>
+    <tr><th>항목</th><th>코파트 (CPRT)</th><th>인튜잇 (INTU)</th><th>마이크로소프트 (MSFT)</th></tr>
+    <tr><td>판정</td><td class="up"><b>매수 가능</b></td><td class="up"><b>매수 가능</b> (거부권 대기)</td><td class="warn-txt"><b>관망</b> ($385 대기, −4%)</td></tr>
+    <tr><td>참고 점수</td><td><b>85</b>/100 — 표본 최고 경신</td><td>82/100</td><td>78/100 (알파벳 동점)</td></tr>
+    <tr><td>현재 주가</td><td>$27.94</td><td>~$291</td><td>$400.06</td></tr>
+    <tr><td>낙폭</td><td>사상 최고 대비 −56% (52주 −44%)</td><td>−61% (S&P 최악 종목)</td><td>약 −30%</td></tr>
+    <tr><td>내재가치 (보수/기본/낙관)</td><td>$25 / <b>$38.5</b> / $52</td><td>$281 / <b>$431</b> / $552</td><td>$352 / <b>$481</b> / $614</td></tr>
+    <tr><td>안전마진 (기본)</td><td class="up">+27.4%</td><td class="up"><b>+32.5%</b></td><td class="warn-txt">+16.8% — 미달</td></tr>
+    <tr><td>목표 매수가 (기본×0.8)</td><td class="up">$30.8 — <b>이미 하회</b></td><td class="up">$345 — <b>이미 하회</b></td><td>$385 — 앞으로 −4%</td></tr>
+    <tr><td>관문 (사업/경영진/재무)</td><td>통과/통과/통과 (⚠️ 각 1)</td><td>통과/조건부/통과</td><td>통과/통과/조건부</td></tr>
+    <tr><td>확신도 (매수 시)</td><td>보통 (5~10%)</td><td>보통 (5~10%)</td><td>보통 (5~10%)</td></tr>
+    <tr><td>싼 이유</td><td>보험료 급등→가입 축소→물량 감소 (업계 공통 사이클)</td><td>AI 세무 대체 공포 (숫자는 +13~14% 성장)</td><td>AI capex $190B→FCF 압박 (알파벳 동형)</td></tr>
+    <tr><td>테마</td><td class="up"><b>비AI — 유일</b></td><td class="warn-txt">AI 공포 (테마 합산 대상)</td><td class="warn-txt">AI capex (테마 합산 대상)</td></tr>
+    <tr><td>거부권(10년 확신) 쟁점</td><td>거의 없음 (사고차는 영속)</td><td class="warn-txt"><b>있음</b> — AI가 세무를 대체하는가</td><td>거의 없음 (락인 영속)</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- CPRT -->
+<section class="card">
+  <h3>① 코파트 — <span class="verdict v-buy"><span class="dot"></span>매수 가능 · 85점</span></h3>
+  <p class="body"><strong>사고차 온라인 경매의 사실상 복점.</strong> 폭락의 원인은 보험료 급등으로 소비자가 보험을 줄여 사고차 물량이 감소한 것 — <strong>업계 공통의 외부 사이클</strong>(판별 질문 ④ 일시적 신호)입니다. 해자 건재의 증거가 명확합니다: 물량이 줄어도 <strong>평균 낙찰가는 사상 최고</strong>(가격결정력), 사실상 무차입, ROIC 30.0%, 회사는 폭락 구간에서 자사주 $1.63B 매입 중. ⚠️는 신임 CEO 교체 서프라이즈(전략 연속성 관찰)와 FY26 물량 역풍(미국 보험 물량 −4.2%, 이익은 ASP·자사주로 방어 중).</p>
+  <div class="meter-row"><div class="name">사업의 질</div><div class="track"><div class="fill" style="width:90%"></div></div><div class="val">27/30</div></div>
+  <div class="meter-row"><div class="name">경영진</div><div class="track"><div class="fill" style="width:80%"></div></div><div class="val">16/20</div></div>
+  <div class="meter-row"><div class="name">재무</div><div class="track"><div class="fill" style="width:84%"></div></div><div class="val">21/25</div></div>
+  <div class="meter-row"><div class="name">밸류에이션</div><div class="track"><div class="fill" style="width:84%"></div></div><div class="val">21/25</div></div>
+  <div class="range-wrap">
+    <div class="range-track">
+      <div class="marker" style="left:14.3%"><div class="lbl">보수</div><div class="prc">$25</div><div class="tick"></div></div>
+      <div class="marker" style="left:52.9%"><div class="lbl">기본</div><div class="prc">$38.5</div><div class="tick"></div></div>
+      <div class="marker" style="left:91.4%"><div class="lbl">낙관</div><div class="prc">$52</div><div class="tick"></div></div>
+      <div class="marker now below" style="left:22.7%"><div class="tick"></div><div class="prc">$27.94</div><div class="lbl">현재가 — 목표 $30.8 이미 하회</div></div>
+    </div>
+    <div class="range-foot"><span>$20</span><span>내재가치 범위 (표시 눈금일 뿐)</span><span>$55</span></div>
+  </div>
+</section>
+
+<!-- INTU -->
+<section class="card">
+  <h3>② 인튜잇 — <span class="verdict v-buy"><span class="dot"></span>매수 가능 · 82점 · 거부권 대기</span></h3>
+  <p class="body"><strong>미국 세무(터보택스)·중소기업 회계(퀵북스) 독점 — S&P 최악 종목(−50%)이 된 우량주.</strong> 서사(AI가 세무를 대체)와 숫자(매출 +13~14%, GAAP EPS +16%, FCF $5~6B)의 괴리가 표본 중 최대입니다. 안전마진 +32.5%로 <strong>30% 선까지 넘는 유일한 종목</strong>. ⚠️는 고가 M&A 전과(메일침프 $12B), 큰 SBC, 그리고 실체 있는 경고인 터보택스 성장 하향(→7%)·17% 감원. <strong>거부권 질문: "AI가 세금 신고를 공짜로 만드는가"</strong> — 반론은 세무의 본질이 계산이 아니라 보증·책임이라는 것. 어도비를 패스한 논리와의 일관성 판단이 필요합니다.</p>
+  <div class="meter-row"><div class="name">사업의 질</div><div class="track"><div class="fill" style="width:87%"></div></div><div class="val">26/30</div></div>
+  <div class="meter-row"><div class="name">경영진</div><div class="track"><div class="fill" style="width:70%"></div></div><div class="val">14/20</div></div>
+  <div class="meter-row"><div class="name">재무</div><div class="track"><div class="fill" style="width:80%"></div></div><div class="val">20/25</div></div>
+  <div class="meter-row"><div class="name">밸류에이션</div><div class="track"><div class="fill" style="width:88%"></div></div><div class="val">22/25</div></div>
+  <div class="range-wrap">
+    <div class="range-track">
+      <div class="marker" style="left:9.4%"><div class="lbl">보수</div><div class="prc">$281</div><div class="tick"></div></div>
+      <div class="marker" style="left:54.8%"><div class="lbl">기본</div><div class="prc">$431</div><div class="tick"></div></div>
+      <div class="marker" style="left:91.5%"><div class="lbl">낙관 (=애널리스트 평균 $553)</div><div class="prc">$552</div><div class="tick"></div></div>
+      <div class="marker now below" style="left:12.4%"><div class="tick"></div><div class="prc">~$291</div><div class="lbl">현재가 — 보수($281) 바로 위, 목표 $345 이미 하회</div></div>
+    </div>
+    <div class="range-foot"><span>$250</span><span>내재가치 범위 (표시 눈금일 뿐)</span><span>$580</span></div>
+  </div>
+</section>
+
+<!-- MSFT -->
+<section class="card">
+  <h3>③ 마이크로소프트 — <span class="verdict v-wait"><span class="dot"></span>관망 · 78점 · $385 대기 (−4%)</span></h3>
+  <p class="body"><strong>해자 유형 4개(표본 최다)의 최상급 기업 — 그러나 안전마진 +16.8%로 기준(20%)에 근소 미달.</strong> −30% 조정의 원인은 2026년 capex ~$190B(+61%)가 FCF를 잠식하기 시작한 것 — 알파벳과 동형의 "투자 사이클" 할인이며 잠식이 아닙니다(애저 AI run rate $37B가 회수의 증거). ⚠️는 FCF 감소·capex(재무 조건부)와 OpenAI 단일 상대방 리스크($250B 커밋). <strong>알파벳($284 대기)과 논제가 겹치므로, 둘 다 도달 시 하나를 고르거나 절반씩</strong>이 합리적입니다. 참고: FY26 연간 실적이 며칠 내(7월 말) 발표 — 직후 내재가치 갱신 필요.</p>
+  <div class="meter-row"><div class="name">사업의 질</div><div class="track"><div class="fill" style="width:93%"></div></div><div class="val">28/30</div></div>
+  <div class="meter-row"><div class="name">경영진</div><div class="track"><div class="fill" style="width:80%"></div></div><div class="val">16/20</div></div>
+  <div class="meter-row"><div class="name">재무</div><div class="track"><div class="fill" style="width:76%"></div></div><div class="val">19/25</div></div>
+  <div class="meter-row"><div class="name">밸류에이션</div><div class="track"><div class="fill" style="width:60%"></div></div><div class="val">15/25</div></div>
+  <div class="range-wrap">
+    <div class="range-track">
+      <div class="marker" style="left:7.1%"><div class="lbl">보수</div><div class="prc">$352</div><div class="tick"></div></div>
+      <div class="marker" style="left:48.7%"><div class="lbl">기본</div><div class="prc">$481</div><div class="tick"></div></div>
+      <div class="marker" style="left:91.6%"><div class="lbl">낙관</div><div class="prc">$614</div><div class="tick"></div></div>
+      <div class="marker now below" style="left:22.6%"><div class="tick"></div><div class="prc">$400.06</div><div class="lbl">현재가 — 목표 $385까지 −4%</div></div>
+    </div>
+    <div class="range-foot"><span>$330</span><span>내재가치 범위 (표시 눈금일 뿐)</span><span>$640</span></div>
+  </div>
+</section>
+
+<!-- 포트폴리오 관점 -->
+<section class="card">
+  <h2>포트폴리오 관점 — 지금 "매수 가능"이 4개가 됐다</h2>
+  <div class="table-scroll">
+  <table>
+    <tr><th>종목</th><th>상태</th><th>안전마진</th><th>테마</th><th>거부권 쟁점</th></tr>
+    <tr><td>세일즈포스</td><td class="up">매수 가능</td><td>+49%</td><td class="warn-txt">AI 공포</td><td>있음 (좌석 모델)</td></tr>
+    <tr><td>인튜잇</td><td class="up">매수 가능</td><td>+32.5%</td><td class="warn-txt">AI 공포</td><td>있음 (세무 대체)</td></tr>
+    <tr><td><b>코파트</b></td><td class="up">매수 가능</td><td>+27.4%</td><td class="up"><b>비AI (유일)</b></td><td>거의 없음</td></tr>
+    <tr><td>마이크로소프트</td><td class="warn-txt">관망 $385</td><td>+16.8%</td><td class="warn-txt">AI capex</td><td>거의 없음</td></tr>
+    <tr><td>알파벳</td><td class="warn-txt">관망 $284</td><td>+10.5%</td><td class="warn-txt">AI 공포/capex</td><td>거의 없음</td></tr>
+  </table>
+  </div>
+  <ul class="check" style="margin-top:12px">
+    <li><span class="tag warn">규칙</span><span><b>AI 테마 합산 상한(02 §2: 20~30% 중 자기 숫자)이 실질 제약.</b> 세일즈포스+인튜잇+MSFT+알파벳은 "AI 공포는 과장"이라는 한 명제의 네 얼굴 — 다 담으면 분산이 아니라 한 베팅에 몰빵. 이 중 확신 가는 1~2개만.</span></li>
+    <li><span class="tag pass">관찰</span><span><b>코파트는 테마 경쟁이 없어 독립적으로 판단 가능</b> — 매수 시 AI 바구니와 별개 자리.</span></li>
+    <li><span class="tag warn">참고</span><span><b>시장 국면:</b> 우량주가 이렇게 한꺼번에 관문을 통과하는 것 자체가 조정장의 신호. 기회가 많을수록 서두르지 말고 분할로 — 더 싸질 수 있음을 전제로 진입하는 것이 분할매수의 존재 이유.</span></li>
+  </ul>
+</section>
+
+<!-- 출처 -->
+<section class="card">
+  <h2>데이터 출처 (2026.07.26 조사) · 상세 분석은 각 템플릿(md) 참조</h2>
+  <ul class="src">
+    <li>코파트: <a href="https://www.copart.com/content/cprt-07-31-2025-earnings-release.pdf">FY2025 실적 발표(회사 IR)</a> · <a href="https://finance.yahoo.com/markets/stocks/articles/coparts-stock-flying-u-salvage-171530067.html">Yahoo (물량 분석)</a> · <a href="https://www.tikr.com/blog/copart-stock-has-fallen-46-over-the-past-year-heres-why-analysts-still-sees-45-fair-value">TIKR (−46%·FV $45)</a> · <a href="https://www.gurufocus.com/term/debt-to-equity/CPRT">GuruFocus (무부채)</a></li>
+    <li>인튜잇: <a href="https://investors.intuit.com/news-events/press-releases/detail/1312/intuit-reports-strong-third-quarter-results-and-raises-full-year-revenue-guidance">3Q FY26 실적·가이던스(회사 IR)</a> · <a href="https://www.cnbc.com/2026/05/20/intuit-intu-q3-earnings-report-2026-company-cutting-17percent-of-staff.html">CNBC (17% 감원)</a> · <a href="https://www.tikr.com/blog/intuit-stock-has-lost-61-from-its-peak-while-the-business-keeps-generating-6-billion-in-free-cash-flow">TIKR (−61%·FCF $6B)</a> · <a href="https://www.forbes.com/sites/tylerroush/2026/06/02/intuit-becomes-sp-500s-worst-performer-this-year-heres-why/">Forbes (S&P 최악)</a></li>
+    <li>마이크로소프트: <a href="https://www.gurufocus.com/term/forward-pe-ratio/MSFT">GuruFocus (fwd PER·GF Value)</a> · <a href="https://finance.yahoo.com/markets/stocks/articles/microsofts-capex-spending-2026-23-135000219.html">Yahoo (capex $190B)</a> · <a href="https://valueaddvc.com/blog/microsoft-190b-ai-capex-in-2026-azures-37b-run-rate-and-the-250b-openai-deal">ValueAddVC (애저 $37B·OpenAI $250B)</a></li>
+  </ul>
+  <div class="disclaimer">⚠️ 개인 학습·리서치용이며 투자 권유가 아닙니다. 내재가치는 가정에 민감하며(±20% 이상 변동 가능), MSFT는 FY26 연간 실적(7월 말) 발표 전 분석입니다. 코파트 수치는 2026-07-27 사실 검증·정정 반영(기준 EPS $1.61, 내재가치 $25/$38.5/$52 — 상세는 CPRT 보고서 참조). 데이터 신뢰도: 각 사 IR 발표 수치는 확정, 주가·배수는 조회 시점 스냅샷, ROIC 등 일부는 단일 출처. 결정과 책임은 투자자 본인에게 있습니다.</div>
+</section>
+
+</div>
+</body>
+</html>

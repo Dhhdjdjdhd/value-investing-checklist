@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>알파벳(GOOGL) 가치투자 분석 보고서 — 2026.07.25</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page:           #f9f9f7;
+    --surface-1:      #fcfcfb;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --series-1:       #2a78d6;   /* blue  — 매출 */
+    --series-2:       #eb6834;   /* orange — 순이익 */
+    --seq-250:        #86b6ef;
+    --seq-450:        #2a78d6;
+    --status-good:    #0ca30c;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical:#d03b3b;
+    --delta-good:     #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page:           #0d0d0d;
+      --surface-1:      #1a1a19;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --border:         rgba(255,255,255,0.10);
+      --series-1:       #3987e5;
+      --series-2:       #d95926;
+      --seq-250:        #86b6ef;
+      --seq-450:        #3987e5;
+      --delta-good:     #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page:           #0d0d0d;
+    --surface-1:      #1a1a19;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255,255,255,0.10);
+    --series-1:       #3987e5;
+    --series-2:       #d95926;
+    --seq-250:        #86b6ef;
+    --seq-450:        #3987e5;
+    --delta-good:     #0ca30c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--page);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+    line-height: 1.6;
+    padding: 32px 16px 64px;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+
+  /* ---------- 헤더 ---------- */
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  h2 .w { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 6px; }
+  p.body { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 10px; }
+  p.body strong { color: var(--text-primary); }
+
+  /* ---------- 히어로 ---------- */
+  .hero { display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch; }
+  .hero-score { flex: 0 0 auto; text-align: center; padding: 8px 28px 8px 8px; border-right: 1px solid var(--gridline); }
+  .hero-score .num { font-size: 64px; font-weight: 800; line-height: 1.05; }
+  .hero-score .den { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+  .hero-score .label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  .hero-main { flex: 1 1 320px; min-width: 280px; }
+  .verdict {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1.5px solid var(--status-warning);
+    border-radius: 999px; padding: 4px 14px;
+    font-size: 14px; font-weight: 700; margin-bottom: 10px;
+  }
+  .verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--status-warning); }
+
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .fact { border-top: 2px solid var(--gridline); padding-top: 8px; }
+  .fact .k { font-size: 12px; color: var(--text-muted); }
+  .fact .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fact .d { font-size: 12px; color: var(--text-secondary); }
+
+  /* ---------- 점수 미터 ---------- */
+  .meter-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .meter-row .name { font-size: 14px; font-weight: 600; }
+  .meter-row .name small { display: block; font-weight: 400; font-size: 11.5px; color: var(--text-muted); }
+  .track { height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--seq-450); border-radius: 5px; }
+  .meter-row .val { font-size: 14px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .meter-row .val small { font-weight: 400; color: var(--text-muted); }
+
+  /* ---------- 체크리스트 ---------- */
+  ul.check { list-style: none; }
+  ul.check li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--gridline); font-size: 14px; color: var(--text-secondary); align-items: baseline; }
+  ul.check li:last-child { border-bottom: none; }
+  .tag { flex: 0 0 auto; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+  .tag.pass { color: var(--status-good); border: 1px solid var(--status-good); }
+  .tag.warn { color: var(--status-serious); border: 1px solid var(--status-serious); }
+  .tag.fail { color: var(--status-critical); border: 1px solid var(--status-critical); }
+  ul.check b { color: var(--text-primary); font-weight: 600; }
+
+  /* ---------- 차트 ---------- */
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .chart-box { position: relative; }
+  svg text { font-family: inherit; }
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 10;
+    background: var(--surface-1); border: 1px solid var(--border);
+    box-shadow: 0 4px 14px rgba(0,0,0,.18);
+    border-radius: 8px; padding: 8px 12px; font-size: 12.5px;
+    color: var(--text-secondary); white-space: nowrap;
+    opacity: 0; transition: opacity .1s;
+  }
+  .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  details { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  details summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
+
+  /* ---------- 테이블 ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  .table-scroll { overflow-x: auto; }
+  .up { color: var(--delta-good); font-weight: 600; }
+
+  /* ---------- 내재가치 레인지 ---------- */
+  .range-wrap { padding: 46px 10px 8px; }
+  .range-track { position: relative; height: 8px; border-radius: 4px;
+    background: linear-gradient(to right, var(--seq-250), var(--seq-450)); }
+  .marker { position: absolute; top: -40px; transform: translateX(-50%); text-align: center; }
+  .marker .lbl { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; }
+  .marker .prc { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .marker .tick { width: 2px; height: 14px; background: var(--baseline); margin: 2px auto 0; }
+  .marker.now .tick { background: var(--text-primary); width: 3px; height: 20px; }
+  .marker.now .prc, .marker.now .lbl { color: var(--text-primary); font-weight: 800; }
+  .range-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+
+  /* ---------- 기타 ---------- */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  .src { font-size: 12.5px; color: var(--text-muted); }
+  .src a { color: var(--series-1); text-decoration: none; }
+  .src li { margin-bottom: 4px; }
+  .disclaimer {
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; font-size: 12.5px; color: var(--text-muted); margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">가치투자 체크리스트 기반 종목 분석 · 2026년 7월 25일</div>
+  <h1>알파벳 <span style="color:var(--text-muted);font-weight:600">Alphabet Inc. · NASDAQ: GOOGL</span></h1>
+  <div class="sub">검색·유튜브·안드로이드·구글클라우드를 보유한 세계 최대 인터넷 기업 — 버크셔 해서웨이가 2025년 말~2026년 약 310억 달러 이상 매수한 종목 (13F·사모 발행 합산 기준)</div>
+</header>
+
+<!-- ============ 종합 판정 ============ -->
+<section class="card">
+  <div class="hero">
+    <div class="hero-score">
+      <div class="num">78<span class="den">/100</span></div>
+      <div class="label">종합 평가 점수 (참고용 — 판정은 점수가 아니라 관문 방식)</div>
+    </div>
+    <div class="hero-main">
+      <div class="verdict"><span class="dot"></span>판정: 관심 목록 — 우량기업 · 안전마진 부족</div>
+      <p class="body"><strong>사업의 질은 버핏 기준을 여유 있게 통과</strong>하지만, 경영진(⚠️ 3개)과 재무(⚠️ 2개)는 <strong>조건부 통과</strong>이고, 현재 주가는 기본 시나리오 내재가치 대비 약 10% 할인에 그쳐 <strong>안전마진 20% 기준에 미달</strong>합니다. <strong>$284 이하</strong>에서 분할매수 접근이 체크리스트에 부합하며, 그 경우에도 조건부 통과 2건 때문에 확신도는 "보통" — <strong>목표 비중 5~10%로 제한</strong>됩니다.</p>
+      <div class="facts">
+        <div class="fact"><div class="k">현재 주가 (7/24 종가)</div><div class="v">$317.69</div><div class="d">시가총액 약 $3.8조</div></div>
+        <div class="fact"><div class="k">Forward PER</div><div class="v">약 24배</div><div class="d">Trailing PER은 평가이익으로 왜곡</div></div>
+        <div class="fact"><div class="k">ROE (2025)</div><div class="v">31.8%</div><div class="d">기준 15%의 2배 이상</div></div>
+        <div class="fact"><div class="k">목표 매수가</div><div class="v">$284 이하</div><div class="d">기본 내재가치 $355 × 0.8</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 항목별 점수 ============ -->
+<section class="card">
+  <h2>항목별 점수 <span class="w">참고용 — 매수 판정은 점수가 아니라 관문(통과 / 조건부 통과 / 탈락)으로 한다</span></h2>
+  <div class="meter-row">
+    <div class="name">① 사업의 질<small>가중치 30%</small></div>
+    <div class="track"><div class="fill" style="width:90%"></div></div>
+    <div class="val">27<small> / 30</small></div>
+  </div>
+  <div class="meter-row">
+    <div class="name">② 경영진<small>가중치 20% · 조건부 통과</small></div>
+    <div class="track"><div class="fill" style="width:75%"></div></div>
+    <div class="val">15<small> / 20</small></div>
+  </div>
+  <div class="meter-row">
+    <div class="name">③ 재무 건전성<small>가중치 25% · 조건부 통과</small></div>
+    <div class="track"><div class="fill" style="width:84%"></div></div>
+    <div class="val">21<small> / 25</small></div>
+  </div>
+  <div class="meter-row">
+    <div class="name">④ 밸류에이션<small>가중치 25%</small></div>
+    <div class="track"><div class="fill" style="width:60%"></div></div>
+    <div class="val">15<small> / 25</small></div>
+  </div>
+</section>
+
+<!-- ============ 1단계: 사업의 질 ============ -->
+<section class="card">
+  <h2>① 사업의 질 <span class="w">27/30 — 통과</span></h2>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>경제적 해자 — 검색 점유율 약 90%.</b> 브랜드·사용 습관·20년치 검색 데이터가 결합된 복합 해자. "구글링"이 동사가 된 유일한 검색엔진.</span></li>
+    <li><span class="tag pass">통과</span><span><b>네트워크 효과.</b> 유튜브(크리에이터↔시청자↔광고주), 안드로이드(개발자↔사용자), 광고 생태계 모두 규모가 커질수록 강해지는 구조.</span></li>
+    <li><span class="tag pass">통과</span><span><b>원가 우위 — AI 수직계열화.</b> 자체 TPU 칩과 세계 최대급 데이터센터로 AI 연산 원가가 경쟁사 대비 낮음. 클라우드 수주잔고(백로그) <b>$514B</b>.</span></li>
+    <li><span class="tag pass">통과</span><span><b>가격 결정력.</b> 광고는 경매 방식이라 수요 증가가 곧 단가 상승. 클라우드·구독(유튜브 프리미엄, 워크스페이스)도 인상 이력에도 이탈 미미.</span></li>
+    <li><span class="tag warn">주의</span><span><b>단순성·예측 가능성 — 체크리스트 5번째 항목의 판정.</b> 사업 구조 자체는 겉보기(복합기업)보다 단순 — 매출의 약 4분의 3이 광고 단일 엔진, Other Bets는 매출 1% 미만. ⚠️의 원인은 구조가 아니라 <b>AI 검색 전환기의 예측 불확실성</b>: 챗봇형 검색이 검색광고 모델을 잠식할 가능성. 다만 제미나이로 방어 중 — 2026년 2분기 검색 매출 +17%로 오히려 가속. (⚠️ 1개 → 1단계는 무조건 통과 유지)</span></li>
+  </ul>
+</section>
+
+<!-- ============ 2단계: 경영진 ============ -->
+<section class="card">
+  <h2>② 경영진 <span class="w">15/20 — 조건부 통과 (⚠️ 3개 → 매수 시 확신도 "보통" 상한)</span></h2>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>주주환원 강화.</b> 대규모 자사주 매입 지속, 2024년 배당 개시. 발행주식수는 감소 추세.</span></li>
+    <li><span class="tag pass">통과</span><span><b>AI 전환 대응 성공 + 실수 인정.</b> "AI에 뒤처졌다"는 2023년 평가를 부인하지 않고 조직 전면 개편으로 대응, 제미나이·TPU·클라우드로 뒤집음 — 실수를 인정하는 경영진.</span></li>
+    <li><span class="tag warn">주의</span><span><b>공격적 자본 배분 — 2026년 설비투자 $195~205B.</b> 전년 대비 2배 이상이며 2027년 "대폭 증가" 예고. 아직 투자회수가 숫자로 완전히 입증되지 않은 단계 (클라우드 +82% 성장은 긍정 신호).</span></li>
+    <li><span class="tag warn">주의</span><span><b>차등의결권 구조.</b> 창업자(페이지·브린)가 클래스 B 주식으로 지배 — 일반주주의 견제 수단이 제한적.</span></li>
+    <li><span class="tag warn">주의</span><span><b>스톡옵션 보수·희석 + Other Bets 만성 적자.</b> 주식보상 규모가 커서 자사주 매입으로 상쇄 중(발행주식수 추이 감시 필요), Other Bets(웨이모 등)는 자본 배분 규율의 감점 요인.</span></li>
+  </ul>
+</section>
+
+<!-- ============ 3단계: 재무 ============ -->
+<section class="card">
+  <h2>③ 재무 건전성 <span class="w">21/25 — 조건부 통과 (⚠️ 2개, 원인은 하나: AI 설비투자 사이클)</span></h2>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>ROE 31.8% (2025년).</b> 버핏 기준 15%의 2배 이상을 사실상 무차입으로 달성. 10년 추세도 우상향.</span></li>
+    <li><span class="tag pass">통과</span><span><b>영업이익률 32%.</b> 10년간 꾸준히 확대. 순이익률 32.8%.</span></li>
+    <li><span class="tag pass">통과</span><span><b>부채 극소 — 장기부채 상환능력 0.35배.</b> 장기부채 $46.5B ÷ 순이익 $132.2B = 0.35배로 기준(3~4배 이내) 대비 큰 여유. (참고: D/E 0.11)</span></li>
+    <li><span class="tag pass">통과</span><span><b>이익의 일관성.</b> 10년간 매출·순이익 모두 꾸준히 우상향 (아래 차트).</span></li>
+    <li><span class="tag pass">통과</span><span><b>1달러 테스트 (10년).</b> 최근 10년 순이익 합계 약 $580B 대비 같은 기간 시가총액 증가는 약 $3.3조. (순이익 합계는 유보이익보다 관대한 근사지만 5배 이상 여유라 결론 불변.)</span></li>
+    <li><span class="tag warn">주의</span><span><b>이익-현금 괴리 확대.</b> 2025년 FCF $73.3B로 순이익($132.2B)의 55%에 그침 — "이익 ≈ FCF" 기준 미달.</span></li>
+    <li><span class="tag warn">주의</span><span><b>설비투자(CapEx) 부담.</b> 2026년 가이던스 $195~205B(전년 대비 2배 이상), 2027년 "대폭 증가" 예고. 2026년 2분기 $44.9B(분기 사상 최대)로 <b>분기 FCF −$5.9B</b>. 성장투자성 지출이지만 회수는 검증 전 — 위 괴리 항목과 원인은 같음.</span></li>
+  </ul>
+
+  <div style="margin-top:22px">
+    <div class="chart-title">매출 · 순이익 10년 추이</div>
+    <div class="chart-sub">회계연도 기준, 단위: 10억 달러(B)</div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--series-1)"></span>매출</span>
+      <span><span class="sw" style="background:var(--series-2)"></span>순이익</span>
+    </div>
+    <div class="chart-box" id="chart-rev"></div>
+    <details>
+      <summary>데이터 표로 보기</summary>
+      <div class="table-scroll">
+      <table id="rev-table"></table>
+      </div>
+    </details>
+  </div>
+
+  <div style="margin-top:26px">
+    <div class="chart-title">사업부별 매출 — 2026년 2분기</div>
+    <div class="chart-sub">분기 매출 합계 $119.8B (전년 동기 대비 +24%), 단위: 10억 달러(B)</div>
+    <div class="chart-box" id="chart-seg"></div>
+  </div>
+</section>
+
+<!-- ============ 4단계: 밸류에이션 ============ -->
+<section class="card">
+  <h2>④ 밸류에이션 <span class="w">15/25 — 안전마진 미달</span></h2>
+
+  <p class="body"><strong>주의: Trailing PER(약 16~24배로 출처마다 상이)은 신뢰하지 말 것.</strong> 최근 분기 순이익에 보유 지분 평가이익(일회성·비영업 성격)이 대거 반영되어 왜곡됨 — 2026년 2분기 순이익 $112.1B는 영업 실적이 아닌 평가이익이 대부분. 영업 기준으로는 <strong>Forward PER 약 24배</strong>가 실질 지표.</p>
+
+  <p class="body">내재가치는 2025년 EPS 약 $10.9를 기준으로 2단계 DCF(1~5년차 / 6~10년차 성장률 차등, 할인율 9~10%)로 추정한 3개 시나리오:</p>
+
+  <div class="range-wrap">
+    <div class="range-track">
+      <div class="marker" style="left:7%"><div class="lbl">보수 시나리오</div><div class="prc">$265</div><div class="tick"></div></div>
+      <div class="marker now" style="left:32%"><div class="lbl">현재 주가</div><div class="prc">$318</div><div class="tick"></div></div>
+      <div class="marker" style="left:50%"><div class="lbl">기본 시나리오</div><div class="prc">$355</div><div class="tick"></div></div>
+      <div class="marker" style="left:93%"><div class="lbl">낙관 시나리오</div><div class="prc">$445</div><div class="tick"></div></div>
+    </div>
+    <div class="range-foot"><span>$250</span><span>내재가치 추정 범위</span><span>$460</span></div>
+  </div>
+
+  <div class="table-scroll" style="margin-top:14px">
+  <table>
+    <tr><th>시나리오</th><th>가정 (EPS 성장률 1~5년 / 6~10년)</th><th>내재가치</th><th>상승여력<br>(가치÷주가−1)</th><th>안전마진<br>(가치−주가)÷가치</th><th>안전마진 20% 매수가</th></tr>
+    <tr><td>보수</td><td>+10% / +7%, 할인율 10%</td><td>$265</td><td>−17%</td><td>−20% (고평가)</td><td>$212</td></tr>
+    <tr><td><b>기본</b></td><td>+13% / +9%, 할인율 9.5%</td><td><b>$355</b></td><td>+12%</td><td><b>+10.5%</b> — 기준 20% 미달</td><td><b>$284</b></td></tr>
+    <tr><td>낙관</td><td>+15% / +10%, 할인율 9%</td><td>$445</td><td>+40%</td><td>+28.6%</td><td>$356</td></tr>
+  </table>
+  </div>
+
+  <ul class="check" style="margin-top:14px">
+    <li><span class="tag warn">주의</span><span><b>안전마진 부족.</b> 기본 시나리오 대비 할인율 약 10% — 체크리스트 기준(20% 이상)에 미달. <b>목표 매수가: $284 이하 (=$355×0.8).</b></span></li>
+    <li><span class="tag pass">참고</span><span><b>버크셔의 매수 단가.</b> 2026년 6월 사모 발행으로 $348~352에 $100억 추가 매수 — 버핏·아벨은 기본 시나리오보다 낙관적으로 평가하는 셈.</span></li>
+    <li><span class="tag warn">주의</span><span><b>PEG 약 1.3~1.6</b> (Forward PER 24 ÷ 성장률 15~18%) — 피터 린치 기준(1 이하)으로도 "싸지는 않음".</span></li>
+  </ul>
+</section>
+
+<!-- ============ 핵심 재무 요약 ============ -->
+<section class="card">
+  <h2>핵심 재무 요약</h2>
+  <div class="table-scroll">
+  <table>
+    <tr><th>지표</th><th>수치</th><th>체크리스트 기준</th><th>판정</th></tr>
+    <tr><td>매출 (FY2025)</td><td>$403.0B (+15.1%)</td><td>꾸준한 성장</td><td class="up">통과</td></tr>
+    <tr><td>순이익 (FY2025)</td><td>$132.2B (+32%)</td><td>10년 우상향</td><td class="up">통과</td></tr>
+    <tr><td>ROE (FY2025)</td><td>31.8%</td><td>15% 이상 지속</td><td class="up">통과</td></tr>
+    <tr><td>ROIC (FY2025)</td><td>약 30% 수준 (추정 — 순현금 구조라 ROE 왜곡 없음)</td><td>15% 이상</td><td class="up">통과</td></tr>
+    <tr><td>영업이익률</td><td>32.0%</td><td>업계 상위 · 안정</td><td class="up">통과</td></tr>
+    <tr><td>장기부채 상환능력</td><td>0.35배 ($46.5B ÷ $132.2B)</td><td>장기부채 ÷ 순이익 ≤ 3~4배</td><td class="up">통과</td></tr>
+    <tr><td>FCF (FY2025)</td><td>$73.3B (전년 수준)</td><td>순이익과 유사</td><td style="color:var(--status-serious);font-weight:600">주의 — 순이익의 55%</td></tr>
+    <tr><td>2026년 설비투자 가이던스</td><td>$195~205B</td><td>과도한 재투자 부담 경계</td><td style="color:var(--status-serious);font-weight:600">주의 — 관찰 필요</td></tr>
+    <tr><td>클라우드 성장 (2026 2Q)</td><td>+82% YoY, 백로그 $514B</td><td>투자회수 근거</td><td class="up">긍정</td></tr>
+    <tr><td>1달러 테스트 (10년)</td><td>순이익 합계 ≈ $580B → 시총 증가 ≈ $3.3조 (근사)</td><td>유보 $1 → 시장가치 $1 이상</td><td class="up">통과</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- ============ 리스크 & 재검토 ============ -->
+<section class="card">
+  <div class="grid2">
+    <div>
+      <h2>최대 리스크 3가지 (사전 부검)</h2>
+      <ul class="check">
+        <li><span class="tag fail">R1</span><span><b>AI 설비투자의 회수 실패.</b> 연 $200B 투자가 클라우드·검색 수익으로 전환되지 못하면 FCF 훼손이 장기화 — 이 논제가 무너지면 매도 사유. <b>관찰 지표:</b> 클라우드 성장률·수주잔고, FCF 회복 (분기). <b>임계값:</b> 클라우드 성장 +30% 미만 감속 또는 수주잔고 감소가 2분기 연속이면 R1 현실화 판정.</span></li>
+        <li><span class="tag fail">R2</span><span><b>검색 광고 모델의 구조적 잠식.</b> 이용자가 챗봇(경쟁사)으로 이동해 검색 쿼리·광고 단가가 꺾이는 경우. <b>관찰 지표:</b> 검색 매출 성장률 (분기). <b>임계값:</b> +10% 미만 감속 2분기 연속이면 경보(논제 약화), 역성장이면 R2 현실화 판정.</span></li>
+        <li><span class="tag fail">R3</span><span><b>규제·반독점.</b> 2025년 판결로 최악은 피했지만 EU·미국의 추가 규제, 광고사업 분할 요구 재점화 가능성. <b>관찰 지표:</b> 미국·EU 소송/입법 동향 (분기). <b>임계값:</b> 광고사업 분할을 명시한 소송 제기·법안 통과 등 구체적 행동이 발생하면 논제 재평가.</span></li>
+      </ul>
+    </div>
+    <div>
+      <h2>결론 및 재검토 계획</h2>
+      <p class="body"><strong>판정: 관심 목록 (가격 대기).</strong> 사업의 질은 무조건 통과, 경영진(⚠️3)·재무(⚠️2)는 조건부 통과, 밸류에이션은 기준 미달.</p>
+      <p class="body">— <strong>$284 이하</strong>: 안전마진 20% 확보 — 분할매수 시작 검토. 단, 조건부 통과 2건으로 확신도는 "보통" → <strong>목표 비중 5~10%</strong><br>
+      — <strong>$265 이하</strong>: 보수 시나리오로도 적정 가격<br>
+      — <strong>현재가($318)</strong>: 신규 진입보다는 관찰</p>
+      <p class="body">재검토 시점: <strong>2026년 10월 말 (3분기 실적 발표 후)</strong> — R1~R3 관찰 지표 점검: ① 클라우드 성장률·수주잔고 ② 검색 매출 성장률 ③ FCF 회복 신호 ④ 2027년 capex 구체화.</p>
+      <p class="body">관망 운영 규칙 (02 §1·§3): 내재가치·목표 매수가는 <strong>연간 실적 발표 후(2027년 초) 갱신</strong> — 낡은 목표가로 매수하지 않는다. <strong>목표가 도달 ≠ 자동 매수</strong> — 최신 분기 실적 반영을 재확인한 후에만 진입하고, 급락으로 갑자기 도달했다면 그 급락의 이유가 논제 훼손인지부터 확인한다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 출처 ============ -->
+<section class="card">
+  <h2>데이터 출처 (2026.07.25 조사)</h2>
+  <ul class="src">
+    <li>주가·PER: <a href="https://www.financecharts.com/stocks/GOOGL/value/pe-ratio">FinanceCharts</a> · <a href="https://stockanalysis.com/stocks/googl/statistics/">StockAnalysis</a> · <a href="https://www.macrotrends.net/stocks/charts/GOOG/alphabet/pe-ratio">Macrotrends</a></li>
+    <li>FY2025 실적: <a href="https://www.sec.gov/Archives/edgar/data/1652044/000165204426000012/googexhibit991q42025.htm">Alphabet 4Q/FY2025 실적 발표 (SEC)</a> · <a href="https://bullfincher.io/companies/alphabet/financial-statements">Bullfincher</a></li>
+    <li>2026년 2분기 실적: <a href="https://abc.xyz/investor/news/news-details/2026/Alphabet-Announces-Second-Quarter-2026-Results-2026-Y3uQ6H4ZJa/default.aspx">Alphabet IR</a> · <a href="https://www.cnbc.com/2026/07/22/google-earnings-q2-goog-live-updates.html">CNBC</a> · <a href="https://finance.yahoo.com/markets/stocks/articles/alphabet-q2-2026-earnings-revenue-203058727.html">Yahoo Finance</a> · <a href="https://9to5google.com/2026/07/22/alphabet-q2-2026-earnings/">9to5Google</a></li>
+    <li>Capex·클라우드: <a href="https://mlq.ai/news/alphabet-raises-2026-capex-guidance-to-195-205b-cloud-revenue-surges-82/">MLQ</a> · <a href="https://www.cnbc.com/2026/04/29/alphabet-googl-q1-2026-earnings.html">CNBC (1Q26)</a></li>
+    <li>ROE·재무비율: <a href="https://www.macrotrends.net/stocks/charts/GOOG/alphabet/roe">Macrotrends ROE</a> · <a href="https://www.stocktitan.net/financials/GOOG/">StockTitan</a></li>
+    <li>버크셔 지분: <a href="https://www.cnbc.com/2026/06/01/berkshire-hathaway-alphabet-investment.html">CNBC</a> · <a href="https://www.fool.com/investing/2026/07/19/buffett-just-confirmed-that-berkshires-alphabet/">Motley Fool</a></li>
+  </ul>
+  <div class="disclaimer">
+    ⚠️ 이 문서는 개인 학습·리서치용 자료이며 투자 권유가 아닙니다. 내재가치 추정은 가정에 따라 크게 달라질 수 있고, 모든 투자 판단과 결과의 책임은 투자자 본인에게 있습니다. 수치는 조사 시점(2026-07-25) 기준이며 이후 변동될 수 있습니다.
+  </div>
+</section>
+
+</div>
+
+<script>
+(function () {
+  // ---------- 공통 ----------
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  function makeTooltip(box) {
+    const tip = document.createElement('div');
+    tip.className = 'tooltip';
+    box.appendChild(tip);
+    return tip;
+  }
+  // 위쪽만 4px 라운드된 세로 막대 path
+  function vbar(x, y, w, h, r) {
+    if (h <= r) r = Math.max(0, h - 0.5);
+    return `M${x},${y + h} L${x},${y + r} Q${x},${y} ${x + r},${y} L${x + w - r},${y} Q${x + w},${y} ${x + w},${y + r} L${x + w},${y + h} Z`;
+  }
+  // 오른쪽만 4px 라운드된 가로 막대 path
+  function hbar(x, y, w, h, r) {
+    if (w <= r) r = Math.max(0, w - 0.5);
+    return `M${x},${y} L${x + w - r},${y} Q${x + w},${y} ${x + w},${y + r} L${x + w},${y + h - r} Q${x + w},${y + h} ${x + w - r},${y + h} L${x},${y + h} Z`;
+  }
+
+  // ---------- 차트 1: 매출·순이익 10년 ----------
+  const years = [2016,2017,2018,2019,2020,2021,2022,2023,2024,2025];
+  const revenue = [90.3,110.9,136.8,161.9,182.5,257.6,282.8,307.4,350.0,403.0];
+  const income  = [19.5,12.7,30.7,34.3,40.3,76.0,60.0,73.8,100.1,132.2];
+
+  const W = 900, H = 340, padL = 46, padR = 10, padT = 14, padB = 30;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const yMax = 450;
+  const yPix = v => padT + plotH - (v / yMax) * plotH;
+
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="알파벳 매출과 순이익 2016년부터 2025년까지 연도별 막대 차트">`;
+  // 그리드 + y라벨
+  for (let g = 0; g <= 400; g += 100) {
+    const y = yPix(g);
+    s += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${css('--gridline')}" stroke-width="1"/>`;
+    s += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="${css('--text-muted')}" font-variant-numeric="tabular-nums">${g}</text>`;
+  }
+  const groupW = plotW / years.length;
+  const barW = 24, gap = 2;
+  const bars = [];
+  years.forEach((yr, i) => {
+    const cx = padL + groupW * i + groupW / 2;
+    const x1 = cx - barW - gap / 2, x2 = cx + gap / 2;
+    const yR = yPix(revenue[i]), yI = yPix(income[i]);
+    s += `<path d="${vbar(x1, yR, barW, yPix(0) - yR, 4)}" fill="${css('--series-1')}" data-i="${i}"/>`;
+    s += `<path d="${vbar(x2, yI, barW, yPix(0) - yI, 4)}" fill="${css('--series-2')}" data-i="${i}"/>`;
+    s += `<text x="${cx}" y="${H - 10}" text-anchor="middle" font-size="11" fill="${css('--text-muted')}">'${String(yr).slice(2)}</text>`;
+    bars.push({ x: cx, yr, rev: revenue[i], inc: income[i] });
+  });
+  // 마지막 값 직접 라벨 (선별적)
+  s += `<text x="${bars[9].x - gap / 2 - barW / 2}" y="${yPix(403) - 6}" text-anchor="middle" font-size="11.5" font-weight="700" fill="${css('--text-secondary')}">403</text>`;
+  s += `<text x="${bars[9].x + gap / 2 + barW / 2}" y="${yPix(132.2) - 6}" text-anchor="middle" font-size="11.5" font-weight="700" fill="${css('--text-secondary')}">132</text>`;
+  // 베이스라인
+  s += `<line x1="${padL}" y1="${yPix(0)}" x2="${W - padR}" y2="${yPix(0)}" stroke="${css('--baseline')}" stroke-width="1"/>`;
+  s += `</svg>`;
+
+  const revBox = document.getElementById('chart-rev');
+  revBox.innerHTML = s;
+  const revTip = makeTooltip(revBox);
+  revBox.querySelector('svg').addEventListener('mousemove', e => {
+    const rect = revBox.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) / rect.width * W;
+    let best = 0, bd = 1e9;
+    bars.forEach((b, i) => { const d = Math.abs(b.x - mx); if (d < bd) { bd = d; best = i; } });
+    const b = bars[best];
+    revTip.innerHTML = `<b>${b.yr}년</b><br>매출 <b>$${b.rev.toFixed(1)}B</b><br>순이익 <b>$${b.inc.toFixed(1)}B</b> <span style="color:${css('--text-muted')}">(이익률 ${(b.inc / b.rev * 100).toFixed(0)}%)</span>`;
+    revTip.style.opacity = 1;
+    const px = b.x / W * rect.width;
+    revTip.style.left = Math.min(px + 14, rect.width - 150) + 'px';
+    revTip.style.top = '20px';
+  });
+  revBox.querySelector('svg').addEventListener('mouseleave', () => revTip.style.opacity = 0);
+
+  // 데이터 테이블
+  let t = '<tr><th>연도</th>' + years.map(y => `<th>${y}</th>`).join('') + '</tr>';
+  t += '<tr><td>매출 ($B)</td>' + revenue.map(v => `<td>${v.toFixed(1)}</td>`).join('') + '</tr>';
+  t += '<tr><td>순이익 ($B)</td>' + income.map(v => `<td>${v.toFixed(1)}</td>`).join('') + '</tr>';
+  document.getElementById('rev-table').innerHTML = t;
+
+  // ---------- 차트 2: 사업부별 매출 (가로 막대) ----------
+  const segs = [
+    { name: '구글 검색·기타', v: 63.3, yoy: '+17%' },
+    { name: '구글 클라우드', v: 24.8, yoy: '+82%' },
+    { name: '구독·플랫폼·기기 등', v: 20.1, yoy: '' },
+    { name: '유튜브 광고', v: 11.1, yoy: '+13%' },
+    { name: 'Other Bets', v: 0.6, yoy: '' },
+  ];
+  const W2 = 900, rowH = 40, padL2 = 150, padR2 = 120;
+  const H2 = rowH * segs.length + 10;
+  const plotW2 = W2 - padL2 - padR2;
+  const maxV = 70;
+
+  let s2 = `<svg viewBox="0 0 ${W2} ${H2}" width="100%" role="img" aria-label="2026년 2분기 알파벳 사업부별 매출 가로 막대 차트">`;
+  segs.forEach((sg, i) => {
+    const y = 5 + i * rowH, bh = 22;
+    const bw = Math.max(2, sg.v / maxV * plotW2);
+    s2 += `<text x="${padL2 - 10}" y="${y + bh / 2 + 4}" text-anchor="end" font-size="12.5" fill="${css('--text-secondary')}">${sg.name}</text>`;
+    s2 += `<path d="${hbar(padL2, y, bw, bh, 4)}" fill="${css('--series-1')}" data-seg="${i}"/>`;
+    s2 += `<text x="${padL2 + bw + 8}" y="${y + bh / 2 + 4}" font-size="12.5" font-weight="700" fill="${css('--text-primary')}" font-variant-numeric="tabular-nums">$${sg.v.toFixed(1)}B</text>`;
+    if (sg.yoy) s2 += `<text x="${padL2 + bw + 62}" y="${y + bh / 2 + 4}" font-size="11.5" font-weight="600" fill="${css('--delta-good')}">${sg.yoy}</text>`;
+  });
+  s2 += `<line x1="${padL2}" y1="0" x2="${padL2}" y2="${H2}" stroke="${css('--baseline')}" stroke-width="1"/>`;
+  s2 += `</svg>`;
+  document.getElementById('chart-seg').innerHTML = s2;
+})();
+</script>
+</body>
+</html>
