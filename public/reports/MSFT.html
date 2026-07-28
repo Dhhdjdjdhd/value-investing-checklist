@@ -198,8 +198,8 @@
 <section class="card">
   <h2>④ 밸류에이션 <span class="w">15/25 — 근소 미달 (안전마진 +16.8%)</span></h2>
   <p class="body">기준 EPS: TTM 약 $17.6. 2단계 DCF:</p>
-  <div class="range-wrap">
-    <div class="range-track">
+  <div class="range-wrap vic-clickable" id="vicRangeWrap" title="클릭하면 인베스팅닷컴 차트가 새 창으로 열립니다">
+    <div class="range-track" id="vicTrack">
       <div class="marker" style="left:7.1%"><div class="lbl">보수 (회수 부진)</div><div class="prc">$352</div><div class="tick"></div></div>
       <div class="marker" style="left:48.7%"><div class="lbl">기본 (애저 성장 지속)</div><div class="prc">$481</div><div class="tick"></div></div>
       <div class="marker" style="left:91.6%"><div class="lbl">낙관 (AI 수혜 본격화)</div><div class="prc">$614</div><div class="tick"></div></div>
@@ -207,6 +207,15 @@
     </div>
     <div class="range-foot"><span>$330</span><span>내재가치 추정 범위 (양끝은 표시 눈금일 뿐)</span><span>$640</span></div>
   </div>
+
+    <script src="/reports/_quotebar.js"></script>
+    <script>
+      vicQuoteBar({
+        ticker: 'MSFT', lo: 330, hi: 640,
+        target: 385,     // 목표 매수가(기본 내재가치 -20%)
+        chart: 'https://kr.investing.com/equities/microsoft-corp-chart'
+      });
+    </script>
   <div class="table-scroll" style="margin-top:14px">
   <table>
     <tr><th>시나리오</th><th>가정 (EPS 성장률 1~5년 / 6~10년)</th><th>내재가치</th><th>안전마진<br>(가치−주가)÷가치</th><th>안전마진 20% 매수가</th></tr>

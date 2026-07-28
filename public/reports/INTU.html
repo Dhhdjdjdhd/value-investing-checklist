@@ -198,8 +198,8 @@
 <section class="card">
   <h2>④ 밸류에이션 <span class="w">22/25 — 통과 (안전마진 +32.5%)</span></h2>
   <p class="body">기준 EPS: <strong>GAAP $15.8</strong> (FY26 가이던스 중간값 — non-GAAP $23.8이 아님에 유의). 2단계 DCF:</p>
-  <div class="range-wrap">
-    <div class="range-track">
+  <div class="range-wrap vic-clickable" id="vicRangeWrap" title="클릭하면 인베스팅닷컴 차트가 새 창으로 열립니다">
+    <div class="range-track" id="vicTrack">
       <div class="marker" style="left:9.4%"><div class="lbl">보수 (AI가 성장 반감)</div><div class="prc">$281</div><div class="tick"></div></div>
       <div class="marker" style="left:54.8%"><div class="lbl">기본 (감속하되 성장)</div><div class="prc">$431</div><div class="tick"></div></div>
       <div class="marker" style="left:91.5%"><div class="lbl">낙관 (AI 수혜 전환)</div><div class="prc">$552</div><div class="tick"></div></div>
@@ -207,6 +207,15 @@
     </div>
     <div class="range-foot"><span>$250</span><span>내재가치 추정 범위 (양끝은 표시 눈금일 뿐)</span><span>$580</span></div>
   </div>
+
+    <script src="/reports/_quotebar.js"></script>
+    <script>
+      vicQuoteBar({
+        ticker: 'INTU', lo: 250, hi: 580,
+        target: 345,     // 목표 매수가(기본 내재가치 -20%)
+        chart: 'https://kr.investing.com/equities/intuit-chart'
+      });
+    </script>
   <div class="table-scroll" style="margin-top:14px">
   <table>
     <tr><th>시나리오</th><th>가정 (EPS 성장률 1~5년 / 6~10년)</th><th>내재가치</th><th>안전마진<br>(가치−주가)÷가치</th><th>안전마진 20% 매수가</th></tr>

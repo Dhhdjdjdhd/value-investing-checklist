@@ -302,8 +302,8 @@
 
   <p class="body">내재가치는 2025년 EPS 약 $10.9를 기준으로 2단계 DCF(1~5년차 / 6~10년차 성장률 차등, 할인율 9~10%)로 추정한 3개 시나리오:</p>
 
-  <div class="range-wrap">
-    <div class="range-track">
+  <div class="range-wrap vic-clickable" id="vicRangeWrap" title="클릭하면 인베스팅닷컴 차트가 새 창으로 열립니다">
+    <div class="range-track" id="vicTrack">
       <div class="marker" style="left:7%"><div class="lbl">보수 시나리오</div><div class="prc">$265</div><div class="tick"></div></div>
       <div class="marker now" style="left:32%"><div class="lbl">현재 주가</div><div class="prc">$318</div><div class="tick"></div></div>
       <div class="marker" style="left:50%"><div class="lbl">기본 시나리오</div><div class="prc">$355</div><div class="tick"></div></div>
@@ -311,6 +311,15 @@
     </div>
     <div class="range-foot"><span>$250</span><span>내재가치 추정 범위</span><span>$460</span></div>
   </div>
+
+    <script src="/reports/_quotebar.js"></script>
+    <script>
+      vicQuoteBar({
+        ticker: 'GOOGL', lo: 250, hi: 460,
+        target: 284,     // 목표 매수가(기본 내재가치 -20%)
+        chart: 'https://kr.investing.com/equities/google-inc-chart'
+      });
+    </script>
 
   <div class="table-scroll" style="margin-top:14px">
   <table>
