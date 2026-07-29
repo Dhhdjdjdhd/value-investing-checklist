@@ -14,7 +14,8 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
 
   return (
     <div className="flex h-full">
-      <aside className="flex w-48 shrink-0 flex-col border-r border-line bg-white">
+      {/* vic-sidebar: 모바일(html.vic-mobile)에서는 globals.css가 숨긴다 */}
+      <aside className="vic-sidebar flex w-48 shrink-0 flex-col border-r border-line bg-white">
         <nav className="flex-1 overflow-y-auto p-2">
           <button
             onClick={() => setActive(MONITOR.ticker)}

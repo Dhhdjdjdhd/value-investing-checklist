@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>S&amp;P500 모니터링 — TIGER 미국S&amp;P500 (360750)</title>
+<script>
+// 실제 모바일 기기 감지 → <html>.vic-mobile (momcare 방식).
+// 가로 회전 시 폭이 640px을 넘어도 기기 기준이라 유지된다.
+(function(){var ua=navigator.userAgent||'';var m=(navigator.userAgentData&&navigator.userAgentData.mobile===true)||/iPhone|iPod|Android.*Mobile|Windows Phone|BlackBerry|IEMobile|Opera Mini/i.test(ua);if(m)document.documentElement.classList.add('vic-mobile');})();
+</script>
 <style>
   :root {
     color-scheme: light;
@@ -63,14 +68,14 @@
 
   .chart-box { position: relative; }
   .chart-box.loading svg { opacity: .4; }
-  svg { display: block; }
+  svg { display: block; cursor: pointer; }
   svg text { font-family: inherit; }
   .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 7px 11px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
   .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; font-size: 14px; }
   .chart-foot { font-size: 12.5px; color: var(--text-muted); margin-top: 10px; font-variant-numeric: tabular-nums; }
 
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; white-space: nowrap; }
   th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
   th:first-child, td:first-child { text-align: left; }
   td:first-child { color: var(--text-secondary); }
@@ -87,7 +92,12 @@
   .modal-ov { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
   .modal-ov[hidden] { display: none; } /* display:flex가 hidden 속성을 덮지 않도록 */
   .modal { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 12px 40px rgba(0,0,0,.3); }
+  .modal.wide { max-width: 680px; }
   .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+  .card-head h3 { margin-bottom: 0; }
+  #holdModal .chart-sub { margin-top: 2px; }
+  #holdModal .stats { margin: 14px 0 18px; }
+  #holdModal .btns { margin-top: 16px; }
   .edit-grid { display: grid; grid-template-columns: 72px 1fr 1fr; gap: 8px 10px; align-items: center; margin-bottom: 14px; }
   .edit-grid .hd { font-size: 12px; color: var(--text-muted); }
   .edit-grid .nm { font-size: 13.5px; color: var(--text-secondary); }
@@ -98,6 +108,31 @@
   .modal .err { color: var(--status-critical); font-size: 12.5px; min-height: 18px; margin-bottom: 8px; }
   .modal .btns { display: flex; gap: 8px; justify-content: flex-end; }
   .modal .btns .left { margin-right: auto; }
+
+  /* 차트 전체 화면 — 버튼은 모바일 "기기"에서만 (화면 폭이 아니라 UA 기준) */
+  .btn-full { display: none; }
+  .vic-mobile .btn-full { display: inline-block; }
+  .card.chart-full { position: fixed; inset: 0; z-index: 40; margin: 0; border: none; border-radius: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .chart-full .chart-box { flex: 1; min-height: 0; }
+
+  /* 모바일 배치 */
+  @media (max-width: 640px) {
+    body { padding: 16px 10px 40px; }
+    header { margin-bottom: 16px; }
+    h1 { font-size: 22px; }
+    h1 .mkt { display: block; font-size: 14px; margin-top: 2px; }
+    .card { padding: 16px; margin-bottom: 14px; border-radius: 10px; }
+    .stats { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat .v { font-size: 20px; }
+    .seg { gap: 5px; }
+    .seg button { flex: 1; padding: 4px 0; font-size: 12.5px; }
+    .modal-ov { padding: 10px; }
+    .modal { padding: 18px 16px; }
+    /* 표는 화면 폭에 욱여넣지 않는다 — 컬럼 폭을 확보하고 가로 스크롤로 본다 */
+    #holdModal table { min-width: 600px; }
+    th, td { padding: 8px 10px; font-size: 13px; }
+    .chart-foot { font-size: 11.5px; }
+  }
 </style>
 </head>
 <body>
@@ -109,7 +144,7 @@
   <div class="sub">S&amp;P500 지수 추종 ETF — 종목 분석 대상이 아니라 꾸준히 모아가며 지켜보는 계좌</div>
 </header>
 
-<!-- 보유 요약 -->
+<!-- 시세 요약 — 평가금액·손익은 보유 현황 모달 안에만 노출 -->
 <section class="card">
   <div class="stats">
     <div class="stat">
@@ -118,27 +153,20 @@
       <div class="d" id="stChange">시세 불러오는 중…</div>
     </div>
     <div class="stat">
-      <div class="k">평가금액</div>
-      <div class="v" id="stValue">—</div>
-      <div class="d">매입 <span id="stCost"></span></div>
-    </div>
-    <div class="stat">
-      <div class="k">평가손익</div>
-      <div class="v" id="stPl">—</div>
-      <div class="d" id="stPlPct"></div>
-    </div>
-    <div class="stat">
       <div class="k">평균단가</div>
       <div class="v" id="stAvg">—</div>
-      <div class="d"><span id="stShares"></span> 보유</div>
+      <div class="d">개인연금 + IRP + ISA 가중평균</div>
     </div>
   </div>
 </section>
 
 <!-- 가격 차트 -->
-<section class="card">
-  <h2>가격 추이</h2>
-  <div class="chart-sub">일별 종가 기준 · 점선은 내 평균단가</div>
+<section class="card" id="chartCard">
+  <div class="card-head">
+    <h2>가격 추이</h2>
+    <button class="btn btn-full" id="btnFull">전체 화면</button>
+  </div>
+  <div class="chart-sub">일별 종가 기준 · 점선은 내 평균단가 · 차트를 클릭하면 계좌별 보유 현황이 열립니다</div>
   <div class="seg" id="segRange" role="group" aria-label="기간 선택"></div>
   <div class="chart-box" id="chartBox">
     <svg id="chartSvg" role="img" aria-label="360750 가격 추이 차트" tabindex="0"></svg>
@@ -147,24 +175,55 @@
   <div class="chart-foot" id="chartFoot"></div>
 </section>
 
-<!-- 계좌별 보유 현황 -->
-<section class="card">
-  <div class="card-head">
-    <h2>계좌별 보유 현황</h2>
-    <button class="btn" id="btnEdit">편집</button>
-  </div>
-  <div class="chart-sub">평가금액·손익은 현재가 기준으로 자동 계산</div>
-  <div class="table-scroll">
-    <table>
-      <thead>
-        <tr><th>계좌</th><th>수량</th><th>평단가</th><th>매입금액</th><th>평가금액</th><th>평가손익</th><th>수익률</th></tr>
-      </thead>
-      <tbody id="holdBody"></tbody>
-    </table>
-  </div>
-  <div class="foot">시세: 야후 파이낸스 · 정규장 중 60초마다 갱신 · <span id="asOf"></span></div>
-</section>
+</div>
 
+<!-- 열람 비밀번호 모달 — 차트 클릭 시 먼저 뜬다 -->
+<div class="modal-ov" id="pwModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+    <h3 id="pwTitle">보유 현황 열람</h3>
+    <div class="pw-row">
+      <label for="viewPwInput">비밀번호</label>
+      <input type="password" id="viewPwInput" autocomplete="off">
+    </div>
+    <div class="err" id="pwErr"></div>
+    <div class="btns">
+      <button class="btn" id="btnPwCancel">취소</button>
+      <button class="btn primary" id="btnPwOk">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 계좌별 보유 현황 모달 — 비밀번호 확인 후 오픈 -->
+<div class="modal-ov" id="holdModal" hidden>
+  <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="holdTitle">
+    <div class="card-head">
+      <h3 id="holdTitle">계좌별 보유 현황</h3>
+      <button class="btn" id="btnEdit">편집</button>
+    </div>
+    <div class="chart-sub">평가금액·손익은 현재가 기준으로 자동 계산</div>
+    <div class="stats">
+      <div class="stat">
+        <div class="k">평가금액</div>
+        <div class="v" id="stValue">—</div>
+        <div class="d">매입 <span id="stCost"></span></div>
+      </div>
+      <div class="stat">
+        <div class="k">평가손익</div>
+        <div class="v" id="stPl">—</div>
+        <div class="d" id="stPlPct"></div>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>계좌</th><th>수량</th><th>평단가</th><th>매입금액</th><th>평가금액</th><th>평가손익</th><th>수익률</th></tr>
+        </thead>
+        <tbody id="holdBody"></tbody>
+      </table>
+    </div>
+    <div class="foot">시세: 야후 파이낸스 · 정규장 중 60초마다 갱신 · <span id="asOf"></span></div>
+    <div class="btns"><button class="btn" id="btnHoldClose">닫기</button></div>
+  </div>
 </div>
 
 <!-- 보유 내역 편집 모달 -->
@@ -172,10 +231,6 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
     <h3 id="editTitle">보유 내역 편집</h3>
     <div class="edit-grid" id="editGrid"></div>
-    <div class="pw-row">
-      <label for="pwInput">관리 비밀번호</label>
-      <input type="password" id="pwInput" autocomplete="off">
-    </div>
     <div class="err" id="editErr"></div>
     <div class="btns">
       <button class="btn left" id="btnReset">기본값</button>
@@ -190,7 +245,7 @@
 // 기본값은 파일에 두고, 편집한 값은 이 브라우저의 localStorage에 저장된다.
 var TICKER = '360750.KS';
 var LS_KEY = 'snp500.hold';
-var EDIT_PW = '360750'; // 관리 비밀번호 (실수 방지용 잠금)
+var VIEW_PW = '360750'; // 보유 현황 열람 비밀번호
 var DEFAULT_HOLD = [
   { name: '개인연금', shares: 40, cost: 27024 },
   { name: 'IRP',      shares: 28, cost: 27060 },
@@ -243,7 +298,6 @@ var lastQuote = null; // 마지막 시세 — 편집 저장 후 즉시 재계산
 function renderStatic() {
   document.getElementById('stCost').textContent = won(TOTAL_COST);
   document.getElementById('stAvg').textContent = won(AVG);
-  document.getElementById('stShares').textContent = TOTAL_SHARES + '주';
 }
 renderStatic();
 buildTable(null);
@@ -391,9 +445,13 @@ function drawChart() {
   var svg = document.getElementById('chartSvg');
   svg.textContent = '';
 
-  var W = Math.max(320, document.getElementById('chartBox').clientWidth);
-  var H = 300;
-  var pad = { l: 8, r: 64, t: 14, b: 26 };
+  var box = document.getElementById('chartBox');
+  var W = Math.max(300, box.clientWidth);
+  var narrow = W < 520; // 모바일 폭 — 차트를 낮추고 여백을 줄인다
+  var full = document.getElementById('chartCard').classList.contains('chart-full');
+  // 전체 화면이면 카드가 준 높이를 그대로 쓴다 (flex:1)
+  var H = full ? Math.max(220, box.clientHeight) : narrow ? 230 : 300;
+  var pad = { l: 8, r: narrow ? 52 : 64, t: 14, b: 26 };
   svg.setAttribute('width', W);
   svg.setAttribute('height', H);
   svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
@@ -415,8 +473,8 @@ function drawChart() {
     svg.appendChild(tx);
   });
 
-  // x 라벨 — 4~5개만
-  var xN = Math.min(5, n);
+  // x 라벨 — 좁으면 3개, 아니면 5개
+  var xN = Math.min(narrow ? 3 : 5, n);
   for (var k = 0; k < xN; k++) {
     var i = Math.round(k * (n - 1) / (xN - 1 || 1));
     var tx2 = el('text', {
@@ -484,21 +542,22 @@ function drawChart() {
     tip.style.opacity = 0;
   }
 
-  svg.addEventListener('pointermove', function (ev) {
+  // on* 프로퍼티 할당 — 다시 그릴 때 이전 리스너가 남지 않는다
+  svg.onpointermove = function (ev) {
     var r = svg.getBoundingClientRect();
     var x = ev.clientX - r.left;
     var i = Math.round((x - pad.l) / (W - pad.l - pad.r) * (n - 1));
     showIdx(Math.max(0, Math.min(n - 1, i)));
-  });
-  svg.addEventListener('pointerleave', hide);
+  };
+  svg.onpointerleave = hide;
   // 키보드로도 같은 값 탐색 (←/→)
-  svg.addEventListener('keydown', function (ev) {
+  svg.onkeydown = function (ev) {
     if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight') return;
     ev.preventDefault();
     var i = hoverIdx < 0 ? n - 1 : hoverIdx + (ev.key === 'ArrowRight' ? 1 : -1);
     showIdx(Math.max(0, Math.min(n - 1, i)));
-  });
-  svg.addEventListener('blur', hide);
+  };
+  svg.onblur = hide;
 
   // 기간 요약 — 호버 없이도 핵심 값 확인 가능
   var ret = (c[last] - c[0]) / c[0] * 100;
@@ -512,13 +571,67 @@ function drawChart() {
 var resizeT;
 window.addEventListener('resize', function () {
   clearTimeout(resizeT);
-  resizeT = setTimeout(drawChart, 150);
+  resizeT = setTimeout(drawChart, 150); // 화면 회전 시에도 다시 그린다
 });
 loadChart();
 
-// ── 보유 내역 편집 모달 ─────────────────────────────────
+// ── 차트 전체 화면 토글 (모바일 전용 버튼) ──────────────
+var chartCard = document.getElementById('chartCard');
+var btnFull = document.getElementById('btnFull');
+function setChartFull(on) {
+  chartCard.classList.toggle('chart-full', on);
+  btnFull.textContent = on ? '닫기 ✕' : '전체 화면';
+  drawChart();
+}
+btnFull.addEventListener('click', function () {
+  setChartFull(!chartCard.classList.contains('chart-full'));
+});
+
+// ── 계좌별 보유 현황 모달 (차트 클릭 → 비밀번호 확인 후 오픈) ──
+var holdModal = document.getElementById('holdModal');
+var pwModal = document.getElementById('pwModal');
+var viewPwInput = document.getElementById('viewPwInput');
+var pwErr = document.getElementById('pwErr');
+var unlocked = false; // 한 번 인증하면 새로고침 전까지 유지
+
+function openHoldModal() { holdModal.hidden = false; }
+function closeHoldModal() { holdModal.hidden = true; }
+function closePwModal() { pwModal.hidden = true; }
+
+document.getElementById('chartSvg').onclick = function () {
+  if (unlocked) { openHoldModal(); return; }
+  pwErr.textContent = '';
+  viewPwInput.value = '';
+  pwModal.hidden = false;
+  viewPwInput.focus();
+};
+
+function submitPw() {
+  if (viewPwInput.value !== VIEW_PW) {
+    pwErr.textContent = '비밀번호가 올바르지 않습니다.';
+    viewPwInput.focus();
+    return;
+  }
+  unlocked = true;
+  closePwModal();
+  openHoldModal();
+}
+document.getElementById('btnPwOk').addEventListener('click', submitPw);
+viewPwInput.addEventListener('keydown', function (ev) {
+  if (ev.key === 'Enter') submitPw();
+});
+document.getElementById('btnPwCancel').addEventListener('click', closePwModal);
+pwModal.addEventListener('click', function (ev) {
+  if (ev.target === pwModal) closePwModal();
+});
+
+document.getElementById('btnHoldClose').addEventListener('click', closeHoldModal);
+holdModal.addEventListener('click', function (ev) {
+  if (ev.target === holdModal) closeHoldModal();
+});
+
+// ── 보유 내역 편집 모달 (열람 시 이미 인증했으므로 비번 없음) ──
 var modal = document.getElementById('editModal');
-var pwInput = document.getElementById('pwInput');
 var editErr = document.getElementById('editErr');
 
 function fillEditGrid(rows) {
@@ -550,7 +663,6 @@ function fillEditGrid(rows) {
 function openModal() {
   fillEditGrid(HOLD);
   editErr.textContent = '';
-  pwInput.value = '';
   modal.hidden = false;
 }
 function closeModal() { modal.hidden = true; }
@@ -565,15 +677,14 @@ modal.addEventListener('click', function (ev) {
   if (ev.target === modal) closeModal(); // 바깥 클릭으로 닫기
 });
 document.addEventListener('keydown', function (ev) {
-  if (ev.key === 'Escape' && !modal.hidden) closeModal();
+  if (ev.key !== 'Escape') return;
+  if (!modal.hidden) closeModal(); // 가장 위 모달부터 닫는다
+  else if (!pwModal.hidden) closePwModal();
+  else if (!holdModal.hidden) closeHoldModal();
+  else if (chartCard.classList.contains('chart-full')) setChartFull(false);
 });
 
 document.getElementById('btnSave').addEventListener('click', function () {
-  if (pwInput.value !== EDIT_PW) {
-    editErr.textContent = '비밀번호가 올바르지 않습니다.';
-    pwInput.focus();
-    return;
-  }
   var next = [];
   for (var i = 0; i < HOLD.length; i++) {
     var sh = Number(document.getElementById('in-sh' + i).value);

@@ -116,3 +116,11 @@ body {
 .vic-doc td {
   @apply bg-white;
 }
+
+/* ── 모바일 전용 모드 ──────────────────────────────
+   모바일 기기에서는 사이드바를 숨겨 S&P500 모니터링 화면만 노출한다.
+   감지는 layout.tsx의 인라인 head 스크립트가 <html>에 vic-mobile을 붙이는 방식. */
+
+.vic-mobile .vic-sidebar {
+  display: none;
+}
