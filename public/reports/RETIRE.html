@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LTP — Long-term Research</title>
+<script>
+/* 비밀번호 게이트 — 탭에서 인증되면 sessionStorage 공유로 통과, 직접 URL 접근 시에도 묻는다 */
+(function () {
+  var KEY = 'vic-retire-ok';
+  try {
+    if (sessionStorage.getItem(KEY) === '1') return;
+    var pw = prompt('비밀번호를 입력하세요');
+    if (pw === '880115') {
+      sessionStorage.setItem(KEY, '1');
+      return;
+    }
+  } catch (e) {}
+  document.addEventListener('DOMContentLoaded', function () {
+    document.body.innerHTML =
+      '<p style="font-family:sans-serif;padding:60px 20px;text-align:center;color:#888">🔒 접근이 제한된 문서입니다.</p>';
+  });
+})();
+</script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Malgun Gothic", "맑은 고딕", -apple-system, sans-serif;
+    background: #f4f6f9;
+    color: #2c3e50;
+    line-height: 1.7;
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  header {
+    background: linear-gradient(135deg, #1a3a5c, #2c5f8a);
+    color: #fff;
+    border-radius: 14px;
+    padding: 32px 28px;
+    margin-bottom: 24px;
+  }
+  header h1 { font-size: 24px; margin-bottom: 8px; }
+  header p { opacity: .85; font-size: 14px; }
+  .badge {
+    display: inline-block; background: rgba(255,255,255,.18);
+    border-radius: 20px; padding: 3px 12px; font-size: 12px; margin-top: 12px; margin-right: 6px;
+  }
+
+  section {
+    background: #fff; border-radius: 14px;
+    padding: 26px 28px; margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  h2 {
+    font-size: 18px; color: #1a3a5c;
+    padding-bottom: 10px; border-bottom: 2px solid #e8edf3;
+    margin-bottom: 16px;
+  }
+  h2 .num {
+    display: inline-block; background: #1a3a5c; color: #fff;
+    width: 26px; height: 26px; border-radius: 50%;
+    text-align: center; line-height: 26px; font-size: 14px; margin-right: 8px;
+  }
+  h3 { font-size: 15px; margin: 18px 0 8px; color: #2c5f8a; }
+  p, li { font-size: 14px; }
+  ul, ol { padding-left: 22px; margin: 8px 0; }
+  li { margin-bottom: 5px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13.5px; }
+  th {
+    background: #1a3a5c; color: #fff; padding: 9px 10px;
+    text-align: center; font-weight: 600; white-space: nowrap;
+  }
+  td { padding: 8px 10px; border-bottom: 1px solid #e8edf3; text-align: center; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  .highlight-row td { background: #fff6e0 !important; font-weight: 700; }
+  .done-row td { background: #e7f5ec !important; font-weight: 700; }
+  .num-r { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .flow {
+    background: #f0f5fa; border-radius: 10px; padding: 18px 20px;
+    font-family: Consolas, monospace; font-size: 13px; line-height: 1.9;
+    overflow-x: auto; white-space: pre;
+  }
+  .callout {
+    border-left: 4px solid #2c8a5f; background: #eef8f2;
+    border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 14px 0; font-size: 14px;
+  }
+  .warn {
+    border-left: 4px solid #c0703a; background: #fdf3ec;
+    border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 14px 0; font-size: 14px;
+  }
+  .check li { list-style: none; margin-bottom: 8px; }
+  .check li::before { content: "☐ "; color: #2c5f8a; font-weight: 700; }
+  .small { font-size: 12px; color: #7a8a99; }
+  footer { text-align: center; margin-top: 24px; font-size: 12px; color: #96a4b2; }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    section, header { box-shadow: none; border: 1px solid #ddd; border-radius: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>📈 S&amp;P500 은퇴 플랜 — 혼자 기준</h1>
+  <p>법인 잉여금 3.7억 → 연금·ISA 이사 → 63세 은퇴 인출 전략</p>
+  <span class="badge">88년생 · 63세(2051년) 은퇴 목표</span>
+  <span class="badge">2026.07.29 작성</span>
+</header>
+
+<!-- 1. 전제 -->
+<section>
+  <h2><span class="num">1</span>플랜 전제</h2>
+  <table>
+    <tr><th style="width:35%">항목</th><th>내용</th></tr>
+    <tr><td>투자 대상</td><td><b>360750 (TIGER 미국S&amp;P500)</b> — 모든 계좌 공통</td></tr>
+    <tr><td>투자 원금</td><td>법인 이익 약 <b>3.7억</b> (2027년부터 유입 예정, 매출 4.3억+3.6억 중 인건비·법인세 제외분)</td></tr>
+    <tr><td>수익률 가정</td><td>연 <b>7%</b> (보수적 5% / 역사평균 10% 시나리오 별도)</td></tr>
+    <tr><td>이사 속도</td><td>혼자 기준 <b>연 3,800만원</b> = 배당 2,000만 + 급여분 1,800만</td></tr>
+    <tr><td>개인 계좌 배분</td><td>연금저축 600 + IRP 300 + 연금저축 추가 900 + ISA 2,000</td></tr>
+  </table>
+  <div class="callout">
+    💡 <b>핵심 원리</b>: 총자산은 어느 계좌에 있든 같은 속도로 불어난다.
+    이 플랜은 수익률 게임이 아니라 <b>"나올 때 세금이 싼 통장(연금 3.3~5.5% / ISA 9.9%)으로 매년 이사시키는 게임"</b>이다.
+  </div>
+</section>
+
+<!-- 2. 전체 구조 -->
+<section>
+  <h2><span class="num">2</span>전체 구조도</h2>
+  <div class="flow">[법인 계좌]  이익 유입 → 360750 매수 (안 팔면 법인세 0)
+     │
+     │  매년 3,800만원 인출 (세금 싼 문으로만)
+     │   ├─ 배당 2,000만  → 15.4% 떼고 1,692만  (종합과세 회피선)
+     │   └─ 급여분 1,800만 (급여는 법인 비용 → 법인세 절감 효과)
+     ▼
+[개인 계좌]  연금저축 1,800 + ISA 2,000 → 360750 재매수
+     │
+     │  3년마다: ISA 만기 → 저율 정산 → 연금저축 이체(+추가 세액공제) → ISA 재가입
+     ▼
+[63세~]  연금 수령(3.3~5.5%) + 법인 급여 월 300(건보 직장가입 유지) + 최후 퇴직금</div>
+  <div class="warn">
+    ⚠️ 법인 → 개인은 절대 "그냥 이체" 금지 (가지급금 문제). 반드시 <b>배당 결의·급여 지급</b>이라는 공식 절차로만. 서류는 세무사가 처리.
+  </div>
+</section>
+
+<!-- 3. 지금 할 일 -->
+<section>
+  <h2><span class="num">3</span>지금 할 일 (2026년, 한 번만)</h2>
+  <ul class="check">
+    <li><b>세무사 미팅</b> — ① 급여·배당 금액 설계 ② 정관에 임원퇴직금 규정 ③ 창업중소기업 세액감면 해당 여부(수도권 밖+소프트웨어+신설법인 → 법인세 50% 감면 가능성) 확인</li>
+    <li><b>법인 증권계좌 개설</b> — 매출 유입 전 미리. 서류: 사업자등록증·등기부등본·정관·사원명부·법인인감증명. 신설법인은 "여유자금 운용 목적" + 사업 증빙 지참</li>
+    <li><b>개인 계좌 3개 개설</b> — 연금저축펀드 + IRP + ISA(중개형), 증권사 앱 비대면 가능</li>
+    <li><b>급여 세팅</b> — 매출 들어오기 전에 대표 급여 시작 (이익 발생 연도의 비용 처리 근거)</li>
+  </ul>
+</section>
+
+<!-- 4. 매년 루틴 -->
+<section>
+  <h2><span class="num">4</span>매년 반복 루틴</h2>
+  <table>
+    <tr><th>순서</th><th>재원</th><th>금액</th><th>넣는 곳</th><th>효과</th></tr>
+    <tr><td>①</td><td>급여에서</td><td class="num-r">900만</td><td>연금저축 600 + IRP 300</td><td><b>연말정산 환급 ~119만</b> (확정 13.2%)</td></tr>
+    <tr><td>②</td><td>배당 2,000만 (세후 1,692만)</td><td class="num-r">1,692만</td><td>ISA</td><td>15.4% 분리과세로 종결</td></tr>
+    <tr><td>③</td><td>급여 여유분</td><td class="num-r">~308만</td><td>ISA 마저 채움 (한도 2,000만)</td><td>비과세 200만 + 초과 9.9%</td></tr>
+    <tr><td>④</td><td>급여 여유분</td><td class="num-r">~900만</td><td>연금저축 추가 (총한도 1,800만)</td><td>과세이연 + 연금 저율</td></tr>
+  </table>
+  <p class="small">※ 첫해(2027)는 배당 재원(전년도 이익)이 없으므로 급여 중심으로 시작, 2028년부터 풀 사이클 가동.</p>
+  <h3>🔄 3년마다 (2030, 2033, 2036 …)</h3>
+  <ol>
+    <li>ISA 안 360750 전량 매도 → 만기 해지 (수익 200만 비과세 + 초과 9.9% 정산)</li>
+    <li>만기금 <b>연금저축으로 이체</b> — 한도 무관 전액 가능, 이체액 10%(최대 300만) 추가 세액공제</li>
+    <li>연금계좌에서 360750 재매수 → 새 ISA 가입 → 반복 (총한도 1억은 실질적으로 안 걸림)</li>
+  </ol>
+  <p class="small">※ 55세 전 목돈 쓸 계획이 생기면 이체 비율만 조절 (세액공제 안 받은 원금은 중도인출 페널티 없음)</p>
+</section>
+
+<!-- 5. 연차별 자산 이동표 -->
+<section>
+  <h2><span class="num">5</span>연차별 자산 이동표 (연 7% 가정)</h2>
+  <table>
+    <tr><th>연차</th><th>연도</th><th>나이</th><th>법인 계좌</th><th>개인 (연금+ISA)</th><th>합계</th></tr>
+    <tr><td>1</td><td>2027</td><td>39세</td><td class="num-r">3.58억</td><td class="num-r">0.38억</td><td class="num-r">3.96억</td></tr>
+    <tr><td>2</td><td>2028</td><td>40세</td><td class="num-r">3.45억</td><td class="num-r">0.79억</td><td class="num-r">4.24억</td></tr>
+    <tr><td>3</td><td>2029</td><td>41세</td><td class="num-r">3.31억</td><td class="num-r">1.22억</td><td class="num-r">4.53억</td></tr>
+    <tr><td>4</td><td>2030</td><td>42세</td><td class="num-r">3.16억</td><td class="num-r">1.69억</td><td class="num-r">4.85억</td></tr>
+    <tr><td>5</td><td>2031</td><td>43세</td><td class="num-r">3.00억</td><td class="num-r">2.19억</td><td class="num-r">5.19억</td></tr>
+    <tr><td>6</td><td>2032</td><td>44세</td><td class="num-r">2.83억</td><td class="num-r">2.72억</td><td class="num-r">5.55억</td></tr>
+    <tr><td>7</td><td>2033</td><td>45세</td><td class="num-r">2.65억</td><td class="num-r">3.29억</td><td class="num-r">5.94억</td></tr>
+    <tr><td>8</td><td>2034</td><td>46세</td><td class="num-r">2.46억</td><td class="num-r">3.90억</td><td class="num-r">6.36억</td></tr>
+    <tr><td>9</td><td>2035</td><td>47세</td><td class="num-r">2.25억</td><td class="num-r">4.55억</td><td class="num-r">6.80억</td></tr>
+    <tr><td>10</td><td>2036</td><td>48세</td><td class="num-r">2.03억</td><td class="num-r">5.25억</td><td class="num-r">7.28억</td></tr>
+    <tr><td>11</td><td>2037</td><td>49세</td><td class="num-r">1.79억</td><td class="num-r">6.00억</td><td class="num-r">7.79억</td></tr>
+    <tr><td>12</td><td>2038</td><td>50세</td><td class="num-r">1.54억</td><td class="num-r">6.80억</td><td class="num-r">8.33억</td></tr>
+    <tr><td>13</td><td>2039</td><td>51세</td><td class="num-r">1.26억</td><td class="num-r">7.65억</td><td class="num-r">8.92억</td></tr>
+    <tr><td>14</td><td>2040</td><td>52세</td><td class="num-r">0.97억</td><td class="num-r">8.57억</td><td class="num-r">9.54억</td></tr>
+    <tr><td>15</td><td>2041</td><td>53세</td><td class="num-r">0.66억</td><td class="num-r">9.55억</td><td class="num-r">10.21억</td></tr>
+    <tr><td>16</td><td>2042</td><td>54세</td><td class="num-r">0.33억</td><td class="num-r">10.60억</td><td class="num-r">10.92억</td></tr>
+    <tr class="done-row"><td>17</td><td>2043</td><td>55세</td><td class="num-r">0 (완료 🎉)</td><td class="num-r">11.69억</td><td class="num-r">11.69억</td></tr>
+  </table>
+  <p class="small">※ 매년 3,800만원 이사 + 법인 잔액 연 7% 성장 기준. 마지막 해는 잔액 전부 이체.
+  세액공제 환급(연 ~119만, 17년 누적 ~2,000만)과 사업 신규 이익은 별도 플러스 요인.</p>
+
+  <h3>이사 완료 후 — 복리 구간 (전액 개인 계좌)</h3>
+  <table>
+    <tr><th>연도</th><th>나이</th><th>자산 (연금+ISA)</th><th>비고</th></tr>
+    <tr><td>2043</td><td>55세</td><td class="num-r">11.7억</td><td>이사 완료 · 연금 개시 가능 시점</td></tr>
+    <tr><td>2048</td><td>60세</td><td class="num-r"><b>16.4억</b></td><td>지금부터 22년 뒤</td></tr>
+    <tr class="highlight-row"><td>2051</td><td>63세</td><td class="num-r">약 20억</td><td>🏁 은퇴 — 인출 개시</td></tr>
+  </table>
+
+  <h3>수익률 시나리오별 63세(2051년) 자산</h3>
+  <table>
+    <tr><th>연 수익률</th><th>63세 자산</th></tr>
+    <tr><td>5% (보수적)</td><td class="num-r">약 12.5억</td></tr>
+    <tr class="highlight-row"><td>7% (기준)</td><td class="num-r">약 20억</td></tr>
+    <tr><td>10% (S&amp;P500 장기평균)</td><td class="num-r">약 40억</td></tr>
+  </table>
+</section>
+
+<!-- 6. 은퇴 후 -->
+<section>
+  <h2><span class="num">6</span>63세 이후 — 인출 3종 파이프</h2>
+  <table>
+    <tr><th>파이프</th><th>내용</th><th>세금</th></tr>
+    <tr><td>① 연금계좌</td><td>연금으로 매월 수령</td><td><b>3.3~5.5%</b></td></tr>
+    <tr><td>② 법인 급여</td><td>대표 급여 월 300 (급여 비용처리 → 매도차익 상쇄, 법인세 ~0)</td><td>소득세+건보 실효 ~12% · <b>건보 직장가입 유지</b></td></tr>
+    <tr><td>③ 퇴직금</td><td>법인 정리 시점에 임원퇴직금으로 잔여 목돈 회수</td><td>퇴직소득세 (가장 저율급 목돈 통로)</td></tr>
+  </table>
+  <div class="callout">
+    은퇴 후에도 법인 자산이 연 7%면 수익(수천만원)이 급여 인출보다 커서 <b>원금이 마르지 않는 구조</b>.
+    프리랜서 처리 ❌ — 대표 급여(근로소득)가 정답.
+  </div>
+</section>
+
+<!-- 7. 금지/주의 -->
+<section>
+  <h2><span class="num">7</span>금지 사항 &amp; 주의 사항</h2>
+  <h3>🚫 하지 말 것</h3>
+  <ul>
+    <li>법인 → 개인 <b>무단 이체</b> (가지급금 = 세무조사 1순위)</li>
+    <li>본인·가족에게 <b>프리랜서비 지급</b> (가공경비 의심 패턴 + 실익 없음)</li>
+    <li>배당 연 2,000만원 <b>초과</b> (금융소득종합과세 + 건보료 영향)</li>
+    <li>개인 <b>일반계좌에서 360750</b> 보유 (배당소득 15.4%+종합과세 — 최악의 자리. 개인 여윳돈 직투는 VOO/SPLG로)</li>
+    <li>법인 명의 <b>대출·연대보증</b> (법인 투자금이 사업 리스크에 노출되는 주 경로)</li>
+  </ul>
+  <h3>⚠️ 알아둘 것</h3>
+  <ul>
+    <li>매출 대부분이 사업수입인 동안 법인세 9.9% 구간 · 나중에 투자만 하는 법인이 되면 <b>약 21% 일괄</b> (소규모 성실신고 법인 규정)</li>
+    <li>법인 ETF는 <b>안 팔면 과세 없음</b> · 팔면 "차익 − 급여·경비" 에만 법인세</li>
+    <li>연금·ISA 한도, 건보 규정은 세법 개정으로 바뀔 수 있음 → <b>매년 초 1회 확인</b></li>
+    <li>모든 급여·배당·퇴직금 설계의 최종 확정은 <b>세무사 검증 필수</b></li>
+  </ul>
+  <h3>🔄 나중에 조정할 옵션 (예약)</h3>
+  <ul>
+    <li><b>배우자 정직원 채용 시</b>: 이사 속도 연 3,800만 → 7,600만 (완료 17년 → 7년), 세액공제 환급 2배, 소득 분산 절세. 조건: 실제 업무 부여 + 4대보험 + 계좌이체 증빙</li>
+    <li>사업 리스크 커지면: 투자자산 별도 법인 분리 검토</li>
+  </ul>
+</section>
+
+<footer>
+  본 문서는 2026년 7월 현행 세법·건강보험 기준의 계획안이며, 실행 전 세무사 검증을 전제로 함 · 수익률 7%는 가정치
+</footer>
+
+</div>
+</body>
+</html>

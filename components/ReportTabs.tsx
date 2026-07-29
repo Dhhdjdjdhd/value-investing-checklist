@@ -9,8 +9,27 @@ import type { StockMeta } from '@/lib/content';
 // 분석 보고서가 아닌 고정 탭 — 적립식 ETF 모니터링 화면
 const MONITOR = { ticker: 'SNP500', name: 'S&P500', desc: '360750 · 모니터링' };
 
+// 비밀번호로 잠긴 고정 탭 — LTP(Long-Term Plan). 티커처럼 보이게 위장 (RETIRE.html 자체에도 동일 게이트가 있어 직접 URL 접근도 막는다)
+const RETIRE = { ticker: 'RETIRE', name: 'LTP', desc: '🔒 Long-term · 리서치' };
+const RETIRE_PW = '880115';
+const RETIRE_KEY = 'vic-retire-ok';
+
 export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
   const [active, setActive] = useState(MONITOR.ticker);
+
+  const openRetire = () => {
+    if (sessionStorage.getItem(RETIRE_KEY) === '1') {
+      setActive(RETIRE.ticker);
+      return;
+    }
+    const input = window.prompt('비밀번호를 입력하세요');
+    if (input === RETIRE_PW) {
+      sessionStorage.setItem(RETIRE_KEY, '1');
+      setActive(RETIRE.ticker);
+    } else if (input !== null) {
+      alert('비밀번호가 틀렸습니다');
+    }
+  };
 
   return (
     <div className="flex h-full">
@@ -32,6 +51,24 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
               }`}
             >
               {MONITOR.desc}
+            </span>
+          </button>
+
+          <button
+            onClick={openRetire}
+            className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
+              active === RETIRE.ticker
+                ? 'bg-navy text-white'
+                : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
+            }`}
+          >
+            <span className="block text-[14px] font-bold">{RETIRE.name}</span>
+            <span
+              className={`block text-[11px] ${
+                active === RETIRE.ticker ? 'text-white/70' : 'text-muted'
+              }`}
+            >
+              {RETIRE.desc}
             </span>
           </button>
 
