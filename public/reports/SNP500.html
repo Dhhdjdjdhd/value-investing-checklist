@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S&amp;P500 모니터링 — TIGER 미국S&amp;P500 (360750)</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6;
+    --status-good: #0ca30c; --status-critical: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5;
+  }
+  /* 상승 = 빨강, 하락 = 파랑 (국내 관행, _quotebar.js와 동일) */
+  .up { color: var(--status-critical); }
+  .down { color: var(--series-1); }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  h1 .mkt { color: var(--text-muted); font-weight: 600; font-size: 20px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
+
+  /* 스탯 타일 */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; }
+  .stat { border-top: 2px solid var(--gridline); padding-top: 10px; }
+  .stat .k { font-size: 12.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .stat .v { font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; margin: 2px 0; }
+  .stat .d { font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+  .stat .d b { font-variant-numeric: tabular-nums; }
+  .badge { padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 700; background: var(--gridline); color: var(--text-secondary); }
+  .badge.open { background: var(--status-good); color: #fff; }
+
+  /* 기간 선택 — 차트 위 한 줄 */
+  .seg { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .seg button { border: 1px solid var(--border); background: transparent; color: var(--text-secondary); border-radius: 8px; padding: 4px 14px; font-size: 13px; font-family: inherit; cursor: pointer; }
+  .seg button:hover { background: var(--gridline); }
+  .seg button.on { background: var(--text-primary); color: var(--page); border-color: var(--text-primary); font-weight: 700; }
+
+  .chart-box { position: relative; }
+  .chart-box.loading svg { opacity: .4; }
+  svg { display: block; }
+  svg text { font-family: inherit; }
+  .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 7px 11px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
+  .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; font-size: 14px; }
+  .chart-foot { font-size: 12.5px; color: var(--text-muted); margin-top: 10px; font-variant-numeric: tabular-nums; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  tr.total td { border-top: 2px solid var(--baseline); border-bottom: none; font-weight: 700; color: var(--text-primary); }
+  .table-scroll { overflow-x: auto; }
+  .foot { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+
+  /* 편집 버튼 + 모달 */
+  .card-head { display: flex; justify-content: space-between; align-items: center; }
+  .card-head h2 { margin-bottom: 0; }
+  .btn { border: 1px solid var(--border); background: transparent; color: var(--text-secondary); border-radius: 8px; padding: 5px 14px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .btn:hover { background: var(--gridline); }
+  .btn.primary { background: var(--text-primary); color: var(--page); border-color: var(--text-primary); font-weight: 700; }
+  .modal-ov { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
+  .modal-ov[hidden] { display: none; } /* display:flex가 hidden 속성을 덮지 않도록 */
+  .modal { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 12px 40px rgba(0,0,0,.3); }
+  .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+  .edit-grid { display: grid; grid-template-columns: 72px 1fr 1fr; gap: 8px 10px; align-items: center; margin-bottom: 14px; }
+  .edit-grid .hd { font-size: 12px; color: var(--text-muted); }
+  .edit-grid .nm { font-size: 13.5px; color: var(--text-secondary); }
+  .modal input { width: 100%; border: 1px solid var(--border); background: var(--page); color: var(--text-primary); border-radius: 8px; padding: 7px 10px; font-size: 14px; font-family: inherit; font-variant-numeric: tabular-nums; }
+  .modal input:focus { outline: 2px solid var(--series-1); border-color: transparent; }
+  .pw-row { margin: 4px 0 10px; }
+  .pw-row label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+  .modal .err { color: var(--status-critical); font-size: 12.5px; min-height: 18px; margin-bottom: 8px; }
+  .modal .btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .modal .btns .left { margin-right: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">적립식 모니터링 · 개인연금 + IRP + ISA</div>
+  <h1>TIGER 미국S&amp;P500 <span class="mkt">KRX: 360750</span></h1>
+  <div class="sub">S&amp;P500 지수 추종 ETF — 종목 분석 대상이 아니라 꾸준히 모아가며 지켜보는 계좌</div>
+</header>
+
+<!-- 보유 요약 -->
+<section class="card">
+  <div class="stats">
+    <div class="stat">
+      <div class="k">현재가 <span class="badge" id="stState">…</span></div>
+      <div class="v" id="stPrice">—</div>
+      <div class="d" id="stChange">시세 불러오는 중…</div>
+    </div>
+    <div class="stat">
+      <div class="k">평가금액</div>
+      <div class="v" id="stValue">—</div>
+      <div class="d">매입 <span id="stCost"></span></div>
+    </div>
+    <div class="stat">
+      <div class="k">평가손익</div>
+      <div class="v" id="stPl">—</div>
+      <div class="d" id="stPlPct"></div>
+    </div>
+    <div class="stat">
+      <div class="k">평균단가</div>
+      <div class="v" id="stAvg">—</div>
+      <div class="d"><span id="stShares"></span> 보유</div>
+    </div>
+  </div>
+</section>
+
+<!-- 가격 차트 -->
+<section class="card">
+  <h2>가격 추이</h2>
+  <div class="chart-sub">일별 종가 기준 · 점선은 내 평균단가</div>
+  <div class="seg" id="segRange" role="group" aria-label="기간 선택"></div>
+  <div class="chart-box" id="chartBox">
+    <svg id="chartSvg" role="img" aria-label="360750 가격 추이 차트" tabindex="0"></svg>
+    <div class="tooltip" id="chartTip"></div>
+  </div>
+  <div class="chart-foot" id="chartFoot"></div>
+</section>
+
+<!-- 계좌별 보유 현황 -->
+<section class="card">
+  <div class="card-head">
+    <h2>계좌별 보유 현황</h2>
+    <button class="btn" id="btnEdit">편집</button>
+  </div>
+  <div class="chart-sub">평가금액·손익은 현재가 기준으로 자동 계산</div>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr><th>계좌</th><th>수량</th><th>평단가</th><th>매입금액</th><th>평가금액</th><th>평가손익</th><th>수익률</th></tr>
+      </thead>
+      <tbody id="holdBody"></tbody>
+    </table>
+  </div>
+  <div class="foot">시세: 야후 파이낸스 · 정규장 중 60초마다 갱신 · <span id="asOf"></span></div>
+</section>
+
+</div>
+
+<!-- 보유 내역 편집 모달 -->
+<div class="modal-ov" id="editModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+    <h3 id="editTitle">보유 내역 편집</h3>
+    <div class="edit-grid" id="editGrid"></div>
+    <div class="pw-row">
+      <label for="pwInput">관리 비밀번호</label>
+      <input type="password" id="pwInput" autocomplete="off">
+    </div>
+    <div class="err" id="editErr"></div>
+    <div class="btns">
+      <button class="btn left" id="btnReset">기본값</button>
+      <button class="btn" id="btnCancel">취소</button>
+      <button class="btn primary" id="btnSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 보유 내역 ───────────────────────────────────────────
+// 기본값은 파일에 두고, 편집한 값은 이 브라우저의 localStorage에 저장된다.
+var TICKER = '360750.KS';
+var LS_KEY = 'snp500.hold';
+var EDIT_PW = '360750'; // 관리 비밀번호 (실수 방지용 잠금)
+var DEFAULT_HOLD = [
+  { name: '개인연금', shares: 40, cost: 27024 },
+  { name: 'IRP',      shares: 28, cost: 27060 },
+  { name: 'ISA',      shares:  3, cost: 27555 },
+];
+
+function loadHold() {
+  try {
+    var v = JSON.parse(localStorage.getItem(LS_KEY));
+    if (
+      Array.isArray(v) && v.length === DEFAULT_HOLD.length &&
+      v.every(function (h) { return h && h.shares >= 0 && h.cost > 0; })
+    ) {
+      return DEFAULT_HOLD.map(function (d, i) {
+        return { name: d.name, shares: Number(v[i].shares), cost: Number(v[i].cost) };
+      });
+    }
+  } catch (e) { /* 손상된 저장값은 무시하고 기본값 사용 */ }
+  return DEFAULT_HOLD.map(function (d) {
+    return { name: d.name, shares: d.shares, cost: d.cost };
+  });
+}
+
+var HOLD = loadHold();
+var TOTAL_SHARES, TOTAL_COST, AVG;
+function recalc() {
+  TOTAL_SHARES = HOLD.reduce(function (s, h) { return s + h.shares; }, 0);
+  TOTAL_COST   = HOLD.reduce(function (s, h) { return s + h.shares * h.cost; }, 0);
+  AVG = TOTAL_SHARES ? TOTAL_COST / TOTAL_SHARES : 0; // 가중평균 평단
+}
+recalc();
+
+var STATE_LABEL = { REGULAR: '정규장', PRE: '장전', POST: '장후', CLOSED: '장마감' };
+var RANGES = [
+  { key: '3mo', label: '3개월' },
+  { key: '6mo', label: '6개월' },
+  { key: '1y',  label: '1년' },
+  { key: '3y',  label: '3년' },
+  { key: 'max', label: '전체' },
+];
+
+function won(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
+function num(n) { return Math.round(n).toLocaleString('ko-KR'); }
+function sgn(n) { return n >= 0 ? '+' : ''; }
+function cls(n) { return n >= 0 ? 'up' : 'down'; }
+
+// ── 상단 스탯 + 계좌 표 ─────────────────────────────────
+var lastQuote = null; // 마지막 시세 — 편집 저장 후 즉시 재계산에 쓴다
+
+function renderStatic() {
+  document.getElementById('stCost').textContent = won(TOTAL_COST);
+  document.getElementById('stAvg').textContent = won(AVG);
+  document.getElementById('stShares').textContent = TOTAL_SHARES + '주';
+}
+renderStatic();
+buildTable(null);
+
+function buildTable(price) {
+  var body = document.getElementById('holdBody');
+  body.textContent = '';
+  var rows = HOLD.concat([{ name: '합계', shares: TOTAL_SHARES, cost: AVG, total: true }]);
+  rows.forEach(function (h) {
+    var tr = document.createElement('tr');
+    if (h.total) tr.className = 'total';
+    var buy = h.shares * h.cost;
+    var cells = [h.name, h.shares + '주', num(h.cost) + '원', won(buy)];
+    if (price) {
+      var val = h.shares * price;
+      var pl = val - buy;
+      cells.push(won(val), sgn(pl) + won(pl), sgn(pl) + (pl / buy * 100).toFixed(2) + '%');
+    } else {
+      cells.push('—', '—', '—');
+    }
+    cells.forEach(function (c, i) {
+      var td = document.createElement('td');
+      td.textContent = c;
+      if (price && i >= 5) td.className = cls(h.shares * price - buy);
+      tr.appendChild(td);
+    });
+    body.appendChild(tr);
+  });
+}
+
+function renderStats(q) {
+  lastQuote = q;
+  var open = q.marketState === 'REGULAR';
+  var st = document.getElementById('stState');
+  st.textContent = STATE_LABEL[q.marketState] || '장마감';
+  st.className = 'badge' + (open ? ' open' : '');
+
+  var el = document.getElementById('stPrice');
+  el.textContent = won(q.price);
+  el.className = 'v ' + cls(q.change);
+  var ch = document.getElementById('stChange');
+  ch.innerHTML = '';
+  ch.className = 'd ' + cls(q.change);
+  ch.textContent = sgn(q.change) + num(q.change) + '원 (' + sgn(q.change) + q.changePct.toFixed(2) + '%)';
+
+  var val = q.price * TOTAL_SHARES;
+  var pl = val - TOTAL_COST;
+  document.getElementById('stValue').textContent = won(val);
+  var plEl = document.getElementById('stPl');
+  plEl.textContent = sgn(pl) + won(pl);
+  plEl.className = 'v ' + cls(pl);
+  var pctEl = document.getElementById('stPlPct');
+  pctEl.textContent = '매입금액 대비 ' + sgn(pl) + (pl / TOTAL_COST * 100).toFixed(2) + '%';
+  pctEl.className = 'd ' + cls(pl);
+
+  document.getElementById('asOf').textContent = q.asOf + ' 기준';
+  buildTable(q.price);
+  return open;
+}
+
+// ── 시세 폴링 (정규장 60초, 그 외 5분 — _quotebar.js와 동일 규칙) ──
+var timer;
+function schedule(ms) { clearTimeout(timer); timer = setTimeout(tick, ms); }
+function tick() {
+  if (document.hidden) { schedule(5 * 60 * 1000); return; }
+  fetch('/api/quote/' + TICKER)
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (q) { schedule(renderStats(q) ? 60 * 1000 : 5 * 60 * 1000); })
+    .catch(function () {
+      document.getElementById('stChange').textContent = '시세를 불러오지 못했습니다';
+      schedule(5 * 60 * 1000);
+    });
+}
+document.addEventListener('visibilitychange', function () { if (!document.hidden) tick(); });
+tick();
+
+// ── 차트 ────────────────────────────────────────────────
+var curRange = '1y';
+var chartData = null; // { t:[], c:[] }
+var hoverIdx = -1;
+
+var seg = document.getElementById('segRange');
+RANGES.forEach(function (r) {
+  var b = document.createElement('button');
+  b.textContent = r.label;
+  b.dataset.key = r.key;
+  if (r.key === curRange) b.className = 'on';
+  b.addEventListener('click', function () {
+    if (curRange === r.key) return;
+    curRange = r.key;
+    Array.prototype.forEach.call(seg.children, function (x) {
+      x.className = x.dataset.key === curRange ? 'on' : '';
+    });
+    loadChart();
+  });
+  seg.appendChild(b);
+});
+
+function loadChart() {
+  var box = document.getElementById('chartBox');
+  box.classList.add('loading'); // 이전 렌더를 흐리게 유지 (레이아웃 점프 방지)
+  fetch('/api/history/' + TICKER + '?range=' + curRange)
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (d) {
+      chartData = d;
+      hoverIdx = -1;
+      drawChart();
+    })
+    .catch(function () {
+      document.getElementById('chartFoot').textContent = '차트 데이터를 불러오지 못했습니다';
+    })
+    .then(function () { box.classList.remove('loading'); });
+}
+
+function fmtDate(sec, long) {
+  var d = new Date(sec * 1000);
+  var p = d.toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' });
+  // "2026. 07. 29." → 잘라 쓴다
+  var m = p.match(/(\d{4})\. (\d{2})\. (\d{2})/);
+  if (!m) return p;
+  return long ? m[1] + '.' + m[2] + '.' + m[3] : m[1].slice(2) + '.' + m[2];
+}
+
+function niceTicks(lo, hi, n) {
+  var span = hi - lo;
+  var step = Math.pow(10, Math.floor(Math.log10(span / n)));
+  var err = span / n / step;
+  if (err >= 7.5) step *= 10;
+  else if (err >= 3.5) step *= 5;
+  else if (err >= 1.5) step *= 2;
+  var ticks = [];
+  for (var v = Math.ceil(lo / step) * step; v <= hi; v += step) ticks.push(v);
+  return ticks;
+}
+
+var NS = 'http://www.w3.org/2000/svg';
+function el(name, attrs) {
+  var e = document.createElementNS(NS, name);
+  for (var k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+function drawChart() {
+  if (!chartData || !chartData.t.length) return;
+  var svg = document.getElementById('chartSvg');
+  svg.textContent = '';
+
+  var W = Math.max(320, document.getElementById('chartBox').clientWidth);
+  var H = 300;
+  var pad = { l: 8, r: 64, t: 14, b: 26 };
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+  var t = chartData.t, c = chartData.c, n = c.length;
+  var lo = Math.min(AVG, Math.min.apply(null, c));
+  var hi = Math.max(AVG, Math.max.apply(null, c));
+  var padV = (hi - lo) * 0.06 || 1;
+  lo -= padV; hi += padV;
+
+  var X = function (i) { return pad.l + (W - pad.l - pad.r) * (n === 1 ? 0.5 : i / (n - 1)); };
+  var Y = function (v) { return pad.t + (H - pad.t - pad.b) * (1 - (v - lo) / (hi - lo)); };
+
+  // 수평 그리드 + 우측 y 라벨 (최근가와 가까운 쪽)
+  niceTicks(lo, hi, 4).forEach(function (v) {
+    svg.appendChild(el('line', { x1: pad.l, x2: W - pad.r, y1: Y(v), y2: Y(v), stroke: 'var(--gridline)', 'stroke-width': 1 }));
+    var tx = el('text', { x: W - pad.r + 8, y: Y(v) + 4, 'font-size': 11, fill: 'var(--text-muted)' });
+    tx.textContent = num(v);
+    svg.appendChild(tx);
+  });
+
+  // x 라벨 — 4~5개만
+  var xN = Math.min(5, n);
+  for (var k = 0; k < xN; k++) {
+    var i = Math.round(k * (n - 1) / (xN - 1 || 1));
+    var tx2 = el('text', {
+      x: X(i), y: H - 8, 'font-size': 11, fill: 'var(--text-muted)',
+      'text-anchor': k === 0 ? 'start' : k === xN - 1 ? 'end' : 'middle',
+    });
+    tx2.textContent = fmtDate(t[i], false);
+    svg.appendChild(tx2);
+  }
+
+  // 평단 기준선 (점선) + 라벨
+  svg.appendChild(el('line', { x1: pad.l, x2: W - pad.r, y1: Y(AVG), y2: Y(AVG), stroke: 'var(--text-secondary)', 'stroke-width': 1.5, 'stroke-dasharray': '5 4' }));
+  var avgLbl = el('text', { x: pad.l + 4, y: Y(AVG) - 6, 'font-size': 11, 'font-weight': 700, fill: 'var(--text-secondary)' });
+  avgLbl.textContent = '평단 ' + num(AVG) + '원';
+  svg.appendChild(avgLbl);
+
+  // 가격 라인 (2px)
+  var dPath = '';
+  for (var j = 0; j < n; j++) dPath += (j ? 'L' : 'M') + X(j).toFixed(1) + ' ' + Y(c[j]).toFixed(1);
+  svg.appendChild(el('path', { d: dPath, fill: 'none', stroke: 'var(--series-1)', 'stroke-width': 2, 'stroke-linejoin': 'round' }));
+
+  // 마지막 점 + 현재값 직접 라벨
+  var last = n - 1;
+  svg.appendChild(el('circle', { cx: X(last), cy: Y(c[last]), r: 4, fill: 'var(--series-1)', stroke: 'var(--surface-1)', 'stroke-width': 2 }));
+  var lastLbl = el('text', { x: W - pad.r + 8, y: Y(c[last]) + 4, 'font-size': 12, 'font-weight': 800, fill: 'var(--text-primary)' });
+  lastLbl.textContent = num(c[last]);
+  svg.appendChild(lastLbl);
+
+  // 크로스헤어(호버 레이어)
+  var cross = el('line', { y1: pad.t, y2: H - pad.b, stroke: 'var(--baseline)', 'stroke-width': 1, visibility: 'hidden' });
+  var dot = el('circle', { r: 4.5, fill: 'var(--series-1)', stroke: 'var(--surface-1)', 'stroke-width': 2, visibility: 'hidden' });
+  svg.appendChild(cross);
+  svg.appendChild(dot);
+
+  var tip = document.getElementById('chartTip');
+  function showIdx(i) {
+    hoverIdx = i;
+    cross.setAttribute('x1', X(i)); cross.setAttribute('x2', X(i));
+    cross.setAttribute('visibility', 'visible');
+    dot.setAttribute('cx', X(i)); dot.setAttribute('cy', Y(c[i]));
+    dot.setAttribute('visibility', 'visible');
+
+    tip.textContent = '';
+    var d1 = document.createElement('div');
+    d1.textContent = fmtDate(t[i], true);
+    var d2 = document.createElement('div');
+    var b = document.createElement('b');
+    b.textContent = won(c[i]);
+    d2.appendChild(b);
+    var d3 = document.createElement('div');
+    var diff = (c[i] - AVG) / AVG * 100;
+    d3.textContent = '평단 대비 ' + sgn(diff) + diff.toFixed(1) + '%';
+    tip.appendChild(d1); tip.appendChild(d2); tip.appendChild(d3);
+    tip.style.opacity = 1;
+    var bx = document.getElementById('chartBox').getBoundingClientRect();
+    var left = X(i) + 14;
+    if (left + tip.offsetWidth > bx.width) left = X(i) - tip.offsetWidth - 14;
+    tip.style.left = left + 'px';
+    tip.style.top = Math.max(0, Y(c[i]) - tip.offsetHeight - 10) + 'px';
+  }
+  function hide() {
+    hoverIdx = -1;
+    cross.setAttribute('visibility', 'hidden');
+    dot.setAttribute('visibility', 'hidden');
+    tip.style.opacity = 0;
+  }
+
+  svg.addEventListener('pointermove', function (ev) {
+    var r = svg.getBoundingClientRect();
+    var x = ev.clientX - r.left;
+    var i = Math.round((x - pad.l) / (W - pad.l - pad.r) * (n - 1));
+    showIdx(Math.max(0, Math.min(n - 1, i)));
+  });
+  svg.addEventListener('pointerleave', hide);
+  // 키보드로도 같은 값 탐색 (←/→)
+  svg.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight') return;
+    ev.preventDefault();
+    var i = hoverIdx < 0 ? n - 1 : hoverIdx + (ev.key === 'ArrowRight' ? 1 : -1);
+    showIdx(Math.max(0, Math.min(n - 1, i)));
+  });
+  svg.addEventListener('blur', hide);
+
+  // 기간 요약 — 호버 없이도 핵심 값 확인 가능
+  var ret = (c[last] - c[0]) / c[0] * 100;
+  document.getElementById('chartFoot').textContent =
+    fmtDate(t[0], true) + ' ~ ' + fmtDate(t[last], true) +
+    ' · 기간 수익률 ' + sgn(ret) + ret.toFixed(1) + '%' +
+    ' · 최고 ' + num(Math.max.apply(null, c)) + '원' +
+    ' · 최저 ' + num(Math.min.apply(null, c)) + '원';
+}
+
+var resizeT;
+window.addEventListener('resize', function () {
+  clearTimeout(resizeT);
+  resizeT = setTimeout(drawChart, 150);
+});
+loadChart();
+
+// ── 보유 내역 편집 모달 ─────────────────────────────────
+var modal = document.getElementById('editModal');
+var pwInput = document.getElementById('pwInput');
+var editErr = document.getElementById('editErr');
+
+function fillEditGrid(rows) {
+  var grid = document.getElementById('editGrid');
+  grid.textContent = '';
+  ['계좌', '수량 (주)', '평단가 (원)'].forEach(function (h) {
+    var d = document.createElement('div');
+    d.className = 'hd';
+    d.textContent = h;
+    grid.appendChild(d);
+  });
+  rows.forEach(function (h, i) {
+    var nm = document.createElement('div');
+    nm.className = 'nm';
+    nm.textContent = h.name;
+    grid.appendChild(nm);
+    [['sh', h.shares, 1, 0], ['co', h.cost, 1, 1]].forEach(function (f) {
+      var inp = document.createElement('input');
+      inp.type = 'number';
+      inp.id = 'in-' + f[0] + i;
+      inp.value = f[1];
+      inp.step = f[2];
+      inp.min = f[3];
+      grid.appendChild(inp);
+    });
+  });
+}
+
+function openModal() {
+  fillEditGrid(HOLD);
+  editErr.textContent = '';
+  pwInput.value = '';
+  modal.hidden = false;
+}
+function closeModal() { modal.hidden = true; }
+
+document.getElementById('btnEdit').addEventListener('click', openModal);
+document.getElementById('btnCancel').addEventListener('click', closeModal);
+document.getElementById('btnReset').addEventListener('click', function () {
+  fillEditGrid(DEFAULT_HOLD); // 입력칸만 기본값으로 — 저장을 눌러야 반영된다
+  editErr.textContent = '';
+});
+modal.addEventListener('click', function (ev) {
+  if (ev.target === modal) closeModal(); // 바깥 클릭으로 닫기
+});
+document.addEventListener('keydown', function (ev) {
+  if (ev.key === 'Escape' && !modal.hidden) closeModal();
+});
+
+document.getElementById('btnSave').addEventListener('click', function () {
+  if (pwInput.value !== EDIT_PW) {
+    editErr.textContent = '비밀번호가 올바르지 않습니다.';
+    pwInput.focus();
+    return;
+  }
+  var next = [];
+  for (var i = 0; i < HOLD.length; i++) {
+    var sh = Number(document.getElementById('in-sh' + i).value);
+    var co = Number(document.getElementById('in-co' + i).value);
+    if (!isFinite(sh) || sh < 0 || !Number.isInteger(sh)) {
+      editErr.textContent = HOLD[i].name + ' 수량이 올바르지 않습니다 (0 이상 정수).';
+      return;
+    }
+    if (!isFinite(co) || co <= 0) {
+      editErr.textContent = HOLD[i].name + ' 평단가가 올바르지 않습니다.';
+      return;
+    }
+    next.push({ name: HOLD[i].name, shares: sh, cost: co });
+  }
+  HOLD = next;
+  localStorage.setItem(LS_KEY, JSON.stringify(HOLD));
+  recalc();
+  renderStatic();
+  if (lastQuote) renderStats(lastQuote);
+  else buildTable(null);
+  drawChart(); // 평단 점선 위치 갱신
+  closeModal();
+});
+</script>
+</body>
+</html>

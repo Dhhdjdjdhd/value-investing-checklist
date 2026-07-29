@@ -11,8 +11,9 @@ export async function GET(
   { params }: { params: { ticker: string } },
 ) {
   // 경로로 들어온 값을 그대로 외부 URL에 붙이지 않는다(티커 형식만 허용)
+  // 한국 종목(360750.KS)도 쓰므로 숫자를 허용한다
   const ticker = params.ticker.toUpperCase();
-  if (!/^[A-Z.\-]{1,10}$/.test(ticker)) {
+  if (!/^[A-Z0-9.\-]{1,10}$/.test(ticker)) {
     return NextResponse.json({ error: 'invalid ticker' }, { status: 400 });
   }
 

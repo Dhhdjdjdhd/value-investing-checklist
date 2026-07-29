@@ -6,21 +6,36 @@ import type { StockMeta } from '@/lib/content';
 // 분석 보고서 HTML은 <style>·<script>를 자체 포함한 완결 문서다.
 // body만 뽑아 넣으면 스타일이 깨지므로 iframe으로 통째로 띄운다.
 
-export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
-  const [active, setActive] = useState(stocks[0]?.ticker ?? '');
+// 분석 보고서가 아닌 고정 탭 — 적립식 ETF 모니터링 화면
+const MONITOR = { ticker: 'SNP500', name: 'S&P500', desc: '360750 · 모니터링' };
 
-  if (stocks.length === 0) {
-    return (
-      <div className="flex h-full items-center justify-center text-muted">
-        content/stocks 에 분석 문서가 없습니다.
-      </div>
-    );
-  }
+export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
+  const [active, setActive] = useState(MONITOR.ticker);
 
   return (
     <div className="flex h-full">
       <aside className="flex w-48 shrink-0 flex-col border-r border-line bg-white">
         <nav className="flex-1 overflow-y-auto p-2">
+          <button
+            onClick={() => setActive(MONITOR.ticker)}
+            className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
+              active === MONITOR.ticker
+                ? 'bg-navy text-white'
+                : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
+            }`}
+          >
+            <span className="block text-[14px] font-bold">{MONITOR.name}</span>
+            <span
+              className={`block text-[11px] ${
+                active === MONITOR.ticker ? 'text-white/70' : 'text-muted'
+              }`}
+            >
+              {MONITOR.desc}
+            </span>
+          </button>
+
+          <div className="my-2 border-t border-line" />
+
           {stocks.map((s) => {
             const on = s.ticker === active;
             return (
