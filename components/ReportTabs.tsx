@@ -14,18 +14,22 @@ const RETIRE = { ticker: 'RETIRE', name: 'LTP', desc: '🔒 Long-term · 리서�
 const RETIRE_PW = '880115';
 const RETIRE_KEY = 'vic-retire-ok';
 
+// LTP 파생안 — 배당+나스닥 50:50 은퇴 플랜 (LTP와 같은 비밀번호·세션 키 공유)
+const DIVNDQ = { ticker: 'DIVNDQ', name: 'LTP-2', desc: '🔒 배당+나스닥 50:50' };
+
 export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
   const [active, setActive] = useState(MONITOR.ticker);
 
-  const openRetire = () => {
+  // LTP 계열 잠금 탭 공통 — 한 번 인증하면 세션 동안 모두 열린다
+  const openLocked = (ticker: string) => {
     if (sessionStorage.getItem(RETIRE_KEY) === '1') {
-      setActive(RETIRE.ticker);
+      setActive(ticker);
       return;
     }
     const input = window.prompt('비밀번호를 입력하세요');
     if (input === RETIRE_PW) {
       sessionStorage.setItem(RETIRE_KEY, '1');
-      setActive(RETIRE.ticker);
+      setActive(ticker);
     } else if (input !== null) {
       alert('비밀번호가 틀렸습니다');
     }
@@ -55,7 +59,7 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
           </button>
 
           <button
-            onClick={openRetire}
+            onClick={() => openLocked(RETIRE.ticker)}
             className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
               active === RETIRE.ticker
                 ? 'bg-navy text-white'
@@ -69,6 +73,24 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
               }`}
             >
               {RETIRE.desc}
+            </span>
+          </button>
+
+          <button
+            onClick={() => openLocked(DIVNDQ.ticker)}
+            className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
+              active === DIVNDQ.ticker
+                ? 'bg-navy text-white'
+                : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
+            }`}
+          >
+            <span className="block text-[14px] font-bold">{DIVNDQ.name}</span>
+            <span
+              className={`block text-[11px] ${
+                active === DIVNDQ.ticker ? 'text-white/70' : 'text-muted'
+              }`}
+            >
+              {DIVNDQ.desc}
             </span>
           </button>
 
