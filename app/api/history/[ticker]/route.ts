@@ -19,9 +19,9 @@ export async function GET(
   req: Request,
   { params }: { params: { ticker: string } },
 ) {
-  // 한국 종목(360750.KS)도 쓰므로 숫자를 허용한다
+  // 한국 종목(360750.KS)의 숫자, 지수(^GSPC)·환율(KRW=X) 심볼까지 허용한다
   const ticker = params.ticker.toUpperCase();
-  if (!/^[A-Z0-9.\-]{1,10}$/.test(ticker)) {
+  if (!/^[A-Z0-9.\-^=]{1,12}$/.test(ticker)) {
     return NextResponse.json({ error: 'invalid ticker' }, { status: 400 });
   }
 
@@ -33,7 +33,7 @@ export async function GET(
 
   try {
     const res = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=${interval}&range=${range}`,
+      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=${interval}&range=${range}`,
       {
         headers: { 'User-Agent': 'Mozilla/5.0' },
         next: { revalidate: 300 }, // 종가 기반 차트라 5분 캐시면 충분

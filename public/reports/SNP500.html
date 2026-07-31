@@ -69,6 +69,7 @@
   .chart-box { position: relative; }
   .chart-box.loading svg { opacity: .4; }
   svg { display: block; cursor: pointer; }
+  .chart-box.mini svg { cursor: crosshair; } /* 보조 차트는 클릭 동작이 없다 */
   svg text { font-family: inherit; }
   .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 7px 11px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
   .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; font-size: 14px; }
@@ -175,6 +176,27 @@
   <div class="chart-foot" id="chartFoot"></div>
 </section>
 
+<!-- 보조 차트: ETF 가격 ≈ 지수 × 환율이라 두 요인을 나란히 본다 (기간 버튼 공유) -->
+<section class="card">
+  <h2>S&amp;P500 지수</h2>
+  <div class="chart-sub">미국 현지 지수 (포인트) · 위 기간 버튼과 연동</div>
+  <div class="chart-box mini" id="spxBox">
+    <svg id="spxSvg" role="img" aria-label="S&amp;P500 지수 차트" tabindex="0"></svg>
+    <div class="tooltip" id="spxTip"></div>
+  </div>
+  <div class="chart-foot" id="spxFoot"></div>
+</section>
+
+<section class="card">
+  <h2>원/달러 환율</h2>
+  <div class="chart-sub">USD/KRW · 360750 가격 = 지수 × 환율이라 함께 본다</div>
+  <div class="chart-box mini" id="fxBox">
+    <svg id="fxSvg" role="img" aria-label="원달러 환율 차트" tabindex="0"></svg>
+    <div class="tooltip" id="fxTip"></div>
+  </div>
+  <div class="chart-foot" id="fxFoot"></div>
+</section>
+
 </div>
 
 <!-- 열람 비밀번호 모달 — 차트 클릭 시 먼저 뜬다 -->
@@ -221,7 +243,7 @@
         <tbody id="holdBody"></tbody>
       </table>
     </div>
-    <div class="foot">시세: 야후 파이낸스 · 정규장 중 60초마다 갱신 · <span id="asOf"></span></div>
+    <div class="foot">시세: 네이버 금융 (실패 시 야후 폴백) · 정규장 중 30초마다 갱신 · <span id="asOf"></span></div>
     <div class="btns"><button class="btn" id="btnHoldClose">닫기</button></div>
   </div>
 </div>
@@ -358,14 +380,14 @@ function renderStats(q) {
   return open;
 }
 
-// ── 시세 폴링 (정규장 60초, 그 외 5분 — _quotebar.js와 동일 규칙) ──
+// ── 시세 폴링 (정규장 30초 — 네이버 실시간 소스라 짧게, 그 외 5분) ──
 var timer;
 function schedule(ms) { clearTimeout(timer); timer = setTimeout(tick, ms); }
 function tick() {
   if (document.hidden) { schedule(5 * 60 * 1000); return; }
   fetch('/api/quote/' + TICKER)
     .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-    .then(function (q) { schedule(renderStats(q) ? 60 * 1000 : 5 * 60 * 1000); })
+    .then(function (q) { schedule(renderStats(q) ? 30 * 1000 : 5 * 60 * 1000); })
     .catch(function () {
       document.getElementById('stChange').textContent = '시세를 불러오지 못했습니다';
       schedule(5 * 60 * 1000);
@@ -378,6 +400,8 @@ tick();
 var curRange = '1y';
 var chartData = null; // { t:[], c:[] }
 var hoverIdx = -1;
+
+var MINIS = []; // 보조 차트들 — 기간 변경·리사이즈 시 함께 갱신
 
 var seg = document.getElementById('segRange');
 RANGES.forEach(function (r) {
@@ -392,6 +416,7 @@ RANGES.forEach(function (r) {
       x.className = x.dataset.key === curRange ? 'on' : '';
     });
     loadChart();
+    MINIS.forEach(function (m) { m.load(); });
   });
   seg.appendChild(b);
 });
@@ -571,9 +596,155 @@ function drawChart() {
 var resizeT;
 window.addEventListener('resize', function () {
   clearTimeout(resizeT);
-  resizeT = setTimeout(drawChart, 150); // 화면 회전 시에도 다시 그린다
+  resizeT = setTimeout(function () { // 화면 회전 시에도 다시 그린다
+    drawChart();
+    MINIS.forEach(function (m) { m.draw(); });
+  }, 150);
 });
 loadChart();
+
+// ── 보조 차트 (S&P500 지수 · 원/달러 환율) ──────────────
+// 메인 차트의 단순화 버전 — 평단선·클릭 동작 없이 라인 + 크로스헤어만.
+function miniChart(cfg) {
+  var data = null;
+  var hoverI = -1;
+
+  function fmtV(v) {
+    return v.toLocaleString('ko-KR', {
+      minimumFractionDigits: cfg.dec,
+      maximumFractionDigits: cfg.dec,
+    });
+  }
+
+  function load() {
+    var box = document.getElementById(cfg.box);
+    box.classList.add('loading');
+    fetch('/api/history/' + encodeURIComponent(cfg.ticker) + '?range=' + curRange)
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (d) { data = d; hoverI = -1; draw(); })
+      .catch(function () {
+        document.getElementById(cfg.foot).textContent = '데이터를 불러오지 못했습니다';
+      })
+      .then(function () { box.classList.remove('loading'); });
+  }
+
+  function draw() {
+    if (!data || !data.t.length) return;
+    var svg = document.getElementById(cfg.svg);
+    svg.textContent = '';
+
+    var box = document.getElementById(cfg.box);
+    var W = Math.max(300, box.clientWidth);
+    var narrow = W < 520;
+    var H = narrow ? 180 : 220;
+    var pad = { l: 8, r: narrow ? 56 : 68, t: 12, b: 24 };
+    svg.setAttribute('width', W);
+    svg.setAttribute('height', H);
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    var t = data.t, c = data.c, n = c.length;
+    var lo = Math.min.apply(null, c);
+    var hi = Math.max.apply(null, c);
+    var padV = (hi - lo) * 0.06 || 1;
+    lo -= padV; hi += padV;
+
+    var X = function (i) { return pad.l + (W - pad.l - pad.r) * (n === 1 ? 0.5 : i / (n - 1)); };
+    var Y = function (v) { return pad.t + (H - pad.t - pad.b) * (1 - (v - lo) / (hi - lo)); };
+
+    niceTicks(lo, hi, 3).forEach(function (v) {
+      svg.appendChild(el('line', { x1: pad.l, x2: W - pad.r, y1: Y(v), y2: Y(v), stroke: 'var(--gridline)', 'stroke-width': 1 }));
+      var tx = el('text', { x: W - pad.r + 8, y: Y(v) + 4, 'font-size': 11, fill: 'var(--text-muted)' });
+      tx.textContent = fmtV(v);
+      svg.appendChild(tx);
+    });
+
+    var xN = Math.min(narrow ? 3 : 5, n);
+    for (var k = 0; k < xN; k++) {
+      var i = Math.round(k * (n - 1) / (xN - 1 || 1));
+      var tx2 = el('text', {
+        x: X(i), y: H - 7, 'font-size': 11, fill: 'var(--text-muted)',
+        'text-anchor': k === 0 ? 'start' : k === xN - 1 ? 'end' : 'middle',
+      });
+      tx2.textContent = fmtDate(t[i], false);
+      svg.appendChild(tx2);
+    }
+
+    var dPath = '';
+    for (var j = 0; j < n; j++) dPath += (j ? 'L' : 'M') + X(j).toFixed(1) + ' ' + Y(c[j]).toFixed(1);
+    svg.appendChild(el('path', { d: dPath, fill: 'none', stroke: 'var(--series-1)', 'stroke-width': 2, 'stroke-linejoin': 'round' }));
+
+    var last = n - 1;
+    svg.appendChild(el('circle', { cx: X(last), cy: Y(c[last]), r: 4, fill: 'var(--series-1)', stroke: 'var(--surface-1)', 'stroke-width': 2 }));
+    var lastLbl = el('text', { x: W - pad.r + 8, y: Y(c[last]) + 4, 'font-size': 12, 'font-weight': 800, fill: 'var(--text-primary)' });
+    lastLbl.textContent = fmtV(c[last]);
+    svg.appendChild(lastLbl);
+
+    var cross = el('line', { y1: pad.t, y2: H - pad.b, stroke: 'var(--baseline)', 'stroke-width': 1, visibility: 'hidden' });
+    var dot = el('circle', { r: 4.5, fill: 'var(--series-1)', stroke: 'var(--surface-1)', 'stroke-width': 2, visibility: 'hidden' });
+    svg.appendChild(cross);
+    svg.appendChild(dot);
+
+    var tip = document.getElementById(cfg.tip);
+    function showIdx(i) {
+      hoverI = i;
+      cross.setAttribute('x1', X(i)); cross.setAttribute('x2', X(i));
+      cross.setAttribute('visibility', 'visible');
+      dot.setAttribute('cx', X(i)); dot.setAttribute('cy', Y(c[i]));
+      dot.setAttribute('visibility', 'visible');
+
+      tip.textContent = '';
+      var d1 = document.createElement('div');
+      d1.textContent = fmtDate(t[i], true);
+      var d2 = document.createElement('div');
+      var b = document.createElement('b');
+      b.textContent = fmtV(c[i]) + cfg.unit;
+      d2.appendChild(b);
+      tip.appendChild(d1); tip.appendChild(d2);
+      tip.style.opacity = 1;
+      var bx = box.getBoundingClientRect();
+      var left = X(i) + 14;
+      if (left + tip.offsetWidth > bx.width) left = X(i) - tip.offsetWidth - 14;
+      tip.style.left = left + 'px';
+      tip.style.top = Math.max(0, Y(c[i]) - tip.offsetHeight - 10) + 'px';
+    }
+    function hide() {
+      hoverI = -1;
+      cross.setAttribute('visibility', 'hidden');
+      dot.setAttribute('visibility', 'hidden');
+      tip.style.opacity = 0;
+    }
+
+    svg.onpointermove = function (ev) {
+      var r = svg.getBoundingClientRect();
+      var x = ev.clientX - r.left;
+      var i = Math.round((x - pad.l) / (W - pad.l - pad.r) * (n - 1));
+      showIdx(Math.max(0, Math.min(n - 1, i)));
+    };
+    svg.onpointerleave = hide;
+    svg.onkeydown = function (ev) {
+      if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight') return;
+      ev.preventDefault();
+      var i = hoverI < 0 ? n - 1 : hoverI + (ev.key === 'ArrowRight' ? 1 : -1);
+      showIdx(Math.max(0, Math.min(n - 1, i)));
+    };
+    svg.onblur = hide;
+
+    var ret = (c[last] - c[0]) / c[0] * 100;
+    document.getElementById(cfg.foot).textContent =
+      fmtDate(t[0], true) + ' ~ ' + fmtDate(t[last], true) +
+      ' · 기간 ' + sgn(ret) + ret.toFixed(1) + '%' +
+      ' · 최고 ' + fmtV(Math.max.apply(null, c)) + cfg.unit +
+      ' · 최저 ' + fmtV(Math.min.apply(null, c)) + cfg.unit;
+  }
+
+  var m = { load: load, draw: draw };
+  MINIS.push(m);
+  load();
+  return m;
+}
+
+miniChart({ ticker: '^GSPC', svg: 'spxSvg', tip: 'spxTip', foot: 'spxFoot', box: 'spxBox', unit: 'pt', dec: 0 });
+miniChart({ ticker: 'KRW=X', svg: 'fxSvg', tip: 'fxTip', foot: 'fxFoot', box: 'fxBox', unit: '원', dec: 1 });
 
 // ── 차트 전체 화면 토글 (모바일 전용 버튼) ──────────────
 var chartCard = document.getElementById('chartCard');
