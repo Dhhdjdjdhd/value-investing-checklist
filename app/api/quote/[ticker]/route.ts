@@ -47,9 +47,9 @@ export async function GET(
   { params }: { params: { ticker: string } },
 ) {
   // 경로로 들어온 값을 그대로 외부 URL에 붙이지 않는다(티커 형식만 허용)
-  // 한국 종목(360750.KS)도 쓰므로 숫자를 허용한다
+  // 한국 종목(360750.KS)의 숫자, 지수(^KS11)·환율(KRW=X) 심볼까지 허용한다(history 라우트와 동일)
   const ticker = params.ticker.toUpperCase();
-  if (!/^[A-Z0-9.\-]{1,10}$/.test(ticker)) {
+  if (!/^[A-Z0-9.\-^=]{1,12}$/.test(ticker)) {
     return NextResponse.json({ error: 'invalid ticker' }, { status: 400 });
   }
 
@@ -73,7 +73,7 @@ export async function GET(
 
   try {
     const res = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`,
+      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`,
       {
         // UA가 없으면 야후가 차단한다
         headers: { 'User-Agent': 'Mozilla/5.0' },

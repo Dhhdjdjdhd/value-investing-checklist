@@ -124,3 +124,9 @@ body {
 .vic-mobile .vic-sidebar {
   display: none;
 }
+
+/* 사이드바가 사라진 모바일에서 홈으로 돌아갈 유일한 경로 — 보고서 위에 떠 있는 버튼 */
+.vic-mobile .vic-home-fab {
+  display: flex;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom));
+}

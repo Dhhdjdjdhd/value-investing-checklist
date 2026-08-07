@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import type { StockMeta } from '@/lib/content';
 
 // 분석 보고서 HTML은 <style>·<script>를 자체 포함한 완결 문서다.
@@ -16,6 +17,9 @@ const RETIRE_KEY = 'vic-retire-ok';
 
 // LTP 파생안 — 배당+나스닥 50:50 은퇴 플랜 (LTP와 같은 비밀번호·세션 키 공유)
 const DIVNDQ = { ticker: 'DIVNDQ', name: 'LTP-2', desc: '🔒 배당+나스닥 50:50' };
+
+// 매매 계좌 실시간 대시보드 — 분석 보고서가 아닌 고정 탭
+const PORTFOLIO = { ticker: 'PORTFOLIO', name: '포트폴리오', desc: '보유·손익 실시간' };
 
 export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
   const [active, setActive] = useState(MONITOR.ticker);
@@ -94,6 +98,24 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
             </span>
           </button>
 
+          <button
+            onClick={() => setActive(PORTFOLIO.ticker)}
+            className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
+              active === PORTFOLIO.ticker
+                ? 'bg-navy text-white'
+                : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
+            }`}
+          >
+            <span className="block text-[14px] font-bold">{PORTFOLIO.name}</span>
+            <span
+              className={`block text-[11px] ${
+                active === PORTFOLIO.ticker ? 'text-white/70' : 'text-muted'
+              }`}
+            >
+              {PORTFOLIO.desc}
+            </span>
+          </button>
+
           <div className="my-2 border-t border-line" />
 
           {stocks.map((s) => {
@@ -122,14 +144,12 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
         </nav>
 
         <div className="border-t border-line p-3">
-          <a
-            href={`/reports/${active}.html`}
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            href="/"
             className="text-[12px] text-muted hover:text-navy hover:underline"
           >
-            새 창에서 열기 ↗
-          </a>
+            ← 홈
+          </Link>
         </div>
       </aside>
 
@@ -140,6 +160,15 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
         title={`${active} 분석 보고서`}
         className="h-full flex-1 border-0"
       />
+
+      {/* vic-home-fab: 사이드바가 숨겨지는 모바일에서만 노출되는 홈 버튼 (globals.css에서 제어) */}
+      <Link
+        href="/"
+        aria-label="홈으로"
+        className="vic-home-fab hidden fixed bottom-5 right-5 z-50 h-12 w-12 items-center justify-center rounded-full bg-navy text-[18px] text-white shadow-soft"
+      >
+        ←
+      </Link>
     </div>
   );
 }

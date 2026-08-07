@@ -104,8 +104,6 @@
   .edit-grid .nm { font-size: 13.5px; color: var(--text-secondary); }
   .modal input { width: 100%; border: 1px solid var(--border); background: var(--page); color: var(--text-primary); border-radius: 8px; padding: 7px 10px; font-size: 14px; font-family: inherit; font-variant-numeric: tabular-nums; }
   .modal input:focus { outline: 2px solid var(--series-1); border-color: transparent; }
-  .pw-row { margin: 4px 0 10px; }
-  .pw-row label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
   .modal .err { color: var(--status-critical); font-size: 12.5px; min-height: 18px; margin-bottom: 8px; }
   .modal .btns { display: flex; gap: 8px; justify-content: flex-end; }
   .modal .btns .left { margin-right: auto; }
@@ -199,23 +197,7 @@
 
 </div>
 
-<!-- 열람 비밀번호 모달 — 차트 클릭 시 먼저 뜬다 -->
-<div class="modal-ov" id="pwModal" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
-    <h3 id="pwTitle">보유 현황 열람</h3>
-    <div class="pw-row">
-      <label for="viewPwInput">비밀번호</label>
-      <input type="password" id="viewPwInput" autocomplete="off">
-    </div>
-    <div class="err" id="pwErr"></div>
-    <div class="btns">
-      <button class="btn" id="btnPwCancel">취소</button>
-      <button class="btn primary" id="btnPwOk">확인</button>
-    </div>
-  </div>
-</div>
-
-<!-- 계좌별 보유 현황 모달 — 비밀번호 확인 후 오픈 -->
+<!-- 계좌별 보유 현황 모달 — 차트 클릭 시 오픈 -->
 <div class="modal-ov" id="holdModal" hidden>
   <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="holdTitle">
     <div class="card-head">
@@ -267,7 +249,6 @@
 // 기본값은 파일에 두고, 편집한 값은 이 브라우저의 localStorage에 저장된다.
 var TICKER = '360750.KS';
 var LS_KEY = 'snp500.hold';
-var VIEW_PW = '360750'; // 보유 현황 열람 비밀번호
 var DEFAULT_HOLD = [
   { name: '개인연금', shares: 40, cost: 27024 },
   { name: 'IRP',      shares: 28, cost: 27060 },
@@ -758,50 +739,20 @@ btnFull.addEventListener('click', function () {
   setChartFull(!chartCard.classList.contains('chart-full'));
 });
 
-// ── 계좌별 보유 현황 모달 (차트 클릭 → 비밀번호 확인 후 오픈) ──
+// ── 계좌별 보유 현황 모달 (차트 클릭 → 오픈) ──
 var holdModal = document.getElementById('holdModal');
-var pwModal = document.getElementById('pwModal');
-var viewPwInput = document.getElementById('viewPwInput');
-var pwErr = document.getElementById('pwErr');
-var unlocked = false; // 한 번 인증하면 새로고침 전까지 유지
 
 function openHoldModal() { holdModal.hidden = false; }
 function closeHoldModal() { holdModal.hidden = true; }
-function closePwModal() { pwModal.hidden = true; }
 
-document.getElementById('chartSvg').onclick = function () {
-  if (unlocked) { openHoldModal(); return; }
-  pwErr.textContent = '';
-  viewPwInput.value = '';
-  pwModal.hidden = false;
-  viewPwInput.focus();
-};
-
-function submitPw() {
-  if (viewPwInput.value !== VIEW_PW) {
-    pwErr.textContent = '비밀번호가 올바르지 않습니다.';
-    viewPwInput.focus();
-    return;
-  }
-  unlocked = true;
-  closePwModal();
-  openHoldModal();
-}
-document.getElementById('btnPwOk').addEventListener('click', submitPw);
-viewPwInput.addEventListener('keydown', function (ev) {
-  if (ev.key === 'Enter') submitPw();
-});
-document.getElementById('btnPwCancel').addEventListener('click', closePwModal);
-pwModal.addEventListener('click', function (ev) {
-  if (ev.target === pwModal) closePwModal();
-});
+document.getElementById('chartSvg').onclick = openHoldModal;
 
 document.getElementById('btnHoldClose').addEventListener('click', closeHoldModal);
 holdModal.addEventListener('click', function (ev) {
   if (ev.target === holdModal) closeHoldModal();
 });
 
-// ── 보유 내역 편집 모달 (열람 시 이미 인증했으므로 비번 없음) ──
+// ── 보유 내역 편집 모달 ──
 var modal = document.getElementById('editModal');
 var editErr = document.getElementById('editErr');
 
@@ -850,7 +801,6 @@ modal.addEventListener('click', function (ev) {
 document.addEventListener('keydown', function (ev) {
   if (ev.key !== 'Escape') return;
   if (!modal.hidden) closeModal(); // 가장 위 모달부터 닫는다
-  else if (!pwModal.hidden) closePwModal();
   else if (!holdModal.hidden) closeHoldModal();
   else if (chartCard.classList.contains('chart-full')) setChartFull(false);
 });
