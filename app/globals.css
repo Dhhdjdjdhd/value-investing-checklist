@@ -118,11 +118,32 @@ body {
 }
 
 /* ── 모바일 전용 모드 ──────────────────────────────
-   모바일 기기에서는 사이드바를 숨겨 S&P500 모니터링 화면만 노출한다.
+   모바일 기기에서는 사이드바를 숨기고, 좌측 상단 햄버거 버튼으로 메뉴를 오버레이로 연다.
    감지는 layout.tsx의 인라인 head 스크립트가 <html>에 vic-mobile을 붙이는 방식. */
 
 .vic-mobile .vic-sidebar {
   display: none;
+}
+
+/* 햄버거 버튼 — 모바일에서만 노출 (노치 대응) */
+.vic-mobile .vic-menu-btn {
+  display: flex;
+  top: calc(0.75rem + env(safe-area-inset-top));
+}
+
+/* 메뉴가 열리면 사이드바를 화면 왼쪽에 오버레이로 띄운다 (딤보다 위) */
+.vic-mobile .vic-sidebar.vic-open {
+  display: flex;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.vic-mobile .vic-backdrop {
+  display: block;
 }
 
 /* 사이드바가 사라진 모바일에서 홈으로 돌아갈 유일한 경로 — 보고서 위에 떠 있는 버튼 */

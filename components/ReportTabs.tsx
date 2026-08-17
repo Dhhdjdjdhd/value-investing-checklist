@@ -23,17 +23,25 @@ const PORTFOLIO = { ticker: 'PORTFOLIO', name: '포트폴리오', desc: '보유�
 
 export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
   const [active, setActive] = useState(MONITOR.ticker);
+  // 모바일 햄버거 메뉴 열림 여부 — 데스크톱에서는 버튼이 숨겨져 항상 false
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // 탭 선택 공통 — 모바일 메뉴가 열려 있었다면 닫는다
+  const select = (ticker: string) => {
+    setActive(ticker);
+    setMenuOpen(false);
+  };
 
   // LTP 계열 잠금 탭 공통 — 한 번 인증하면 세션 동안 모두 열린다
   const openLocked = (ticker: string) => {
     if (sessionStorage.getItem(RETIRE_KEY) === '1') {
-      setActive(ticker);
+      select(ticker);
       return;
     }
     const input = window.prompt('비밀번호를 입력하세요');
     if (input === RETIRE_PW) {
       sessionStorage.setItem(RETIRE_KEY, '1');
-      setActive(ticker);
+      select(ticker);
     } else if (input !== null) {
       alert('비밀번호가 틀렸습니다');
     }
@@ -41,11 +49,30 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
 
   return (
     <div className="flex h-full">
-      {/* vic-sidebar: 모바일(html.vic-mobile)에서는 globals.css가 숨긴다 */}
-      <aside className="vic-sidebar flex w-48 shrink-0 flex-col border-r border-line bg-white">
+      {/* vic-menu-btn: 사이드바가 숨겨지는 모바일에서만 노출되는 햄버거 버튼 (globals.css에서 제어) */}
+      <button
+        onClick={() => setMenuOpen(true)}
+        aria-label="메뉴 열기"
+        className="vic-menu-btn hidden fixed left-3 top-3 z-50 h-10 w-10 items-center justify-center rounded-full bg-navy text-[16px] text-white shadow-soft"
+      >
+        ☰
+      </button>
+
+      {/* vic-backdrop: 모바일 메뉴가 열렸을 때 바깥 터치로 닫는 딤 영역 */}
+      {menuOpen && (
+        <div
+          onClick={() => setMenuOpen(false)}
+          className="vic-backdrop hidden fixed inset-0 z-40 bg-black/35"
+        />
+      )}
+
+      {/* vic-sidebar: 모바일(html.vic-mobile)에서는 globals.css가 숨기고, vic-open일 때 오버레이로 띄운다 */}
+      <aside
+        className={`vic-sidebar ${menuOpen ? 'vic-open' : ''} flex w-48 shrink-0 flex-col border-r border-line bg-white`}
+      >
         <nav className="flex-1 overflow-y-auto p-2">
           <button
-            onClick={() => setActive(MONITOR.ticker)}
+            onClick={() => select(MONITOR.ticker)}
             className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
               active === MONITOR.ticker
                 ? 'bg-navy text-white'
@@ -99,7 +126,7 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
           </button>
 
           <button
-            onClick={() => setActive(PORTFOLIO.ticker)}
+            onClick={() => select(PORTFOLIO.ticker)}
             className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
               active === PORTFOLIO.ticker
                 ? 'bg-navy text-white'
@@ -123,7 +150,7 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
             return (
               <button
                 key={s.ticker}
-                onClick={() => setActive(s.ticker)}
+                onClick={() => select(s.ticker)}
                 className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
                   on
                     ? 'bg-navy text-white'
