@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NXP 세미컨덕터(NXPI) 가치투자 분석 보고서 — 2026.08.17 · 판정: 관망</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --seq-250: #86b6ef; --seq-450: #2a78d6;
+    --status-good: #0ca30c; --status-warning: #fab219; --status-serious: #ec835a; --status-critical: #d03b3b;
+    --delta-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  h2 .w { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 6px; }
+  p.body { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 10px; }
+  p.body strong { color: var(--text-primary); }
+  .hero { display: flex; flex-wrap: wrap; gap: 24px; }
+  .hero-score { flex: 0 0 auto; text-align: center; padding: 8px 28px 8px 8px; border-right: 1px solid var(--gridline); }
+  .hero-score .num { font-size: 64px; font-weight: 800; line-height: 1.05; }
+  .hero-score .den { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+  .hero-score .label { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; max-width: 150px; }
+  .hero-main { flex: 1 1 320px; min-width: 280px; }
+  .verdict { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--status-warning); border-radius: 999px; padding: 4px 14px; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--status-warning); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .fact { border-top: 2px solid var(--gridline); padding-top: 8px; }
+  .fact .k { font-size: 12px; color: var(--text-muted); }
+  .fact .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fact .d { font-size: 12px; color: var(--text-secondary); }
+  .meter-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .meter-row .name { font-size: 14px; font-weight: 600; }
+  .meter-row .name small { display: block; font-weight: 400; font-size: 11.5px; color: var(--text-muted); }
+  .track { height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--seq-450); border-radius: 5px; }
+  .meter-row .val { font-size: 14px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .meter-row .val small { font-weight: 400; color: var(--text-muted); }
+  ul.check { list-style: none; }
+  ul.check li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--gridline); font-size: 14px; color: var(--text-secondary); align-items: baseline; }
+  ul.check li:last-child { border-bottom: none; }
+  .tag { flex: 0 0 auto; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+  .tag.pass { color: var(--status-good); border: 1px solid var(--status-good); }
+  .tag.warn { color: var(--status-serious); border: 1px solid var(--status-serious); }
+  .tag.fail { color: var(--status-critical); border: 1px solid var(--status-critical); }
+  ul.check b { color: var(--text-primary); font-weight: 600; }
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .chart-box { position: relative; }
+  svg text { font-family: inherit; }
+  .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
+  .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  details { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  details summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  .table-scroll { overflow-x: auto; }
+  .up { color: var(--delta-good); font-weight: 600; }
+  .warn-txt { color: var(--status-serious); font-weight: 600; }
+  .range-wrap { padding: 46px 10px 52px; }
+  .range-track { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--seq-250), var(--seq-450)); }
+  .marker { position: absolute; top: -40px; transform: translateX(-50%); text-align: center; }
+  .marker .lbl { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; }
+  .marker .prc { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .marker .tick { width: 2px; height: 14px; background: var(--baseline); margin: 2px auto 0; }
+  .marker.below { top: auto; bottom: -48px; }
+  .marker.below .tick { margin: 0 auto 2px; }
+  .marker.now .tick { background: var(--text-primary); width: 3px; height: 20px; }
+  .marker.now .prc, .marker.now .lbl { color: var(--text-primary); font-weight: 800; }
+  .range-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  .src { font-size: 12.5px; color: var(--text-muted); }
+  .src a { color: var(--series-1); text-decoration: none; }
+  .src li { margin-bottom: 4px; }
+  .disclaimer { border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+  .notice { border: 1.5px solid var(--status-warning); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">가치투자 체크리스트 기반 종목 분석 · 2026년 8월 17일</div>
+  <h1>NXP 세미컨덕터 <span style="color:var(--text-muted);font-weight:600">NXP Semiconductors N.V. · NASDAQ: NXPI</span></h1>
+  <div class="sub">차량용·산업용 반도체 5사 과점의 한 축 — 자동차 재고 사이클 바닥을 지나 2026년 회복 전환. 사업은 통과했고 <b>가격만 문제</b>인 상태</div>
+</header>
+
+<div class="notice">⚠️ <b>스크리너 "fwd PER 14.0배"에 속지 말 것:</b> 그 수치는 <b>비GAAP 기준</b>이다. GAAP으로 보면 현재 PER은 <b>약 20배</b>. 컨센서스 forward EPS($16.7)와 GAAP TTM EPS($11.72)의 괴리가 <b>43%</b>에 달한다. 본 분석은 GAAP 기준으로 재계산했고, 그 결과 안전마진이 <b>17.4%로 기준 20%에 미달</b>해 매수하지 않는다. — 05 문서 §5 "거짓 통과" 사례</div>
+
+<!-- 종합 판정 -->
+<section class="card">
+  <div class="hero">
+    <div class="hero-score">
+      <div class="num">79<span class="den">/100</span></div>
+      <div class="label">종합 평가 점수 (참고용 — 판정은 점수가 아니라 관문 방식)</div>
+    </div>
+    <div class="hero-main">
+      <div class="verdict"><span class="dot"></span>판정: 관망 — 목표 매수가 $227.2까지 −3.2%</div>
+      <p class="body">싼 이유는 <strong>자동차 반도체 재고 조정</strong>이며 <strong>업계 공통 + 외부 사이클</strong>이다(판별 ④ 일시적 신호). 고객 이탈 증거 없음 — 2분기 전 사업부가 성장했고 SDV 다년 플랫폼 수주도 확보했다. <strong>해자 무손상, 사업 통과, 가격만 미달</strong> — 알파벳·MSFT와 같은 유형이다.</p>
+      <div class="facts">
+        <div class="fact"><div class="k">현재 주가 (8/14)</div><div class="v">$234.71</div><div class="d">52주 고점 대비 −31%</div></div>
+        <div class="fact"><div class="k">내재가치 (기본)</div><div class="v">$284</div><div class="d">기준 EPS $12.50 (GAAP)</div></div>
+        <div class="fact"><div class="k">목표 매수가</div><div class="v">$227.2</div><div class="d">−3.2% 남음</div></div>
+        <div class="fact"><div class="k">안전마진</div><div class="v warn-txt">+17.4%</div><div class="d">기준 20% 미달 ❌</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 단계별 점수 -->
+<section class="card">
+  <h2>단계별 점수</h2>
+  <div class="meter-row"><div class="name">① 사업의 질<small>통과 (⚠️ 1)</small></div><div class="track"><div class="fill" style="width:93%;background:var(--status-good)"></div></div><div class="val">28<small>/30</small></div></div>
+  <div class="meter-row"><div class="name">② 경영진<small>조건부 통과 (⚠️ 2)</small></div><div class="track"><div class="fill" style="width:70%;background:var(--status-serious)"></div></div><div class="val">14<small>/20</small></div></div>
+  <div class="meter-row"><div class="name">③ 재무<small>통과 (⚠️ 1)</small></div><div class="track"><div class="fill" style="width:84%"></div></div><div class="val">21<small>/25</small></div></div>
+  <div class="meter-row"><div class="name">④ 밸류에이션<small>미달 — 관심 목록</small></div><div class="track"><div class="fill" style="width:64%;background:var(--status-serious)"></div></div><div class="val">16<small>/25</small></div></div>
+</section>
+
+<!-- 1단계 -->
+<section class="card">
+  <h2>① 사업의 질 <span class="w">28/30 — 통과 (⚠️ 1개)</span></h2>
+  <p class="body">자동차에 들어가는 반도체를 만든다. 차량용 마이크로컨트롤러, 레이더 칩, 차량 네트워크(이더넷 스위치), 전기차 배터리 관리, 디지털 키 같은 것들이다. 자동차 회사·부품사(티어1)에 팔고 산업 장비·모바일에도 공급한다.</p>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>10년 뒤에도 필요한가</b> — 소프트웨어 정의 차량(SDV)·전동화로 갈수록 <b>차량당 반도체 탑재량은 증가</b></span></li>
+    <li><span class="tag pass">해자</span><span><b>전환비용 — 설계 인(design-in) 락인.</b> 차량용 반도체는 <b>AEC-Q100 인증</b>을 통과하고 특정 차종에 설계 채택되면 그 모델의 생애주기(<b>7~10년</b>) 동안 교체되지 않는다. 바꾸려면 재인증·재검증·리콜 리스크를 감수해야 한다 — <b>한 번 이기면 10년 매출이 확정</b>되는 구조. 코파트의 야드와 같은 "시간이 지켜주는 해자"</span></li>
+    <li><span class="tag pass">해자</span><span><b>규모의 경제 + 과점</b> — 차량용 MCU는 NXP·인피니언·르네사스·TI·ST의 <b>5사 과점</b>. 신규 진입은 인증 이력이 없어 사실상 불가</span></li>
+    <li><span class="tag pass">통과</span><span><b>가격 결정력</b> — 설계 인 이후 재협상력이 공급자 쪽에 있다. 2분기 비GAAP 영업이익률 <b>35%</b>가 증거</span></li>
+    <li><span class="tag warn">⚠️</span><span><b>예측 가능성 — 사이클성.</b> FY2023 $13,276M → FY2025 $12,269M로 2년 감소 후 회복 중. 코파트와 달리 <b>명확한 순환 사업</b></span></li>
+  </ul>
+</section>
+
+<!-- 2단계 -->
+<section class="card">
+  <h2>② 경영진 <span class="w">14/20 — 조건부 통과 (⚠️ 2개)</span></h2>
+  <ul class="check">
+    <li><span class="tag warn">⚠️</span><span><b>CEO 교체 직후 — 검증 이력 부족.</b> 현 CEO <b>Rafael Sotomayor</b>(2분기 실적 코멘트 주체). 장기간 조직을 이끈 Kurt Sievers의 후임으로 <b>자본배분 실적이 아직 없다.</b> ※ 취임 시점·경위는 <b>원문(DEF 14A·8-K) 확인 미완료</b> — 진입 전 필수 확인 항목</span></li>
+    <li><span class="tag warn">⚠️</span><span><b>$3.3B 앰바렐라(Ambarella) 인수 추진 — 전략 전환 신호.</b> 명분(엣지 AI·차량 내 AI 프로세싱)은 정합적이나, <b>유기적 성장</b>을 고수해온 회사가 시총의 5.6%를 한 번에 쓰는 인수로 선회. 보도 직후 <b>NXP −3%, 앰바렐라 +17%</b> — 시장은 "비싸게 산다"에 표를 던졌다. 인수가가 앰바렐라 시총과 거의 같아 <b>프리미엄이 거의 없다는 점</b>은 완화 요인</span></li>
+    <li><span class="tag pass">통과</span><span><b>부채 관리</b> — D/E 1.48(2022) → 1.20(2025) → <b>0.93</b>으로 꾸준히 개선</span></li>
+    <li><span class="tag pass">통과</span><span><b>주주환원</b> — 배당 연 <b>$4.06</b>(분기 $1.014), 배당성향 34.6%. 2021년 $0.5625 → 2023년 $1.014로 인상 후 유지</span></li>
+  </ul>
+  <p class="body" style="margin-top:12px">⚠️가 2개이므로 <strong>조건부 통과</strong>. 02 §2에 따라 <strong>확신도는 "보통"까지만</strong> 가능하다.</p>
+</section>
+
+<!-- 3단계 -->
+<section class="card">
+  <h2>③ 재무 <span class="w">21/25 — 통과 (⚠️ 1개)</span></h2>
+  <p class="body"><strong>2026 2분기 — 회복의 증거:</strong> 매출 <strong>$3.5B(+19% YoY, +10% QoQ)</strong>, 비GAAP 영업이익률 <strong>35%</strong>, 비GAAP EPS $3.61 — 모두 가이던스 상회. 사업부별 전년 대비: 자동차 $1,938M <strong>+12.1%</strong> / 산업·IoT $755M <strong>+38.3%</strong> / 모바일 $351M +6.0% / 통신인프라 $452M <strong>+41.3%</strong>. <strong>3분기 가이던스</strong>는 매출 $3.65~3.85B(+15~21% YoY), 비GAAP 영업이익률 36.0~37.6%로 가속 지속.</p>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>ROE 27.92% / ROIC 17.99%</b></span></li>
+    <li><span class="tag pass">통과</span><span><b>D/E 0.93</b>(개선 중), 유동비율 <b>2.04</b></span></li>
+    <li><span class="tag pass">통과</span><span><b>영업이익률 26.6% → 32.9%</b> 개선. 일회성 아님 — 2분기 비GAAP 35%, 3분기 가이던스 36%+로 연속 확인</span></li>
+    <li><span class="tag warn">⚠️</span><span><b>매출이 3년째 FY2023 고점($13,276M)을 못 넘었다</b>(TTM $13,185M). EPS는 사상 최고인데 매출은 아직 아래 — <b>마진 개선이 이익을 끌어올린 구조</b>. 지속성이 관건(R4)</span></li>
+  </ul>
+
+  <div style="margin-top:22px">
+    <div class="chart-title">매출 · GAAP 순이익 추이 (FY21~TTM, 12월 결산)</div>
+    <div class="chart-sub">단위: 10억 달러(B). FY23 고점 → FY25 저점 → TTM 회복이라는 <b>사이클의 모양</b>이 그대로 보인다</div>
+    <div class="legend"><span><span class="sw" style="background:var(--series-1)"></span>매출</span><span><span class="sw" style="background:var(--series-2)"></span>GAAP 순이익</span></div>
+    <div class="chart-box" id="chart-rev"></div>
+    <details><summary>데이터 표로 보기</summary><div class="table-scroll"><table id="rev-table"></table></div></details>
+  </div>
+</section>
+
+<!-- 4단계 -->
+<section class="card">
+  <h2>④ 밸류에이션 <span class="w">16/25 — 관심 목록 (근소 미달, 안전마진 +17.4%)</span></h2>
+  <p class="body">기준 EPS: TTM GAAP $11.72는 트로프 분기를 포함하므로, <strong>현재 분기 실행률 기준 GAAP $12.50</strong>을 채택했다. 컨센서스 forward $16.7은 <strong>비GAAP</strong>이라 GAAP과 43% 차이가 나 기각.</p>
+  <div class="range-wrap" id="vicRangeWrap" title="클릭하면 차트가 새 창으로 열립니다" style="cursor:pointer">
+    <div class="range-track" id="vicTrack">
+      <div class="marker" style="left:6.1%"><div class="lbl">보수 (사이클 재둔화)</div><div class="prc">$142</div><div class="tick"></div></div>
+      <div class="marker" style="left:45.6%"><div class="lbl">기본 (SDV·전동화 성장)</div><div class="prc">$284</div><div class="tick"></div></div>
+      <div class="marker" style="left:91.4%"><div class="lbl">낙관 (AI 엣지 확장)</div><div class="prc">$449</div><div class="tick"></div></div>
+      <div class="marker now below" style="left:31.9%"><div class="tick"></div><div class="prc">$234.71</div><div class="lbl">현재 주가 — 목표 $227.2까지 −3.2%</div></div>
+    </div>
+    <div class="range-foot"><span>$120</span><span>내재가치 추정 범위 (양끝은 표시 눈금일 뿐)</span><span>$480</span></div>
+  </div>
+
+  <script src="/reports/_quotebar.js"></script>
+  <script>
+    vicQuoteBar({ ticker:'NXPI', lo:120, hi:480, target:227.2,
+                  chart:'https://stockanalysis.com/stocks/nxpi/' });
+  </script>
+
+  <div class="table-scroll" style="margin-top:18px">
+    <table>
+      <tr><th>시나리오</th><th>기준 EPS</th><th>성장 (1~5년/6~10년)</th><th>할인율</th><th>종료 PER</th><th>내재가치</th><th>안전마진</th></tr>
+      <tr><td>보수 (사이클 재둔화)</td><td>$11.00</td><td>+3% / +2%</td><td>10%</td><td>12</td><td><b>$142</b></td><td>−65%</td></tr>
+      <tr><td><b>기본 (SDV·전동화 구조 성장)</b></td><td><b>$12.50</b></td><td>+9% / +5%</td><td>9%</td><td>16</td><td><b>$284</b></td><td class="warn-txt"><b>+17.4%</b></td></tr>
+      <tr><td>낙관 (AI 엣지 확장 성공)</td><td>$13.50</td><td>+13% / +7%</td><td>8.5%</td><td>19</td><td><b>$449</b></td><td>+48%</td></tr>
+    </table>
+  </div>
+  <p class="body" style="margin-top:14px"><strong>역DCF 검산:</strong> 현재가 $234.71을 정당화하려면 기준 EPS $12.50에서 연 <strong>약 11%</strong> 성장이 필요하다. 내 기본 가정(+9%)보다 <strong>높다</strong> — 시장이 나보다 낙관적이라는 뜻이므로, 싸다고 결론 내릴 근거가 없음을 재확인.</p>
+</section>
+
+<!-- 5단계 -->
+<section class="card">
+  <h2>⑤ 최종 점검 + 사전 부검 <span class="w">목표가 도달 대비 기록</span></h2>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>10년 보유 의향</b> — 차량당 반도체 탑재량 증가는 구조적</span></li>
+    <li><span class="tag pass">통과</span><span><b>남들이 사니까 아님</b> — −31% 구간</span></li>
+    <li><span class="tag pass">분산</span><span><b>테마 분산 가치 — 포트폴리오 관점의 최대 장점.</b> AI 공포 테마(GOOGL·MSFT·INTU·PTC)와 리스크 원인이 다르고 코파트(보험 사이클)와도 다르다. R1은 <b>자동차 생산 사이클</b>로 포트폴리오 내 유일</span></li>
+  </ul>
+  <div class="table-scroll" style="margin-top:14px">
+    <table>
+      <tr><th>R#</th><th style="text-align:left">리스크</th><th style="text-align:left">관찰 지표 · 임계값</th><th>주기</th></tr>
+      <tr><td>R1</td><td style="text-align:left"><b>자동차 재고 사이클 재둔화</b></td><td style="text-align:left">자동차 부문 매출 YoY(기준값 <b>+12.1%</b>). <b>2개 분기 연속 감소 → 논제 재평가</b></td><td>분기</td></tr>
+      <tr><td>R2</td><td style="text-align:left"><b>앰바렐라 인수의 자본배분 실패</b></td><td style="text-align:left">인수 확정 여부·최종 인수가·희석 규모. <b>시총 10% 초과 지불 또는 신주 발행 시 재평가</b></td><td>수시</td></tr>
+      <tr><td>R3</td><td style="text-align:left">중국 로컬 차량용 반도체 대체</td><td style="text-align:left">중화권 매출 비중·성장률. <b>2개 분기 연속 감소 → 경보</b></td><td>분기</td></tr>
+      <tr><td>R4</td><td style="text-align:left">마진 개선의 되돌림</td><td style="text-align:left">비GAAP 영업이익률(현재 35%, 가이던스 36~37.6%). <b>32% 아래 후퇴 시 기준 EPS 재산정</b></td><td>분기</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 결론 -->
+<section class="card">
+  <h2>결론 및 실행 계획</h2>
+  <ul class="check">
+    <li><span class="tag warn">판정</span><span><b>관망 (목표 매수가 $227.2 — 현재가 대비 −3.2%)</b> — 참고 점수 79/100 (사업 28/30, 경영진 14/20, 재무 21/25, 밸류 16/25)</span></li>
+    <li><span class="tag warn">확신도</span><span>도달 시 <b>보통</b> — ①17.4%&lt;30 ✗ ②$234.71 &gt; 보수 $142 ✗ ③해자 2개 ✓ ④10년 서술 ✓ ⑤2단계 조건부 ✗</span></li>
+    <li><span class="tag fail">필수</span><span><b>목표가 도달 ≠ 자동 매수 (02 §1).</b> 도달 시 두 가지를 먼저 확인한다 — ① <b>앰바렐라 인수 결론</b>(인수가·자금조달 방식 확정 전에는 진입하지 않는다) ② <b>CEO Rafael Sotomayor의 취임 경위·자본배분 방침 원문 확인</b>(2단계 ⚠️ 해소)</span></li>
+    <li><span class="tag warn">점검</span><span>다음 점검 <b>2026-11 (3분기 실적)</b> — R1 자동차 매출·R4 마진 / 내재가치 갱신: FY2026 연간 확정 후</span></li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>출처</h2>
+  <ul class="src">
+    <li><a href="https://www.stocktitan.net/sec-filings/NXPI/10-q-nxp-semiconductors-n-v-quarterly-earnings-report-45f059e63fd8.html" target="_blank">NXP 2026 2분기 실적 (10-Q)</a></li>
+    <li><a href="https://stockanalysis.com/stocks/nxpi/" target="_blank">stockanalysis.com — NXPI 재무·비율·배당</a></li>
+    <li><a href="https://www.investing.com/news/stock-market-news/ambarella-reportedly-in-talks-to-be-acquired-by-nxp-semiconductors-shares-spike-4829078" target="_blank">NXP–앰바렐라 인수 협상 보도</a></li>
+  </ul>
+  <div class="disclaimer">이 문서는 개인의 투자 판단 기록이며 투자 권유가 아닙니다. 수치는 2026-08-14 종가 기준 스냅샷이고 이후 변동될 수 있습니다. 내재가치는 명시된 가정 위에서만 성립하며, 가정이 바뀌면 결론도 바뀝니다. CEO 관련 사항은 원문 확인이 완료되지 않은 상태로 기록되었습니다.</div>
+</section>
+
+</div>
+
+<script>
+(function () {
+  const years = ['FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'TTM'];
+  const revenue = [11.063, 13.205, 13.276, 12.614, 12.269, 13.185];
+  const income = [1.871, 2.787, 2.797, 2.510, 2.021, 2.975];
+  const W = 880, H = 260, padL = 46, padR = 12, padT = 18, padB = 34;
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const max = Math.max(...revenue) * 1.15;
+  const yPix = v => H - padB - (v / max) * (H - padT - padB);
+  const n = years.length, slot = (W - padL - padR) / n, barW = Math.min(28, slot * 0.3), gap = 6;
+
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="260" preserveAspectRatio="none" role="img">`;
+  for (let i = 0; i <= 4; i++) {
+    const v = max * i / 4, y = yPix(v);
+    s += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${css('--gridline')}" stroke-width="1"/>`;
+    s += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="${css('--text-muted')}">${v.toFixed(0)}</text>`;
+  }
+  const bars = [];
+  years.forEach((yr, i) => {
+    const cx = padL + slot * i + slot / 2;
+    s += `<rect x="${cx - gap / 2 - barW}" y="${yPix(revenue[i])}" width="${barW}" height="${yPix(0) - yPix(revenue[i])}" fill="${css('--series-1')}" rx="2"/>`;
+    s += `<rect x="${cx + gap / 2}" y="${yPix(income[i])}" width="${barW}" height="${yPix(0) - yPix(income[i])}" fill="${css('--series-2')}" rx="2"/>`;
+    s += `<text x="${cx}" y="${H - 12}" text-anchor="middle" font-size="11" fill="${css('--text-muted')}">${yr}</text>`;
+    bars.push({ x: cx, yr, rev: revenue[i], inc: income[i] });
+  });
+  s += `<line x1="${padL}" y1="${yPix(0)}" x2="${W - padR}" y2="${yPix(0)}" stroke="${css('--baseline')}" stroke-width="1"/></svg>`;
+
+  const box = document.getElementById('chart-rev');
+  box.innerHTML = s;
+  const tip = document.createElement('div'); tip.className = 'tooltip'; box.appendChild(tip);
+  const svg = box.querySelector('svg');
+  svg.addEventListener('mousemove', e => {
+    const rect = box.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) / rect.width * W;
+    let best = 0, bd = 1e9;
+    bars.forEach((b, i) => { const d = Math.abs(b.x - mx); if (d < bd) { bd = d; best = i; } });
+    const b = bars[best];
+    tip.innerHTML = `<b>${b.yr}</b><br>매출 <b>$${b.rev.toFixed(2)}B</b><br>순이익 <b>$${b.inc.toFixed(2)}B</b> <span style="color:${css('--text-muted')}">(이익률 ${(b.inc / b.rev * 100).toFixed(1)}%)</span>`;
+    tip.style.opacity = 1;
+    tip.style.left = Math.min(b.x / W * rect.width + 14, rect.width - 160) + 'px';
+    tip.style.top = '20px';
+  });
+  svg.addEventListener('mouseleave', () => tip.style.opacity = 0);
+
+  let t = '<tr><th>연도</th>' + years.map(y => `<th>${y}</th>`).join('') + '</tr>';
+  t += '<tr><td>매출 ($B)</td>' + revenue.map(v => `<td>${v.toFixed(2)}</td>`).join('') + '</tr>';
+  t += '<tr><td>순이익 ($B)</td>' + income.map(v => `<td>${v.toFixed(2)}</td>`).join('') + '</tr>';
+  document.getElementById('rev-table').innerHTML = t;
+})();
+</script>
+</body>
+</html>

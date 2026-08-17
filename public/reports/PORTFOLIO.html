@@ -209,13 +209,14 @@
 <script>
 // ── 기본 데이터 ─────────────────────────────────────────
 // 보유 수량·평단은 D:\00.주식 시장 조사\dashboard\portfolio.json 스냅샷,
-// 목표 매수가·내재가치는 content/stocks/*.md 프론트매터(분석 보고서 4단계) 값이다.
+// 목표 매수가·내재가치는 02.종목분석/*.md 프론트매터(분석 보고서 4단계) 값이다.
+// (2026-08-16 원본 통합: 종전 content/stocks/ 사본은 삭제됨)
 // 화면에서 편집한 값은 이 브라우저의 localStorage에만 저장된다(SNP500.html과 같은 방식).
 var LS_KEY = 'vic.portfolio';
 
 var DEFAULT_DATA = {
   baseCapital: 10000000,
-  cash: 5605497,
+  cash: 1064767, // 2026-08-17 UHS·PTC 각 10주 매수분 4,540,730원 차감 (종전 5,605,497)
   holdings: [
     {
       name: '코파트', code: 'CPRT', sector: '미국·차량경매',
@@ -228,6 +229,18 @@ var DEFAULT_DATA = {
       entryDate: '2026-08-06', shares: 5, avgPrice: 465150,
       targetPrice: 345, intrinsicValue: 431, verdict: '관망',
       entryReason: '미국 나스닥 세무·회계 SW(TurboTax·QuickBooks). 체결 $327.94×5주(8/5 미국 종가)·환율 1,418.4 → 주당 465,150원. 4단계까지 통과해 목표가를 크게 하회 중이나, 5단계 거부권(AI가 세무를 대체하는가) 최종 판단이 남아 있어 판정은 관망.'
+    },
+    {
+      name: '유니버설 헬스', code: 'UHS', sector: '미국·병원/행동건강',
+      entryDate: '2026-08-17', shares: 10, avgPrice: 241428,
+      targetPrice: 213.6, intrinsicValue: 267, verdict: '매수',
+      entryReason: '미국 NYSE 급성기 병원·행동건강 1위. ※평단 잠정 — $170.02(8/14 종가)×환율 1,420 가정, 실제 체결가·환율로 편집 필요. 안전마진 36.3%로 표본 최고. 오너 경영(밀러 부자) + 누적 자사주 매입 $6.62B(시총의 66%)가 강점. 메디케이드 SDP 축소 법제화(공법 119-21)를 반영해 기준 EPS를 TTM $24.57이 아닌 $18.00으로 깎고도 통과. ⚠️ 10주 = 원금 대비 24.1%로 02 §2 최대 비중(15~20%) 초과.'
+    },
+    {
+      name: '피티씨', code: 'PTC', sector: '미국·산업SW(PLM)',
+      entryDate: '2026-08-17', shares: 10, avgPrice: 212645,
+      targetPrice: 156.8, intrinsicValue: 196, verdict: '매수',
+      entryReason: '미국 나스닥 제조업 설계·제품수명관리(PLM) SW. ※평단 잠정 — $149.75(8/14 종가)×환율 1,420 가정, 실제 체결가·환율로 편집 필요. 표본 내 최고 해자(설계 데이터 락인). 화면상 PER 14.5배는 Kepware·ThingWorx 매각 차익(주당 $2.82)에 의한 착시이며 실질 20배 — 일회성 제거 후에도 안전마진 23.6%로 통과. ⚠️ 10주 = 원금 대비 21.3%로 02 §2 최대 비중(15~20%) 초과, 인튜잇과 AI 테마 합산 44.6%.'
     }
   ]
 };

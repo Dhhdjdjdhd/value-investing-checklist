@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>피티씨(PTC) 가치투자 분석 보고서 — 2026.08.17 · 판정: 매수 가능</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --seq-250: #86b6ef; --seq-450: #2a78d6;
+    --status-good: #0ca30c; --status-warning: #fab219; --status-serious: #ec835a; --status-critical: #d03b3b;
+    --delta-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  h2 .w { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 6px; }
+  p.body { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 10px; }
+  p.body strong { color: var(--text-primary); }
+  .hero { display: flex; flex-wrap: wrap; gap: 24px; }
+  .hero-score { flex: 0 0 auto; text-align: center; padding: 8px 28px 8px 8px; border-right: 1px solid var(--gridline); }
+  .hero-score .num { font-size: 64px; font-weight: 800; line-height: 1.05; }
+  .hero-score .den { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+  .hero-score .label { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; max-width: 150px; }
+  .hero-main { flex: 1 1 320px; min-width: 280px; }
+  .verdict { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--status-good); border-radius: 999px; padding: 4px 14px; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--status-good); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .fact { border-top: 2px solid var(--gridline); padding-top: 8px; }
+  .fact .k { font-size: 12px; color: var(--text-muted); }
+  .fact .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fact .d { font-size: 12px; color: var(--text-secondary); }
+  .meter-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .meter-row .name { font-size: 14px; font-weight: 600; }
+  .meter-row .name small { display: block; font-weight: 400; font-size: 11.5px; color: var(--text-muted); }
+  .track { height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--seq-450); border-radius: 5px; }
+  .meter-row .val { font-size: 14px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .meter-row .val small { font-weight: 400; color: var(--text-muted); }
+  ul.check { list-style: none; }
+  ul.check li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--gridline); font-size: 14px; color: var(--text-secondary); align-items: baseline; }
+  ul.check li:last-child { border-bottom: none; }
+  .tag { flex: 0 0 auto; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+  .tag.pass { color: var(--status-good); border: 1px solid var(--status-good); }
+  .tag.warn { color: var(--status-serious); border: 1px solid var(--status-serious); }
+  .tag.fail { color: var(--status-critical); border: 1px solid var(--status-critical); }
+  ul.check b { color: var(--text-primary); font-weight: 600; }
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .chart-box { position: relative; }
+  svg text { font-family: inherit; }
+  .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
+  .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  details { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  details summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  .table-scroll { overflow-x: auto; }
+  .up { color: var(--delta-good); font-weight: 600; }
+  .warn-txt { color: var(--status-serious); font-weight: 600; }
+  .range-wrap { padding: 46px 10px 52px; }
+  .range-track { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--seq-250), var(--seq-450)); }
+  .marker { position: absolute; top: -40px; transform: translateX(-50%); text-align: center; }
+  .marker .lbl { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; }
+  .marker .prc { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .marker .tick { width: 2px; height: 14px; background: var(--baseline); margin: 2px auto 0; }
+  .marker.below { top: auto; bottom: -48px; }
+  .marker.below .tick { margin: 0 auto 2px; }
+  .marker.now .tick { background: var(--text-primary); width: 3px; height: 20px; }
+  .marker.now .prc, .marker.now .lbl { color: var(--text-primary); font-weight: 800; }
+  .range-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+  .src { font-size: 12.5px; color: var(--text-muted); }
+  .src a { color: var(--series-1); text-decoration: none; }
+  .src li { margin-bottom: 4px; }
+  .disclaimer { border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+  .notice { border: 1.5px solid var(--status-warning); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">가치투자 체크리스트 기반 종목 분석 · 2026년 8월 17일</div>
+  <h1>피티씨 <span style="color:var(--text-muted);font-weight:600">PTC Inc. · NASDAQ: PTC</span></h1>
+  <div class="sub">제조업 설계·제품수명관리(PLM) 소프트웨어 — 표본 내 최고 해자. 다만 화면상 PER 14.5배는 사업 매각 차익에 의한 착시다</div>
+</header>
+
+<div class="notice">⚠️ <b>데이터 착시 적발 (맥코믹 사례에 이은 두 번째):</b> TTM 순이익 $1,224M이 <b>영업이익 $1,176M보다 크다</b>는 것이 단서였다. 원인은 Kepware·ThingWorx 매각 차익 $463M(비용 −$27M, 세금 −$102M) = <b>주당 $2.82의 일회성</b>. 실질 EPS는 $10.32가 아닌 <b>$7.50</b>이고, 따라서 <b>실질 PER은 14.5배가 아니라 20.0배</b>다. 아래 4단계는 전부 실질 기준으로 재계산했다.</div>
+
+<!-- 종합 판정 -->
+<section class="card">
+  <div class="hero">
+    <div class="hero-score">
+      <div class="num">85<span class="den">/100</span></div>
+      <div class="label">종합 평가 점수 (참고용 — 판정은 점수가 아니라 관문 방식)</div>
+    </div>
+    <div class="hero-main">
+      <div class="verdict"><span class="dot"></span>판정: 매수 가능 — 목표 매수가 이미 하회 (코파트와 동점)</div>
+      <p class="body">싼 이유는 <strong>기술주 조정 + 사업 매각에 따른 실적 연속성 혼란</strong>이다. 고객 이탈 신호가 없고(ARR +9.1%, 순신규 ARR $60M), 해자의 원천인 <strong>설계 데이터 락인은 무손상</strong> → 판별 질문상 일시적 우세. 일회성을 제거하고 다시 계산해도 안전마진 23.6%가 남는다.</p>
+      <div class="facts">
+        <div class="fact"><div class="k">현재 주가 (8/14)</div><div class="v">$149.75</div><div class="d">52주 고점 대비 −31%</div></div>
+        <div class="fact"><div class="k">내재가치 (기본)</div><div class="v">$196</div><div class="d">실질 기준 EPS $7.50</div></div>
+        <div class="fact"><div class="k">목표 매수가</div><div class="v">$156.8</div><div class="d">이미 하회 ✅</div></div>
+        <div class="fact"><div class="k">안전마진</div><div class="v up">+23.6%</div><div class="d">기준 20% 통과</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 단계별 점수 -->
+<section class="card">
+  <h2>단계별 점수</h2>
+  <div class="meter-row"><div class="name">① 사업의 질<small>통과 — 표본 내 최고 해자</small></div><div class="track"><div class="fill" style="width:93%;background:var(--status-good)"></div></div><div class="val">28<small>/30</small></div></div>
+  <div class="meter-row"><div class="name">② 경영진<small>통과 (⚠️ 1)</small></div><div class="track"><div class="fill" style="width:80%"></div></div><div class="val">16<small>/20</small></div></div>
+  <div class="meter-row"><div class="name">③ 재무<small>조건부 통과 (⚠️ 2)</small></div><div class="track"><div class="fill" style="width:80%"></div></div><div class="val">20<small>/25</small></div></div>
+  <div class="meter-row"><div class="name">④ 밸류에이션<small>통과 (안전마진 +23.6%)</small></div><div class="track"><div class="fill" style="width:84%"></div></div><div class="val">21<small>/25</small></div></div>
+</section>
+
+<!-- 1단계 -->
+<section class="card">
+  <h2>① 사업의 질 <span class="w">28/30 — 통과 (⚠️ 1개) ★ 표본 내 최고 해자</span></h2>
+  <p class="body">제조 기업이 제품을 설계(CAD 크레오)하고, 그 설계 데이터·부품표·설계변경 이력을 전사적으로 관리(PLM 윈칠)하는 소프트웨어를 구독으로 판매한다. 자동차·항공·산업장비 회사의 <strong>엔지니어링 부서 전체가 이 위에서 일한다.</strong></p>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>10년 뒤에도 필요한가</b> — 물건을 설계하는 일이 사라지지 않는 한</span></li>
+    <li><span class="tag pass">해자</span><span><b>전환비용 — 이 회사의 전부.</b> 수십 년치 설계 데이터·부품표·승인 워크플로가 윈칠 안에 잠겨 있다. 교체하려면 데이터 이전 + 전 엔지니어 재교육 + 인증 프로세스 재수립 — <b>실무상 불가능에 가깝다.</b> 코파트의 야드, MSFT의 M365와 같은 유형이되 <b>락인 강도는 더 세다</b>(설계 데이터는 규제·품질 감사 대상)</span></li>
+    <li><span class="tag pass">해자</span><span><b>무형자산</b> — 가트너 PLM 매직 쿼드런트 <b>리더</b>, 항공·의료기기 규제 인증 워크플로 내장</span></li>
+    <li><span class="tag pass">통과</span><span><b>가격 결정력</b> — 구독 전환 + 연간 갱신 시 인상 관철. ARR이 증거</span></li>
+    <li><span class="tag warn">⚠️</span><span><b>예측 가능성</b> — 2026-03 Kepware·ThingWorx(IoT) 매각으로 매출 기반 축소. 집중이라는 점에서 긍정이지만 <b>과거 실적과의 연속성이 끊겼다</b></span></li>
+  </ul>
+</section>
+
+<!-- 2단계 -->
+<section class="card">
+  <h2>② 경영진 <span class="w">16/20 — 통과 (⚠️ 1개)</span></h2>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span>CEO <b>Neil Barua</b> — "인텔리전트 제품 라이프사이클"로 전략 단순화, 구독 전환 마무리</span></li>
+    <li><span class="tag pass">통과</span><span><b>선택과 집중</b> — Kepware·ThingWorx 매각(2026-03 완료). 잘 안 되는 IoT를 접고 본업 PLM에 집중. <b>사업을 늘리는 게 아니라 줄이는 결정</b>은 좋은 신호</span></li>
+    <li><span class="tag pass">통과</span><span><b>자본배분</b> — 매각 대금으로 <b>$1.6B 자사주 매입 발표</b>(2026-07-29). 시가총액 $16.25B의 <b>약 10%</b>. 주가가 고점 대비 −31%인 구간에서 사는 것은 타이밍 판단으로도 합격</span></li>
+    <li><span class="tag pass">통과</span><span><b>부채</b> — D/E 0.71(2023) → <b>0.46</b>으로 개선</span></li>
+    <li><span class="tag warn">⚠️</span><span><b>M&amp;A 지속 의사</b> — "M&amp;A는 자본배분의 세 번째 축"이라며 로드맵 가속을 위한 인수를 계속 보겠다고 명시. 방금 매각으로 집중한 회사가 다시 사겠다는 것 — <b>관찰 대상(R3)</b></span></li>
+  </ul>
+</section>
+
+<!-- 3단계 -->
+<section class="card">
+  <h2>③ 재무 <span class="w">20/25 — 조건부 통과 (⚠️ 2개)</span></h2>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>매출 5년 연속 우상향</b> — $1.81B → $2.95B</span></li>
+    <li><span class="tag pass">통과</span><span><b>영업이익률 22% → 37%</b>로 구조적 개선 (구독 전환 완료 효과)</span></li>
+    <li><span class="tag pass">통과</span><span><b>ROE 35.05% / ROIC 19.74% / D/E 0.46</b></span></li>
+    <li><span class="tag warn">⚠️</span><span><b>TTM 순이익 &gt; 영업이익 — 일회성 확정.</b> Q2'26 GAAP EPS에 매각 차익 $463M 포함(비용 −$27M, 세금 −$102M) → 순 +$334M, <b>주당 $2.82</b></span></li>
+    <li><span class="tag warn">⚠️</span><span><b>매출 +19.5%는 실제 성장률이 아니다.</b> 실질 지표는 ARR <b>$2.448B, +9.1%</b>(고정환율, 매각 사업 제외). FY26 가이던스도 ARR +9~9.5%. 또한 Q4'26 FCF 가이던스가 <b>약 $15M</b>에 불과 — 매각 차익 세금 유출 때문</span></li>
+  </ul>
+
+  <div style="margin-top:22px">
+    <div class="chart-title">매출 · GAAP 순이익 추이 (FY21~TTM, 9월 결산)</div>
+    <div class="chart-sub">단위: 10억 달러(B). <b>TTM 순이익 막대에는 매각 차익 $334M이 포함</b>돼 있다 — 이 막대만 실제보다 높다</div>
+    <div class="legend"><span><span class="sw" style="background:var(--series-1)"></span>매출</span><span><span class="sw" style="background:var(--series-2)"></span>GAAP 순이익</span></div>
+    <div class="chart-box" id="chart-rev"></div>
+    <details><summary>데이터 표로 보기</summary><div class="table-scroll"><table id="rev-table"></table></div></details>
+  </div>
+</section>
+
+<!-- 4단계 -->
+<section class="card">
+  <h2>④ 밸류에이션 <span class="w">21/25 — 통과 (안전마진 +23.6%)</span></h2>
+  <p class="body">기준 EPS: TTM GAAP $10.32에서 일회성 $2.82를 제거한 <strong>$7.50</strong>. → 실질 trailing PER = 149.75 ÷ 7.50 = <strong>20.0배</strong> (화면의 14.5배가 아니다). 시장 컨센서스 forward는 약 $8.40(fwd PER 17.8배).</p>
+  <div class="range-wrap" id="vicRangeWrap" title="클릭하면 차트가 새 창으로 열립니다" style="cursor:pointer">
+    <div class="range-track" id="vicTrack">
+      <div class="marker" style="left:10.7%"><div class="lbl">보수 (ARR 5%대 둔화)</div><div class="prc">$109</div><div class="tick"></div></div>
+      <div class="marker" style="left:43.0%"><div class="lbl">기본 (ARR +9% 유지)</div><div class="prc">$196</div><div class="tick"></div></div>
+      <div class="marker" style="left:90.4%"><div class="lbl">낙관 (가격인상·마진 확대)</div><div class="prc">$324</div><div class="tick"></div></div>
+      <div class="marker now below" style="left:25.8%"><div class="tick"></div><div class="prc">$149.75</div><div class="lbl">현재 주가 — 목표 매수가 $156.8 이미 하회</div></div>
+    </div>
+    <div class="range-foot"><span>$80</span><span>내재가치 추정 범위 (양끝은 표시 눈금일 뿐)</span><span>$350</span></div>
+  </div>
+
+  <script src="/reports/_quotebar.js"></script>
+  <script>
+    vicQuoteBar({ ticker:'PTC', lo:80, hi:350, target:156.8,
+                  chart:'https://stockanalysis.com/stocks/ptc/' });
+  </script>
+
+  <div class="table-scroll" style="margin-top:18px">
+    <table>
+      <tr><th>시나리오</th><th>기준 EPS</th><th>성장 (1~5년/6~10년)</th><th>할인율</th><th>종료 PER</th><th>내재가치</th><th>안전마진</th></tr>
+      <tr><td>보수 (ARR 성장 5%대 둔화)</td><td>$7.00</td><td>+5% / +3%</td><td>10%</td><td>14</td><td><b>$109</b></td><td>−37%</td></tr>
+      <tr><td><b>기본 (ARR +9% 유지)</b></td><td><b>$7.50</b></td><td>+9% / +6%</td><td>9%</td><td>19</td><td><b>$196</b></td><td class="up"><b>+23.6%</b></td></tr>
+      <tr><td>낙관 (가격인상 + 마진 확대)</td><td>$8.00</td><td>+13% / +8%</td><td>8.5%</td><td>24</td><td><b>$324</b></td><td>+54%</td></tr>
+    </table>
+  </div>
+  <p class="body" style="margin-top:14px"><strong>역DCF 검산:</strong> 현재가 $149.75를 정당화하려면 기준 EPS $7.50에서 연 <strong>약 6.5%</strong> 성장이 필요하다. 실제 ARR 성장이 <strong>+9.1%</strong>이므로 시장 요구치보다 높다 — 싸다는 결론이 가정 조작이 아님을 확인.</p>
+  <p class="body"><span class="warn-txt">주의:</span> 일회성을 제거하지 않았다면 안전마진이 60%를 넘게 계산됐을 것이다. 맥코믹과 같은 함정을 한 번 더 피했다.</p>
+</section>
+
+<!-- 5단계 -->
+<section class="card">
+  <h2>⑤ 최종 점검 + 사전 부검</h2>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>10년 보유 의향</b> — 제조업 설계 데이터의 잠김은 10년 뒤에도 유효</span></li>
+    <li><span class="tag pass">통과</span><span><b>남들이 사니까 아님</b> — −31% 구간, 목표가 하향 다수</span></li>
+    <li><span class="tag warn">⚠️</span><span><b>테마 중복 주의</b> — "AI가 소프트웨어 엔지니어를 대체한다"는 서사에 노출. 알파벳·MSFT·인튜잇과 <b>부분적으로 같은 명제</b>이므로 테마 합산 상한 안에서 관리. (다만 PTC는 AI를 <b>탑재하는</b> 쪽이라 액센츄어형 인력 대체와는 다름)</span></li>
+  </ul>
+  <div class="table-scroll" style="margin-top:14px">
+    <table>
+      <tr><th>R#</th><th style="text-align:left">리스크</th><th style="text-align:left">관찰 지표 · 임계값</th><th>주기</th></tr>
+      <tr><td>R1</td><td style="text-align:left"><b>ARR 성장 둔화 = 해자 균열</b></td><td style="text-align:left">고정환율 ARR 성장률(현재 <b>+9.1%</b>). <b>2개 분기 연속 7% 하회 → 논제 재평가</b></td><td>분기</td></tr>
+      <tr><td>R2</td><td style="text-align:left">매각 후 FCF 정상화 실패</td><td style="text-align:left">FY27 잉여현금흐름. <b>$700M 아래면 경보</b> (Q4'26 $15M이 세금 유출로 설명되는지 확인)</td><td>분기</td></tr>
+      <tr><td>R3</td><td style="text-align:left">자본배분 후퇴 — 다시 대형 M&amp;A</td><td style="text-align:left">인수 발표 여부·규모. <b>시총 10% 초과 인수 발표 시 재평가</b></td><td>수시</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 결론 -->
+<section class="card">
+  <h2>결론 및 실행 계획</h2>
+  <ul class="check">
+    <li><span class="tag pass">판정</span><span><b>매수 가능</b> — 참고 점수 85/100 (사업 28/30, 경영진 16/20, 재무 20/25, 밸류 21/25) — <b>코파트와 동점</b></span></li>
+    <li><span class="tag warn">확신도</span><span><b>보통</b> — ①안전마진 23.6%&lt;30 ✗ ②주가 $149.75 &gt; 보수 $109 ✗ ③해자 2개 ✓ ④10년 서술 ✓ ⑤3단계 조건부 ✗</span></li>
+    <li><span class="tag pass">비중</span><span>목표 5~10%, 1회차 목표의 1/3~1/2. 추가매수는 $156.8 이하에서 논제 재점검 후. <b>AI 테마 합산 상한(GOOGL·MSFT·INTU와 합산) 안에서 배분할 것</b></span></li>
+    <li><span class="tag warn">점검</span><span>다음 점검 <b>2026-11 (FY26 4분기·연간 실적)</b> — R1 ARR 성장률 + R2 FCF 정상화 / 내재가치 갱신: FY26 확정 후</span></li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>출처</h2>
+  <ul class="src">
+    <li><a href="https://www.prnewswire.com/news-releases/ptc-announces-third-fiscal-quarter-2026-results-302838236.html" target="_blank">PTC 2026 회계 3분기 실적 발표</a></li>
+    <li><a href="https://www.ptc.com/en/news/2026/earnings-results-q2-fy26" target="_blank">PTC 2026 회계 2분기 실적 (Kepware·ThingWorx 매각 차익 $463M 기재)</a></li>
+    <li><a href="https://stockanalysis.com/stocks/ptc/" target="_blank">stockanalysis.com — PTC 재무·비율</a></li>
+    <li><a href="https://www.investing.com/news/company-news/ptc-q326-slides-arr-tops-guidance-16b-buyback-planned-93CH-4821982" target="_blank">PTC Q3'26 — ARR 가이던스 상회, $1.6B 자사주 매입 계획</a></li>
+  </ul>
+  <div class="disclaimer">이 문서는 개인의 투자 판단 기록이며 투자 권유가 아닙니다. 수치는 2026-08-14 종가 기준 스냅샷이고 이후 변동될 수 있습니다. 내재가치는 명시된 가정 위에서만 성립하며, 가정이 바뀌면 결론도 바뀝니다.</div>
+</section>
+
+</div>
+
+<script>
+(function () {
+  const years = ['FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'TTM'];
+  const revenue = [1.807, 1.933, 2.097, 2.298, 2.739, 2.954];
+  const income = [0.477, 0.313, 0.246, 0.376, 0.734, 1.224];
+  const note = ['', '', '', '', '', ' ⚠️ 매각차익 $0.33B 포함'];
+  const W = 880, H = 260, padL = 46, padR = 12, padT = 18, padB = 34;
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const max = Math.max(...revenue) * 1.15;
+  const yPix = v => H - padB - (v / max) * (H - padT - padB);
+  const n = years.length, slot = (W - padL - padR) / n, barW = Math.min(28, slot * 0.3), gap = 6;
+
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="260" preserveAspectRatio="none" role="img">`;
+  for (let i = 0; i <= 4; i++) {
+    const v = max * i / 4, y = yPix(v);
+    s += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${css('--gridline')}" stroke-width="1"/>`;
+    s += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="${css('--text-muted')}">${v.toFixed(1)}</text>`;
+  }
+  const bars = [];
+  years.forEach((yr, i) => {
+    const cx = padL + slot * i + slot / 2;
+    s += `<rect x="${cx - gap / 2 - barW}" y="${yPix(revenue[i])}" width="${barW}" height="${yPix(0) - yPix(revenue[i])}" fill="${css('--series-1')}" rx="2"/>`;
+    s += `<rect x="${cx + gap / 2}" y="${yPix(income[i])}" width="${barW}" height="${yPix(0) - yPix(income[i])}" fill="${css('--series-2')}" rx="2"/>`;
+    s += `<text x="${cx}" y="${H - 12}" text-anchor="middle" font-size="11" fill="${css('--text-muted')}">${yr}</text>`;
+    bars.push({ x: cx, yr, rev: revenue[i], inc: income[i], note: note[i] });
+  });
+  s += `<line x1="${padL}" y1="${yPix(0)}" x2="${W - padR}" y2="${yPix(0)}" stroke="${css('--baseline')}" stroke-width="1"/></svg>`;
+
+  const box = document.getElementById('chart-rev');
+  box.innerHTML = s;
+  const tip = document.createElement('div'); tip.className = 'tooltip'; box.appendChild(tip);
+  const svg = box.querySelector('svg');
+  svg.addEventListener('mousemove', e => {
+    const rect = box.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) / rect.width * W;
+    let best = 0, bd = 1e9;
+    bars.forEach((b, i) => { const d = Math.abs(b.x - mx); if (d < bd) { bd = d; best = i; } });
+    const b = bars[best];
+    tip.innerHTML = `<b>${b.yr}</b><br>매출 <b>$${b.rev.toFixed(2)}B</b><br>순이익 <b>$${b.inc.toFixed(2)}B</b>${b.note}`;
+    tip.style.opacity = 1;
+    tip.style.left = Math.min(b.x / W * rect.width + 14, rect.width - 200) + 'px';
+    tip.style.top = '20px';
+  });
+  svg.addEventListener('mouseleave', () => tip.style.opacity = 0);
+
+  let t = '<tr><th>연도</th>' + years.map(y => `<th>${y}</th>`).join('') + '</tr>';
+  t += '<tr><td>매출 ($B)</td>' + revenue.map(v => `<td>${v.toFixed(2)}</td>`).join('') + '</tr>';
+  t += '<tr><td>순이익 ($B)</td>' + income.map(v => `<td>${v.toFixed(2)}</td>`).join('') + '</tr>';
+  document.getElementById('rev-table').innerHTML = t;
+})();
+</script>
+</body>
+</html>
