@@ -170,10 +170,20 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
           })}
         </nav>
 
-        <div className="border-t border-line p-3">
+        <div className="space-y-2 border-t border-line p-3">
+          {/* 지금 보는 탭이 분석 종목일 때만 노출 — 화면의 HTML 보고서는 시각 자료이고,
+              판정의 원본은 02.종목분석/*.md 체크리스트다. 원본으로 가는 유일한 통로. */}
+          {stocks.some((s) => s.ticker === active) && (
+            <Link
+              href={`/stocks/${active}`}
+              className="block text-[12px] font-bold text-navy hover:underline"
+            >
+              체크리스트 원문 →
+            </Link>
+          )}
           <Link
             href="/"
-            className="text-[12px] text-muted hover:text-navy hover:underline"
+            className="block text-[12px] text-muted hover:text-navy hover:underline"
           >
             ← 홈
           </Link>

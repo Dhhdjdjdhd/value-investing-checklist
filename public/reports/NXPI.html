@@ -207,6 +207,10 @@
     <div class="range-foot"><span>$120</span><span>내재가치 추정 범위 (양끝은 표시 눈금일 뿐)</span><span>$480</span></div>
   </div>
 
+  <script src="/reports/_dcfbox.js"></script>
+  <script>
+    vicDcfBox({ eps0: 12.5, g1: 0.09, g2: 0.05, r: 0.09, per: 16, perSrc: '기재' });
+  </script>
   <script src="/reports/_quotebar.js"></script>
   <script>
     vicQuoteBar({ ticker:'NXPI', lo:120, hi:480, target:227.2,

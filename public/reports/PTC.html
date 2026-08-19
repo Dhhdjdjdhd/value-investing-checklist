@@ -207,6 +207,10 @@
     <div class="range-foot"><span>$80</span><span>내재가치 추정 범위 (양끝은 표시 눈금일 뿐)</span><span>$350</span></div>
   </div>
 
+  <script src="/reports/_dcfbox.js"></script>
+  <script>
+    vicDcfBox({ eps0: 7.5, g1: 0.09, g2: 0.06, r: 0.09, per: 19, perSrc: '기재' });
+  </script>
   <script src="/reports/_quotebar.js"></script>
   <script>
     vicQuoteBar({ ticker:'PTC', lo:80, hi:350, target:156.8,

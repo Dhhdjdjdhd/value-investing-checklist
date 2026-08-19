@@ -34,10 +34,15 @@ export default async function StockPage({
 
   const mos = marginOfSafety(doc);
 
+  // layout이 body에 overflow-hidden을 걸어 두었으므로(보고서를 화면 가득 띄우기 위함),
+  // 긴 문서인 이 페이지는 자체 스크롤 영역을 만들어야 한다. 없으면 아래가 잘려서 안 보인다.
   return (
-    <article>
-      <Link href="/" className="text-[13px] text-muted hover:text-navy">
-        ← 목록으로
+    <article className="mx-auto h-full max-w-4xl overflow-y-auto px-5 py-8">
+      <Link
+        href="/dashboard"
+        className="text-[13px] text-muted hover:text-navy"
+      >
+        ← 보고서 화면으로
       </Link>
 
       {/* 요약 카드 — 본문을 다 읽지 않아도 결론과 근거 숫자가 먼저 보이게 한다 */}
