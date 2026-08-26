@@ -216,7 +216,7 @@ var LS_KEY = 'vic.portfolio';
 
 var DEFAULT_DATA = {
   baseCapital: 10000000,
-  cash: 1064767, // 2026-08-17 UHS·PTC 각 10주 매수분 4,540,730원 차감 (종전 5,605,497)
+  cash: 3515472, // 2026-08-26 INTU 전량 청산 대금 2,450,705원 입금 (종전 1,064,767)
   holdings: [
     {
       name: '코파트', code: 'CPRT', sector: '미국·차량경매',
@@ -224,12 +224,10 @@ var DEFAULT_DATA = {
       targetPrice: 30.8, intrinsicValue: 38.5, verdict: '매수',
       entryReason: '미국 나스닥 차량경매 플랫폼. 체결 $29.40×71주(8/4 미국 종가)·환율 1,424.88 → 주당 41,891원. 목표 매수가 $30.8 아래에서 1회차 진입 완료. 야드 토지 소유가 해자이자 CapEx 부담이라는 양면을 갖는다.'
     },
-    {
-      name: '인튜잇', code: 'INTU', sector: '미국·핀테크SW',
-      entryDate: '2026-08-06', shares: 5, avgPrice: 465150,
-      targetPrice: 345, intrinsicValue: 431, verdict: '관망',
-      entryReason: '미국 나스닥 세무·회계 SW(TurboTax·QuickBooks). 체결 $327.94×5주(8/5 미국 종가)·환율 1,418.4 → 주당 465,150원. 4단계까지 통과해 목표가를 크게 하회 중이나, 5단계 거부권(AI가 세무를 대체하는가) 최종 판단이 남아 있어 판정은 관망.'
-    },
+    // 인튜잇(INTU) — 2026-08-26 전량 청산 (5주, $345.17, +5.25%). 매도 사유 ① 판단 오류.
+    // FY26 확정 실적에서 TurboTax 유닛이 2년 연속 감소(-2%)했고 CEO가 "가격이 이탈 1순위 이유"라 인정하며
+    // FY27 가격 인하로 선회 — 매출 성장이 가격 인상의 산물이었다는 뜻이라 매수 논제의 전제가 무너졌다.
+    // 상세: 02.종목분석/인튜잇_INTU_분석_20260726.md 8단계
     {
       name: '유니버설 헬스', code: 'UHS', sector: '미국·병원/행동건강',
       entryDate: '2026-08-17', shares: 10, avgPrice: 241428,
