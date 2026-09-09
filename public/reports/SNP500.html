@@ -138,7 +138,7 @@
 <div class="wrap">
 
 <header>
-  <div class="kicker">적립식 모니터링 · 개인연금 + IRP + ISA</div>
+  <div class="kicker">적립식 모니터링 · 연금 + IRP + ISA + 일반 + 법인</div>
   <h1>TIGER 미국S&amp;P500 <span class="mkt">KRX: 360750</span></h1>
   <div class="sub">S&amp;P500 지수 추종 ETF — 종목 분석 대상이 아니라 꾸준히 모아가며 지켜보는 계좌</div>
 </header>
@@ -154,7 +154,7 @@
     <div class="stat">
       <div class="k">평균단가</div>
       <div class="v" id="stAvg">—</div>
-      <div class="d">개인연금 + IRP + ISA 가중평균</div>
+      <div class="d">연금 + IRP + ISA + 일반 + 법인 가중평균</div>
     </div>
   </div>
 </section>
@@ -250,9 +250,11 @@
 var TICKER = '360750.KS';
 var LS_KEY = 'snp500.hold';
 var DEFAULT_HOLD = [
-  { name: '개인연금', shares: 40, cost: 27024 },
-  { name: 'IRP',      shares: 28, cost: 27060 },
-  { name: 'ISA',      shares:  3, cost: 27555 },
+  { name: '연금', shares: 40, cost: 27024 },
+  { name: 'IRP',  shares: 28, cost: 27060 },
+  { name: 'ISA',  shares:  3, cost: 27555 },
+  { name: '일반', shares:  0, cost: 0 },
+  { name: '법인', shares:  0, cost: 0 },
 ];
 
 function loadHold() {
@@ -260,7 +262,7 @@ function loadHold() {
     var v = JSON.parse(localStorage.getItem(LS_KEY));
     if (
       Array.isArray(v) && v.length === DEFAULT_HOLD.length &&
-      v.every(function (h) { return h && h.shares >= 0 && h.cost > 0; })
+      v.every(function (h) { return h && h.shares >= 0 && h.cost >= 0; })
     ) {
       return DEFAULT_HOLD.map(function (d, i) {
         return { name: d.name, shares: Number(v[i].shares), cost: Number(v[i].cost) };
@@ -314,7 +316,7 @@ function buildTable(price) {
     if (h.total) tr.className = 'total';
     var buy = h.shares * h.cost;
     var cells = [h.name, h.shares + '주', num(h.cost) + '원', won(buy)];
-    if (price) {
+    if (price && buy > 0) { // 매입금액 0인 계좌(미보유)는 손익 계산 대상이 아니다
       var val = h.shares * price;
       var pl = val - buy;
       cells.push(won(val), sgn(pl) + won(pl), sgn(pl) + (pl / buy * 100).toFixed(2) + '%');
@@ -324,7 +326,7 @@ function buildTable(price) {
     cells.forEach(function (c, i) {
       var td = document.createElement('td');
       td.textContent = c;
-      if (price && i >= 5) td.className = cls(h.shares * price - buy);
+      if (price && buy > 0 && i >= 5) td.className = cls(h.shares * price - buy);
       tr.appendChild(td);
     });
     body.appendChild(tr);
@@ -770,7 +772,7 @@ function fillEditGrid(rows) {
     nm.className = 'nm';
     nm.textContent = h.name;
     grid.appendChild(nm);
-    [['sh', h.shares, 1, 0], ['co', h.cost, 1, 1]].forEach(function (f) {
+    [['sh', h.shares, 1, 0], ['co', h.cost, 1, 0]].forEach(function (f) {
       var inp = document.createElement('input');
       inp.type = 'number';
       inp.id = 'in-' + f[0] + i;
@@ -814,7 +816,7 @@ document.getElementById('btnSave').addEventListener('click', function () {
       editErr.textContent = HOLD[i].name + ' 수량이 올바르지 않습니다 (0 이상 정수).';
       return;
     }
-    if (!isFinite(co) || co <= 0) {
+    if (!isFinite(co) || co < 0 || (sh > 0 && co === 0)) {
       editErr.textContent = HOLD[i].name + ' 평단가가 올바르지 않습니다.';
       return;
     }
