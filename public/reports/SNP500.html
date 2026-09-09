@@ -246,35 +246,21 @@
 
 <script>
 // ── 보유 내역 ───────────────────────────────────────────
-// 기본값은 파일에 두고, 편집한 값은 이 브라우저의 localStorage에 저장된다.
+// 값은 서버(/api/hold → MongoDB)에 저장된다 — 어느 기기에서 봐도 같은 값.
+// DEFAULT_HOLD는 서버에 저장된 값이 아직 없거나 DB에 못 붙을 때의 폴백.
 var TICKER = '360750.KS';
-var LS_KEY = 'snp500.hold';
+var TOKEN_KEY = 'snp500.editToken'; // 저장용 편집 토큰 — 기기당 최초 1회 입력
 var DEFAULT_HOLD = [
-  { name: '연금', shares: 40, cost: 27024 },
-  { name: 'IRP',  shares: 28, cost: 27060 },
-  { name: 'ISA',  shares:  3, cost: 27555 },
-  { name: '일반', shares:  0, cost: 0 },
-  { name: '법인', shares:  0, cost: 0 },
+  { name: '연금', shares: 154, cost: 26540 },
+  { name: 'IRP',  shares:  28, cost: 27060 },
+  { name: 'ISA',  shares:  40, cost: 27213 },
+  { name: '일반', shares:   0, cost: 0 },
+  { name: '법인', shares: 588, cost: 25461 },
 ];
 
-function loadHold() {
-  try {
-    var v = JSON.parse(localStorage.getItem(LS_KEY));
-    if (
-      Array.isArray(v) && v.length === DEFAULT_HOLD.length &&
-      v.every(function (h) { return h && h.shares >= 0 && h.cost >= 0; })
-    ) {
-      return DEFAULT_HOLD.map(function (d, i) {
-        return { name: d.name, shares: Number(v[i].shares), cost: Number(v[i].cost) };
-      });
-    }
-  } catch (e) { /* 손상된 저장값은 무시하고 기본값 사용 */ }
-  return DEFAULT_HOLD.map(function (d) {
-    return { name: d.name, shares: d.shares, cost: d.cost };
-  });
-}
-
-var HOLD = loadHold();
+var HOLD = DEFAULT_HOLD.map(function (d) {
+  return { name: d.name, shares: d.shares, cost: d.cost };
+});
 var TOTAL_SHARES, TOTAL_COST, AVG;
 function recalc() {
   TOTAL_SHARES = HOLD.reduce(function (s, h) { return s + h.shares; }, 0);
@@ -282,6 +268,26 @@ function recalc() {
   AVG = TOTAL_SHARES ? TOTAL_COST / TOTAL_SHARES : 0; // 가중평균 평단
 }
 recalc();
+
+// 서버 저장값 로드 — 도착하면 기본값을 덮고 화면을 다시 그린다
+fetch('/api/hold')
+  .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+  .then(function (d) {
+    var v = d && d.hold;
+    if (!Array.isArray(v) || !v.length) return; // 저장된 값 없음 — 기본값 유지
+    if (!v.every(function (h) {
+      return h && typeof h.name === 'string' && h.shares >= 0 && h.cost >= 0;
+    })) return;
+    HOLD = v.map(function (h) {
+      return { name: h.name, shares: Number(h.shares), cost: Number(h.cost) };
+    });
+    recalc();
+    renderStatic();
+    if (lastQuote) renderStats(lastQuote);
+    else buildTable(null);
+    drawChart(); // 평단 점선 갱신 (차트 데이터가 아직 없으면 그냥 통과)
+  })
+  .catch(function () { /* 못 읽으면 기본값으로 표시 */ });
 
 var STATE_LABEL = { REGULAR: '정규장', PRE: '장전', POST: '장후', CLOSED: '장마감' };
 var RANGES = [
@@ -807,6 +813,44 @@ document.addEventListener('keydown', function (ev) {
   else if (chartCard.classList.contains('chart-full')) setChartFull(false);
 });
 
+// 서버에 저장 — 성공하면 화면 반영, 401이면 편집 토큰을 물어보고 1회 재시도
+function saveHold(next) {
+  var btn = document.getElementById('btnSave');
+  var headers = { 'Content-Type': 'application/json' };
+  var tok = localStorage.getItem(TOKEN_KEY);
+  if (tok) headers['x-edit-token'] = tok;
+  btn.disabled = true;
+  editErr.textContent = '저장 중…';
+  fetch('/api/hold', { method: 'PUT', headers: headers, body: JSON.stringify({ hold: next }) })
+    .then(function (r) {
+      if (r.ok) {
+        HOLD = next;
+        recalc();
+        renderStatic();
+        if (lastQuote) renderStats(lastQuote);
+        else buildTable(null);
+        drawChart(); // 평단 점선 위치 갱신
+        editErr.textContent = '';
+        closeModal();
+        return;
+      }
+      if (r.status === 401) {
+        var t = prompt('편집 토큰을 입력하세요 (서버의 EDIT_TOKEN 값)');
+        if (t) {
+          localStorage.setItem(TOKEN_KEY, t);
+          btn.disabled = false;
+          saveHold(next);
+          return;
+        }
+        editErr.textContent = '편집 토큰이 없어 저장하지 못했습니다.';
+        return;
+      }
+      editErr.textContent = '저장 실패 (' + r.status + ') — 서버 DB 연결을 확인하세요.';
+    })
+    .catch(function () { editErr.textContent = '저장 실패 — 네트워크 오류.'; })
+    .then(function () { btn.disabled = false; });
+}
+
 document.getElementById('btnSave').addEventListener('click', function () {
   var next = [];
   for (var i = 0; i < HOLD.length; i++) {
@@ -822,14 +866,7 @@ document.getElementById('btnSave').addEventListener('click', function () {
     }
     next.push({ name: HOLD[i].name, shares: sh, cost: co });
   }
-  HOLD = next;
-  localStorage.setItem(LS_KEY, JSON.stringify(HOLD));
-  recalc();
-  renderStatic();
-  if (lastQuote) renderStats(lastQuote);
-  else buildTable(null);
-  drawChart(); // 평단 점선 위치 갱신
-  closeModal();
+  saveHold(next);
 });
 </script>
 </body>
