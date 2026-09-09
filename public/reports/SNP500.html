@@ -48,6 +48,7 @@
   .sub { color: var(--text-secondary); font-size: 14px; }
   .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
   h2 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  h2 .mkt { color: var(--text-muted); font-weight: 600; font-size: 13px; margin-left: 4px; }
   .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
 
   /* 스탯 타일 */
@@ -81,6 +82,10 @@
   th:first-child, td:first-child { text-align: left; }
   td:first-child { color: var(--text-secondary); }
   tr.total td { border-top: 2px solid var(--baseline); border-bottom: none; font-weight: 700; color: var(--text-primary); }
+  /* 종목 구분 머리글 — 계좌마다 종목이 다를 수 있어 어느 종목의 계좌인지 표에서 갈라준다 */
+  tr.grp td { border-bottom: 1px solid var(--baseline); color: var(--text-muted); font-size: 12px; font-weight: 700; letter-spacing: .03em; padding-top: 16px; }
+  tr.grp:first-child td { padding-top: 4px; }
+  tr.grand td { border-top: 2px solid var(--text-primary); }
   .table-scroll { overflow-x: auto; }
   .foot { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
 
@@ -99,9 +104,11 @@
   #holdModal .chart-sub { margin-top: 2px; }
   #holdModal .stats { margin: 14px 0 18px; }
   #holdModal .btns { margin-top: 16px; }
-  .edit-grid { display: grid; grid-template-columns: 72px 1fr 1fr; gap: 8px 10px; align-items: center; margin-bottom: 14px; }
+  .edit-grid { display: grid; grid-template-columns: 84px 1fr 1fr; gap: 8px 10px; align-items: center; margin-bottom: 14px; }
   .edit-grid .hd { font-size: 12px; color: var(--text-muted); }
   .edit-grid .nm { font-size: 13.5px; color: var(--text-secondary); }
+  /* 계좌 이름만으로는 종목이 구분되지 않는다 (IRP / IRP-2) — 종목코드를 아래 줄에 적는다 */
+  .edit-grid .nm .code { display: block; font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
   .modal input { width: 100%; border: 1px solid var(--border); background: var(--page); color: var(--text-primary); border-radius: 8px; padding: 7px 10px; font-size: 14px; font-family: inherit; font-variant-numeric: tabular-nums; }
   .modal input:focus { outline: 2px solid var(--series-1); border-color: transparent; }
   .modal .err { color: var(--status-critical); font-size: 12.5px; min-height: 18px; margin-bottom: 8px; }
@@ -195,6 +202,26 @@
   <div class="chart-foot" id="fxFoot"></div>
 </section>
 
+<!-- IRP-2 계좌 — 종목이 360750이 아니라 434060이다.
+     위의 현재가·평균단가·차트는 전부 360750 기준이라 여기에 섞지 않고 따로 세운다.
+     상단 카드와 같은 규칙: 평가금액·손익은 보유 현황 모달 안에만 노출. -->
+<section class="card">
+  <h2>IRP-2 · KODEX TDF2050액티브 적격 <span class="mkt">KRX: 434060</span></h2>
+  <div class="chart-sub">S&amp;P500과 다른 종목이라 위 지표·차트에는 합산되지 않는다 · 계좌별 표는 차트를 클릭</div>
+  <div class="stats">
+    <div class="stat">
+      <div class="k">현재가 <span class="badge" id="tdfState">…</span></div>
+      <div class="v" id="tdfPrice">—</div>
+      <div class="d" id="tdfChange">시세 불러오는 중…</div>
+    </div>
+    <div class="stat">
+      <div class="k">평균단가</div>
+      <div class="v" id="tdfAvg">—</div>
+      <div class="d">IRP-2 계좌</div>
+    </div>
+  </div>
+</section>
+
 </div>
 
 <!-- 계좌별 보유 현황 모달 — 차트 클릭 시 오픈 -->
@@ -204,10 +231,10 @@
       <h3 id="holdTitle">계좌별 보유 현황</h3>
       <button class="btn" id="btnEdit">편집</button>
     </div>
-    <div class="chart-sub">평가금액·손익은 현재가 기준으로 자동 계산</div>
+    <div class="chart-sub">평가금액·손익은 현재가 기준으로 자동 계산 · 아래 타일은 두 종목을 합친 값</div>
     <div class="stats">
       <div class="stat">
-        <div class="k">평가금액</div>
+        <div class="k">평가금액 <span class="badge">전체</span></div>
         <div class="v" id="stValue">—</div>
         <div class="d">매입 <span id="stCost"></span></div>
       </div>
@@ -248,24 +275,55 @@
 // ── 보유 내역 ───────────────────────────────────────────
 // 값은 서버(/api/hold → MongoDB)에 저장된다 — 어느 기기에서 봐도 같은 값.
 // DEFAULT_HOLD는 서버에 저장된 값이 아직 없거나 DB에 못 붙을 때의 폴백.
-var TICKER = '360750.KS';
+var TICKER = '360750.KS';      // 메인 종목 — 상단 스탯과 세 차트가 전부 이 종목 기준
+var TDF_TICKER = '434060.KS';  // IRP-2 계좌가 담고 있는 종목 (KODEX TDF2050액티브 적격)
 var TOKEN_KEY = 'snp500.editToken'; // 저장용 편집 토큰 — 기기당 최초 1회 입력
 var DEFAULT_HOLD = [
-  { name: '연금', shares: 154, cost: 26540 },
-  { name: 'IRP',  shares:  28, cost: 27060 },
-  { name: 'ISA',  shares:  40, cost: 27213 },
-  { name: '일반', shares:   0, cost: 0 },
-  { name: '법인', shares: 588, cost: 25461 },
+  { name: '연금',  ticker: TICKER,     shares: 154, cost: 26540 },
+  { name: 'IRP',   ticker: TICKER,     shares:  28, cost: 27060 },
+  { name: 'ISA',   ticker: TICKER,     shares:  40, cost: 27213 },
+  { name: '일반',  ticker: TICKER,     shares:   0, cost: 0 },
+  { name: '법인',  ticker: TICKER,     shares: 588, cost: 25461 },
+  { name: 'IRP-2', ticker: TDF_TICKER, shares:   0, cost: 0 },
 ];
 
-var HOLD = DEFAULT_HOLD.map(function (d) {
-  return { name: d.name, shares: d.shares, cost: d.cost };
-});
+// 모달 표를 종목 단위로 끊어 보여주기 위한 메타. 배열 순서 = 표에 찍히는 순서.
+var PRODUCTS = [
+  { ticker: TICKER,     label: 'TIGER 미국S&P500',        code: '360750' },
+  { ticker: TDF_TICKER, label: 'KODEX TDF2050액티브 적격', code: '434060' },
+];
+
+// 예전 저장 문서에는 ticker가 없다 (그때는 전 계좌가 360750 하나였다) — 없으면 메인 종목으로 본다
+function normHold(rows) {
+  return rows.map(function (h) {
+    return {
+      name: h.name,
+      ticker: h.ticker || TICKER,
+      shares: Number(h.shares),
+      cost: Number(h.cost),
+    };
+  });
+}
+
+var HOLD = normHold(DEFAULT_HOLD);
+
+// 종목 하나의 계좌들을 묶어 수량·매입금액·가중평균 평단을 낸다.
+// 종목이 다르면 평단을 섞을 수 없어서 합계는 반드시 이 단위로만 낸다.
+function sumBy(ticker) {
+  var rows = HOLD.filter(function (h) { return h.ticker === ticker; });
+  var shares = rows.reduce(function (s, h) { return s + h.shares; }, 0);
+  var cost   = rows.reduce(function (s, h) { return s + h.shares * h.cost; }, 0);
+  return { rows: rows, shares: shares, cost: cost, avg: shares ? cost / shares : 0 };
+}
+
+// TOTAL_* / AVG는 360750 기준 — 상단 스탯과 차트 평단 점선이 그대로 쓴다
 var TOTAL_SHARES, TOTAL_COST, AVG;
+var TDF_SHARES, TDF_COST, TDF_AVG;
 function recalc() {
-  TOTAL_SHARES = HOLD.reduce(function (s, h) { return s + h.shares; }, 0);
-  TOTAL_COST   = HOLD.reduce(function (s, h) { return s + h.shares * h.cost; }, 0);
-  AVG = TOTAL_SHARES ? TOTAL_COST / TOTAL_SHARES : 0; // 가중평균 평단
+  var m = sumBy(TICKER);
+  TOTAL_SHARES = m.shares; TOTAL_COST = m.cost; AVG = m.avg;
+  var t = sumBy(TDF_TICKER);
+  TDF_SHARES = t.shares; TDF_COST = t.cost; TDF_AVG = t.avg;
 }
 recalc();
 
@@ -278,13 +336,12 @@ fetch('/api/hold')
     if (!v.every(function (h) {
       return h && typeof h.name === 'string' && h.shares >= 0 && h.cost >= 0;
     })) return;
-    HOLD = v.map(function (h) {
-      return { name: h.name, shares: Number(h.shares), cost: Number(h.cost) };
-    });
+    HOLD = normHold(v);
     recalc();
     renderStatic();
+    renderTdfStats();
     if (lastQuote) renderStats(lastQuote);
-    else buildTable(null);
+    else renderHold();
     drawChart(); // 평단 점선 갱신 (차트 데이터가 아직 없으면 그냥 통과)
   })
   .catch(function () { /* 못 읽으면 기본값으로 표시 */ });
@@ -304,79 +361,178 @@ function sgn(n) { return n >= 0 ? '+' : ''; }
 function cls(n) { return n >= 0 ? 'up' : 'down'; }
 
 // ── 상단 스탯 + 계좌 표 ─────────────────────────────────
-var lastQuote = null; // 마지막 시세 — 편집 저장 후 즉시 재계산에 쓴다
+// 마지막 시세 — 편집 저장 후 즉시 재계산에 쓴다
+var lastQuote = null;    // 360750
+var lastTdfQuote = null; // 434060
+
+function priceOf(ticker) {
+  if (ticker === TICKER) return lastQuote ? lastQuote.price : 0;
+  if (ticker === TDF_TICKER) return lastTdfQuote ? lastTdfQuote.price : 0;
+  return 0;
+}
 
 function renderStatic() {
-  document.getElementById('stCost').textContent = won(TOTAL_COST);
   document.getElementById('stAvg').textContent = won(AVG);
+  document.getElementById('tdfAvg').textContent = TDF_SHARES ? won(TDF_AVG) : '—';
 }
-renderStatic();
-buildTable(null);
 
-function buildTable(price) {
+function cell(tr, text, klass) {
+  var td = document.createElement('td');
+  td.textContent = text;
+  if (klass) td.className = klass;
+  tr.appendChild(td);
+}
+
+// 종목 구분 머리글 (표 안에서 계좌 묶음을 갈라준다)
+function addGroupRow(body, text) {
+  var tr = document.createElement('tr');
+  tr.className = 'grp';
+  var td = document.createElement('td');
+  td.colSpan = 7;
+  td.textContent = text;
+  tr.appendChild(td);
+  body.appendChild(tr);
+}
+
+function addHoldRow(body, h, price, klass) {
+  var tr = document.createElement('tr');
+  if (klass) tr.className = klass;
+  var buy = h.shares * h.cost;
+  cell(tr, h.name);
+  cell(tr, h.shares + '주');
+  cell(tr, num(h.cost) + '원');
+  cell(tr, won(buy));
+  if (price && buy > 0) { // 매입금액 0인 계좌(미보유)는 손익 계산 대상이 아니다
+    var pl = h.shares * price - buy;
+    cell(tr, won(h.shares * price));
+    cell(tr, sgn(pl) + won(pl), cls(pl));
+    cell(tr, sgn(pl) + (pl / buy * 100).toFixed(2) + '%', cls(pl));
+  } else {
+    cell(tr, '—'); cell(tr, '—'); cell(tr, '—');
+  }
+  body.appendChild(tr);
+}
+
+// 종목별 그룹 → 소계 → (종목이 둘 이상이면) 총합계.
+// 반환값은 총합계 타일에 그대로 쓴다.
+function buildTable() {
   var body = document.getElementById('holdBody');
   body.textContent = '';
-  var rows = HOLD.concat([{ name: '합계', shares: TOTAL_SHARES, cost: AVG, total: true }]);
-  rows.forEach(function (h) {
-    var tr = document.createElement('tr');
-    if (h.total) tr.className = 'total';
-    var buy = h.shares * h.cost;
-    var cells = [h.name, h.shares + '주', num(h.cost) + '원', won(buy)];
-    if (price && buy > 0) { // 매입금액 0인 계좌(미보유)는 손익 계산 대상이 아니다
-      var val = h.shares * price;
-      var pl = val - buy;
-      cells.push(won(val), sgn(pl) + won(pl), sgn(pl) + (pl / buy * 100).toFixed(2) + '%');
-    } else {
-      cells.push('—', '—', '—');
-    }
-    cells.forEach(function (c, i) {
-      var td = document.createElement('td');
-      td.textContent = c;
-      if (price && buy > 0 && i >= 5) td.className = cls(h.shares * price - buy);
-      tr.appendChild(td);
-    });
-    body.appendChild(tr);
+
+  var groups = PRODUCTS.filter(function (p) { return sumBy(p.ticker).rows.length > 0; });
+  var multi = groups.length > 1;
+  var buy = 0, val = 0, priced = true;
+
+  groups.forEach(function (p) {
+    var g = sumBy(p.ticker);
+    var price = priceOf(p.ticker);
+    if (multi) addGroupRow(body, p.label + ' · ' + p.code);
+    g.rows.forEach(function (h) { addHoldRow(body, h, price, ''); });
+    addHoldRow(body, { name: multi ? '소계' : '합계', shares: g.shares, cost: g.avg }, price, 'total');
+    buy += g.cost;
+    val += g.shares * price;
+    // 보유 중인데 시세를 못 받은 종목이 있으면 총합계는 낼 수 없다
+    if (!price && g.cost > 0) priced = false;
   });
+
+  if (multi) {
+    var tr = document.createElement('tr');
+    tr.className = 'total grand';
+    cell(tr, '총합계');
+    cell(tr, '—');
+    cell(tr, '—'); // 종목이 섞이면 평단가는 의미가 없다
+    cell(tr, won(buy));
+    if (priced && buy > 0) {
+      var pl = val - buy;
+      cell(tr, won(val));
+      cell(tr, sgn(pl) + won(pl), cls(pl));
+      cell(tr, sgn(pl) + (pl / buy * 100).toFixed(2) + '%', cls(pl));
+    } else {
+      cell(tr, '—'); cell(tr, '—'); cell(tr, '—');
+    }
+    body.appendChild(tr);
+  }
+
+  return { buy: buy, val: val, priced: priced };
+}
+
+// 모달 표 + 그 위 합계 타일 (두 종목 합산) — 시세나 보유 내역이 바뀔 때마다 호출
+function renderHold() {
+  var t = buildTable();
+  document.getElementById('stCost').textContent = won(t.buy);
+
+  var vEl = document.getElementById('stValue');
+  var plEl = document.getElementById('stPl');
+  var pctEl = document.getElementById('stPlPct');
+  if (!t.priced || t.buy <= 0) {
+    vEl.textContent = '—';
+    plEl.textContent = '—'; plEl.className = 'v';
+    pctEl.textContent = ''; pctEl.className = 'd';
+    return;
+  }
+  var pl = t.val - t.buy;
+  vEl.textContent = won(t.val);
+  plEl.textContent = sgn(pl) + won(pl);
+  plEl.className = 'v ' + cls(pl);
+  pctEl.textContent = '매입금액 대비 ' + sgn(pl) + (pl / t.buy * 100).toFixed(2) + '%';
+  pctEl.className = 'd ' + cls(pl);
+}
+
+// 시세 한 건을 스탯 타일 3종(상태 배지·현재가·등락)에 그린다 — 상단/IRP-2 카드가 공유
+function paintQuote(q, idState, idPrice, idChange) {
+  var open = q.marketState === 'REGULAR';
+  var st = document.getElementById(idState);
+  st.textContent = STATE_LABEL[q.marketState] || '장마감';
+  st.className = 'badge' + (open ? ' open' : '');
+
+  var el = document.getElementById(idPrice);
+  el.textContent = won(q.price);
+  el.className = 'v ' + cls(q.change);
+
+  var ch = document.getElementById(idChange);
+  ch.className = 'd ' + cls(q.change);
+  ch.textContent = sgn(q.change) + num(q.change) + '원 (' + sgn(q.change) + q.changePct.toFixed(2) + '%)';
+  return open;
 }
 
 function renderStats(q) {
   lastQuote = q;
-  var open = q.marketState === 'REGULAR';
-  var st = document.getElementById('stState');
-  st.textContent = STATE_LABEL[q.marketState] || '장마감';
-  st.className = 'badge' + (open ? ' open' : '');
-
-  var el = document.getElementById('stPrice');
-  el.textContent = won(q.price);
-  el.className = 'v ' + cls(q.change);
-  var ch = document.getElementById('stChange');
-  ch.innerHTML = '';
-  ch.className = 'd ' + cls(q.change);
-  ch.textContent = sgn(q.change) + num(q.change) + '원 (' + sgn(q.change) + q.changePct.toFixed(2) + '%)';
-
-  var val = q.price * TOTAL_SHARES;
-  var pl = val - TOTAL_COST;
-  document.getElementById('stValue').textContent = won(val);
-  var plEl = document.getElementById('stPl');
-  plEl.textContent = sgn(pl) + won(pl);
-  plEl.className = 'v ' + cls(pl);
-  var pctEl = document.getElementById('stPlPct');
-  pctEl.textContent = '매입금액 대비 ' + sgn(pl) + (pl / TOTAL_COST * 100).toFixed(2) + '%';
-  pctEl.className = 'd ' + cls(pl);
-
+  var open = paintQuote(q, 'stState', 'stPrice', 'stChange');
   document.getElementById('asOf').textContent = q.asOf + ' 기준';
-  buildTable(q.price);
+  renderHold();
   return open;
 }
+
+function renderTdfStats() {
+  if (!lastTdfQuote) return;
+  paintQuote(lastTdfQuote, 'tdfState', 'tdfPrice', 'tdfChange');
+}
+
+renderStatic();
+renderHold();
 
 // ── 시세 폴링 (정규장 30초 — 네이버 실시간 소스라 짧게, 그 외 5분) ──
 var timer;
 function schedule(ms) { clearTimeout(timer); timer = setTimeout(tick, ms); }
+function asJson(r) { return r.ok ? r.json() : Promise.reject(r.status); }
 function tick() {
   if (document.hidden) { schedule(5 * 60 * 1000); return; }
-  fetch('/api/quote/' + TICKER)
-    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-    .then(function (q) { schedule(renderStats(q) ? 30 * 1000 : 5 * 60 * 1000); })
+  // 둘 다 KRX라 장 시간이 같다 — 타이머 하나로 같이 돌린다.
+  // IRP-2 쪽은 보조 정보라, 실패해도 메인 시세 갱신을 막지 않는다.
+  Promise.all([
+    fetch('/api/quote/' + TICKER).then(asJson),
+    fetch('/api/quote/' + TDF_TICKER).then(asJson).catch(function () { return null; }),
+  ])
+    .then(function (r) {
+      if (r[1]) {
+        lastTdfQuote = r[1];
+        renderTdfStats();
+      } else if (!lastTdfQuote) {
+        document.getElementById('tdfChange').textContent = '시세를 불러오지 못했습니다';
+      }
+      // renderStats → renderHold가 lastTdfQuote를 읽으므로 반드시 그 뒤에 부른다
+      schedule(renderStats(r[0]) ? 30 * 1000 : 5 * 60 * 1000);
+    })
     .catch(function () {
       document.getElementById('stChange').textContent = '시세를 불러오지 못했습니다';
       schedule(5 * 60 * 1000);
@@ -777,6 +933,11 @@ function fillEditGrid(rows) {
     var nm = document.createElement('div');
     nm.className = 'nm';
     nm.textContent = h.name;
+    // IRP와 IRP-2는 종목이 달라 이름만으로는 구분되지 않는다 — 코드를 아래 줄에 붙인다
+    var code = document.createElement('span');
+    code.className = 'code';
+    code.textContent = (h.ticker || TICKER).replace(/\..*$/, '');
+    nm.appendChild(code);
     grid.appendChild(nm);
     [['sh', h.shares, 1, 0], ['co', h.cost, 1, 0]].forEach(function (f) {
       var inp = document.createElement('input');
@@ -824,11 +985,11 @@ function saveHold(next) {
   fetch('/api/hold', { method: 'PUT', headers: headers, body: JSON.stringify({ hold: next }) })
     .then(function (r) {
       if (r.ok) {
-        HOLD = next;
+        HOLD = normHold(next);
         recalc();
         renderStatic();
         if (lastQuote) renderStats(lastQuote);
-        else buildTable(null);
+        else renderHold();
         drawChart(); // 평단 점선 위치 갱신
         editErr.textContent = '';
         closeModal();
@@ -864,7 +1025,7 @@ document.getElementById('btnSave').addEventListener('click', function () {
       editErr.textContent = HOLD[i].name + ' 평단가가 올바르지 않습니다.';
       return;
     }
-    next.push({ name: HOLD[i].name, shares: sh, cost: co });
+    next.push({ name: HOLD[i].name, ticker: HOLD[i].ticker, shares: sh, cost: co });
   }
   saveHold(next);
 });
