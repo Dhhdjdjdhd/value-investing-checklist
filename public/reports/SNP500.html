@@ -136,6 +136,8 @@
     .modal { padding: 18px 16px; }
     /* 표는 화면 폭에 욱여넣지 않는다 — 컬럼 폭을 확보하고 가로 스크롤로 본다 */
     #holdModal table { min-width: 600px; }
+    /* 좁은 화면에서는 평가금액 타일을 숨긴다 — 현재가·평가손익 두 칸이 한 줄에 딱 맞는다 */
+    #holdModal .stat-value { display: none; }
     th, td { padding: 8px 10px; font-size: 13px; }
     .chart-foot { font-size: 11.5px; }
   }
@@ -237,7 +239,7 @@
         <div class="v" id="mdPrice">—</div>
         <div class="d" id="mdAvgLine">평단 —</div>
       </div>
-      <div class="stat">
+      <div class="stat stat-value">
         <div class="k">평가금액 <span class="badge">전체</span></div>
         <div class="v" id="stValue">—</div>
         <div class="d">매입 <span id="stCost"></span></div>
