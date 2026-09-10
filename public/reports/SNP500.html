@@ -84,8 +84,7 @@
   tr.total td { border-top: 2px solid var(--baseline); border-bottom: none; font-weight: 700; color: var(--text-primary); }
   /* 종목 구분 머리글 — 계좌마다 종목이 다를 수 있어 어느 종목의 계좌인지 표에서 갈라준다 */
   /* 제목 → 컬럼 머리글 → 계좌 행 순서라, 제목 밑줄은 없애고 머리글에 붙여 캡션처럼 보이게 한다 */
-  tr.grp td { border-bottom: none; color: var(--text-muted); font-size: 12px; font-weight: 700; letter-spacing: .03em; padding-top: 16px; padding-bottom: 2px; }
-  tr.grp:first-child td { padding-top: 4px; }
+  tr.grp td { border-bottom: none; color: var(--text-muted); font-size: 12px; font-weight: 700; letter-spacing: .03em; }
   tr.grand td { border-top: 2px solid var(--text-primary); }
   .table-scroll { overflow-x: auto; }
   .foot { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
@@ -98,13 +97,18 @@
   .btn.primary { background: var(--text-primary); color: var(--page); border-color: var(--text-primary); font-weight: 700; }
   .modal-ov { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
   .modal-ov[hidden] { display: none; } /* display:flex가 hidden 속성을 덮지 않도록 */
-  .modal { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; box-shadow: 0 12px 40px rgba(0,0,0,.3); }
+  /* max-height + 스크롤: 화면보다 길어지면 가운데 정렬 때문에 위쪽이 잘려 닿을 수 없게 된다 */
+  .modal { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 100%; max-width: 420px; max-height: 100%; overflow-y: auto; box-shadow: 0 12px 40px rgba(0,0,0,.3); }
   .modal.wide { max-width: 680px; }
   .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
   .card-head h3 { margin-bottom: 0; }
   #holdModal .chart-sub { margin-top: 2px; }
   #holdModal .stats { margin: 10px 0 12px; }
-  #holdModal .btns { margin-top: 16px; }
+  #holdModal .head-btns { display: flex; gap: 6px; }
+  /* 보유 현황 표는 종목 2개면 13줄 가까이 된다 — 모달 높이를 줄이려고 행 간격을 촘촘하게 */
+  #holdModal th, #holdModal td { padding: 5px 10px; line-height: 1.35; }
+  #holdModal tr.grp td { padding: 12px 10px 2px; }
+  #holdModal tr.grp:first-child td { padding-top: 0; }
   .edit-grid { display: grid; grid-template-columns: 84px 1fr 1fr; gap: 8px 10px; align-items: center; margin-bottom: 14px; }
   .edit-grid .hd { font-size: 12px; color: var(--text-muted); }
   .edit-grid .nm { font-size: 13.5px; color: var(--text-secondary); }
@@ -139,6 +143,7 @@
     #holdModal table { min-width: 600px; }
     /* 좁은 화면에서는 평가금액 타일을 숨긴다 — 현재가·평가손익 두 칸이 한 줄에 딱 맞는다 */
     #holdModal .stat-value { display: none; }
+    #holdModal .modal { padding: 14px; }
     /* 모달 타일 숫자(현재가·평가손익)는 반 칸 폭이라 20px이면 빡빡하다 — 한 단계 작게 */
     #holdModal .stat .v { font-size: 17px; }
     #holdModal .stat .d { font-size: 10.5px; }
@@ -236,7 +241,11 @@
   <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="holdTitle">
     <div class="card-head">
       <h3 id="holdTitle">계좌별 보유 현황</h3>
-      <button class="btn" id="btnEdit">편집</button>
+      <!-- 닫기를 맨 아래 따로 두면 버튼 한 줄만큼 모달이 길어진다 — 편집 옆으로 올렸다 -->
+      <div class="head-btns">
+        <button class="btn" id="btnEdit">편집</button>
+        <button class="btn" id="btnHoldClose">닫기</button>
+      </div>
     </div>
     <div class="stats">
       <div class="stat">
@@ -261,7 +270,6 @@
         <tbody id="holdBody"></tbody>
       </table>
     </div>
-    <div class="btns"><button class="btn" id="btnHoldClose">닫기</button></div>
   </div>
 </div>
 
@@ -450,7 +458,10 @@ function buildTable() {
     if (multi) addGroupRow(body, p.label + ' · ' + p.code);
     addHeadRow(body);
     g.rows.forEach(function (h) { addHoldRow(body, h, price, ''); });
-    addHoldRow(body, { name: multi ? '소계' : '합계', shares: g.shares, cost: g.avg }, price, 'total');
+    // 계좌가 하나뿐인 종목(IRP-2)은 소계가 바로 윗줄과 똑같다 — 모달 높이만 늘려서 생략
+    if (g.rows.length > 1) {
+      addHoldRow(body, { name: multi ? '소계' : '합계', shares: g.shares, cost: g.avg }, price, 'total');
+    }
     buy += g.cost;
     val += g.shares * price;
     // 보유 중인데 시세를 못 받은 종목이 있으면 총합계는 낼 수 없다
