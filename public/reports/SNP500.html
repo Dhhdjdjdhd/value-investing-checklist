@@ -231,8 +231,12 @@
       <h3 id="holdTitle">계좌별 보유 현황</h3>
       <button class="btn" id="btnEdit">편집</button>
     </div>
-    <div class="chart-sub">평가금액·손익은 현재가 기준으로 자동 계산 · 아래 타일은 두 종목을 합친 값</div>
     <div class="stats">
+      <div class="stat">
+        <div class="k">현재가 <span class="badge">360750</span></div>
+        <div class="v" id="mdPrice">—</div>
+        <div class="d" id="mdAvgLine">평단 —</div>
+      </div>
       <div class="stat">
         <div class="k">평가금액 <span class="badge">전체</span></div>
         <div class="v" id="stValue">—</div>
@@ -252,7 +256,6 @@
         <tbody id="holdBody"></tbody>
       </table>
     </div>
-    <div class="foot">시세: 네이버 금융 (실패 시 야후 폴백) · 정규장 중 30초마다 갱신 · <span id="asOf"></span></div>
     <div class="btns"><button class="btn" id="btnHoldClose">닫기</button></div>
   </div>
 </div>
@@ -458,6 +461,24 @@ function buildTable() {
 
 // 모달 표 + 그 위 합계 타일 (두 종목 합산) — 시세나 보유 내역이 바뀔 때마다 호출
 function renderHold() {
+  // 상단 타일: 360750 현재가 + 평단 한 칸 (하단 표와 같은 시점 기준)
+  var pEl = document.getElementById('mdPrice');
+  var aEl = document.getElementById('mdAvgLine');
+  if (lastQuote) {
+    pEl.textContent = won(lastQuote.price);
+    pEl.className = 'v ' + cls(lastQuote.change);
+  }
+  if (TOTAL_SHARES) {
+    var avgTxt = '평단 ' + won(AVG);
+    if (lastQuote) {
+      var diff = lastQuote.price - AVG;
+      avgTxt += ' · 평단 대비 ' + sgn(diff) + won(diff);
+    }
+    aEl.textContent = avgTxt;
+  } else {
+    aEl.textContent = '평단 —';
+  }
+
   var t = buildTable();
   document.getElementById('stCost').textContent = won(t.buy);
 
@@ -498,7 +519,6 @@ function paintQuote(q, idState, idPrice, idChange) {
 function renderStats(q) {
   lastQuote = q;
   var open = paintQuote(q, 'stState', 'stPrice', 'stChange');
-  document.getElementById('asOf').textContent = q.asOf + ' 기준';
   renderHold();
   return open;
 }
