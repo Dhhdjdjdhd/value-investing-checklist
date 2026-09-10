@@ -83,7 +83,8 @@
   td:first-child { color: var(--text-secondary); }
   tr.total td { border-top: 2px solid var(--baseline); border-bottom: none; font-weight: 700; color: var(--text-primary); }
   /* 종목 구분 머리글 — 계좌마다 종목이 다를 수 있어 어느 종목의 계좌인지 표에서 갈라준다 */
-  tr.grp td { border-bottom: 1px solid var(--baseline); color: var(--text-muted); font-size: 12px; font-weight: 700; letter-spacing: .03em; padding-top: 16px; }
+  /* 제목 → 컬럼 머리글 → 계좌 행 순서라, 제목 밑줄은 없애고 머리글에 붙여 캡션처럼 보이게 한다 */
+  tr.grp td { border-bottom: none; color: var(--text-muted); font-size: 12px; font-weight: 700; letter-spacing: .03em; padding-top: 16px; padding-bottom: 2px; }
   tr.grp:first-child td { padding-top: 4px; }
   tr.grand td { border-top: 2px solid var(--text-primary); }
   .table-scroll { overflow-x: auto; }
@@ -102,7 +103,7 @@
   .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
   .card-head h3 { margin-bottom: 0; }
   #holdModal .chart-sub { margin-top: 2px; }
-  #holdModal .stats { margin: 14px 0 18px; }
+  #holdModal .stats { margin: 10px 0 12px; }
   #holdModal .btns { margin-top: 16px; }
   .edit-grid { display: grid; grid-template-columns: 84px 1fr 1fr; gap: 8px 10px; align-items: center; margin-bottom: 14px; }
   .edit-grid .hd { font-size: 12px; color: var(--text-muted); }
@@ -138,6 +139,10 @@
     #holdModal table { min-width: 600px; }
     /* 좁은 화면에서는 평가금액 타일을 숨긴다 — 현재가·평가손익 두 칸이 한 줄에 딱 맞는다 */
     #holdModal .stat-value { display: none; }
+    /* 모달 타일 숫자(현재가·평가손익)는 반 칸 폭이라 20px이면 빡빡하다 — 한 단계 작게 */
+    #holdModal .stat .v { font-size: 17px; }
+    #holdModal .stat .d { font-size: 10.5px; }
+    #holdModal tr.grp td { font-size: 11px; } /* 종목 구분 머리글 (TIGER 미국S&P500 · KODEX TDF2050) */ /* 숫자 아래 설명 줄 (평단 대비 · 매입금액 대비) */
     th, td { padding: 8px 10px; font-size: 13px; }
     .chart-foot { font-size: 11.5px; }
   }
@@ -251,10 +256,8 @@
       </div>
     </div>
     <div class="table-scroll">
+      <!-- 컬럼 머리글은 thead가 아니라 buildTable()이 종목 제목 바로 아래에 그룹마다 넣는다 -->
       <table>
-        <thead>
-          <tr><th>계좌</th><th>수량</th><th>평단가</th><th>매입금액</th><th>평가금액</th><th>평가손익</th><th>수익률</th></tr>
-        </thead>
         <tbody id="holdBody"></tbody>
       </table>
     </div>
@@ -388,14 +391,27 @@ function cell(tr, text, klass) {
   tr.appendChild(td);
 }
 
-// 종목 구분 머리글 (표 안에서 계좌 묶음을 갈라준다)
+var COLS = ['계좌', '수량', '평단가', '매입금액', '평가금액', '평가손익', '수익률'];
+
+// 종목 제목 (표 안에서 계좌 묶음을 갈라준다)
 function addGroupRow(body, text) {
   var tr = document.createElement('tr');
   tr.className = 'grp';
   var td = document.createElement('td');
-  td.colSpan = 7;
+  td.colSpan = COLS.length;
   td.textContent = text;
   tr.appendChild(td);
+  body.appendChild(tr);
+}
+
+// 컬럼 머리글 — 종목 제목 바로 아래, 그룹마다 한 번씩
+function addHeadRow(body) {
+  var tr = document.createElement('tr');
+  COLS.forEach(function (c) {
+    var th = document.createElement('th');
+    th.textContent = c;
+    tr.appendChild(th);
+  });
   body.appendChild(tr);
 }
 
@@ -432,6 +448,7 @@ function buildTable() {
     var g = sumBy(p.ticker);
     var price = priceOf(p.ticker);
     if (multi) addGroupRow(body, p.label + ' · ' + p.code);
+    addHeadRow(body);
     g.rows.forEach(function (h) { addHoldRow(body, h, price, ''); });
     addHoldRow(body, { name: multi ? '소계' : '합계', shares: g.shares, cost: g.avg }, price, 'total');
     buy += g.cost;
