@@ -399,7 +399,7 @@ function cell(tr, text, klass) {
   tr.appendChild(td);
 }
 
-var COLS = ['계좌', '수량', '평단가', '매입금액', '평가금액', '평가손익', '수익률'];
+var COLS = ['계좌', '수량', '수익률', '평단가', '매입금액', '평가금액', '평가손익'];
 
 // 종목 제목 (표 안에서 계좌 묶음을 갈라준다)
 function addGroupRow(body, text) {
@@ -427,17 +427,19 @@ function addHoldRow(body, h, price, klass) {
   var tr = document.createElement('tr');
   if (klass) tr.className = klass;
   var buy = h.shares * h.cost;
+  var priced = price && buy > 0; // 매입금액 0인 계좌(미보유)는 손익 계산 대상이 아니다
+  var pl = priced ? h.shares * price - buy : 0;
   cell(tr, h.name);
   cell(tr, h.shares + '주');
+  if (priced) cell(tr, sgn(pl) + (pl / buy * 100).toFixed(2) + '%', cls(pl));
+  else cell(tr, '—');
   cell(tr, num(h.cost) + '원');
   cell(tr, won(buy));
-  if (price && buy > 0) { // 매입금액 0인 계좌(미보유)는 손익 계산 대상이 아니다
-    var pl = h.shares * price - buy;
+  if (priced) {
     cell(tr, won(h.shares * price));
     cell(tr, sgn(pl) + won(pl), cls(pl));
-    cell(tr, sgn(pl) + (pl / buy * 100).toFixed(2) + '%', cls(pl));
   } else {
-    cell(tr, '—'); cell(tr, '—'); cell(tr, '—');
+    cell(tr, '—'); cell(tr, '—');
   }
   body.appendChild(tr);
 }
@@ -471,17 +473,19 @@ function buildTable() {
   if (multi) {
     var tr = document.createElement('tr');
     tr.className = 'total grand';
+    var ok = priced && buy > 0;
+    var pl = ok ? val - buy : 0;
     cell(tr, '총합계');
     cell(tr, '—');
+    if (ok) cell(tr, sgn(pl) + (pl / buy * 100).toFixed(2) + '%', cls(pl));
+    else cell(tr, '—');
     cell(tr, '—'); // 종목이 섞이면 평단가는 의미가 없다
     cell(tr, won(buy));
-    if (priced && buy > 0) {
-      var pl = val - buy;
+    if (ok) {
       cell(tr, won(val));
       cell(tr, sgn(pl) + won(pl), cls(pl));
-      cell(tr, sgn(pl) + (pl / buy * 100).toFixed(2) + '%', cls(pl));
     } else {
-      cell(tr, '—'); cell(tr, '—'); cell(tr, '—');
+      cell(tr, '—'); cell(tr, '—');
     }
     body.appendChild(tr);
   }
