@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>데커스(DECK) 가치투자 분석 보고서 — 2026.10.12 · 판정: 관망 (10/22 실적 확인 후 진입)</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --seq-250: #86b6ef; --seq-450: #2a78d6;
+    --status-good: #0ca30c; --status-warning: #fab219; --status-serious: #ec835a; --status-critical: #d03b3b;
+    --delta-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  h2 .w { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 6px; }
+  p.body { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 10px; }
+  p.body strong { color: var(--text-primary); }
+  .notice { border: 1px solid var(--status-serious); border-radius: 10px; padding: 12px 16px; font-size: 13.5px; color: var(--text-secondary); margin-bottom: 20px; background: var(--surface-1); }
+  .notice b { color: var(--text-primary); }
+  .muted { color: var(--text-muted); font-size: 12.5px; }
+  .hero { display: flex; flex-wrap: wrap; gap: 24px; }
+  .hero-score { flex: 0 0 auto; text-align: center; padding: 8px 28px 8px 8px; border-right: 1px solid var(--gridline); }
+  .hero-score .num { font-size: 64px; font-weight: 800; line-height: 1.05; }
+  .hero-score .den { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+  .hero-score .label { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; max-width: 150px; }
+  .hero-main { flex: 1 1 320px; min-width: 280px; }
+  .verdict { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--status-serious); border-radius: 999px; padding: 4px 14px; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--status-serious); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .fact { border-top: 2px solid var(--gridline); padding-top: 8px; }
+  .fact .k { font-size: 12px; color: var(--text-muted); }
+  .fact .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fact .d { font-size: 12px; color: var(--text-secondary); }
+  .meter-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .meter-row .name { font-size: 14px; font-weight: 600; }
+  .meter-row .name small { display: block; font-weight: 400; font-size: 11.5px; color: var(--text-muted); }
+  .track { height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--seq-450); border-radius: 5px; }
+  .meter-row .val { font-size: 14px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .meter-row .val small { font-weight: 400; color: var(--text-muted); }
+  ul.check { list-style: none; }
+  ul.check li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--gridline); font-size: 14px; color: var(--text-secondary); align-items: baseline; }
+  ul.check li:last-child { border-bottom: none; }
+  .tag { flex: 0 0 auto; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+  .tag.pass { color: var(--status-good); border: 1px solid var(--status-good); }
+  .tag.warn { color: var(--status-serious); border: 1px solid var(--status-serious); }
+  .tag.fail { color: var(--status-critical); border: 1px solid var(--status-critical); }
+  ul.check b { color: var(--text-primary); font-weight: 600; }
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .chart-box { position: relative; }
+  svg text { font-family: inherit; }
+  .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
+  .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  details { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  details summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  .table-scroll { overflow-x: auto; }
+  .up { color: var(--delta-good); font-weight: 600; }
+  .warn-txt { color: var(--status-serious); font-weight: 600; }
+  .range-wrap { padding: 46px 10px 52px; }
+  .range-track { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--seq-250), var(--seq-450)); }
+  .marker { position: absolute; top: -40px; transform: translateX(-50%); text-align: center; }
+  .marker .lbl { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; }
+  .marker .prc { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .marker .tick { width: 2px; height: 14px; background: var(--baseline); margin: 2px auto 0; }
+  .marker.below { top: auto; bottom: -48px; }
+  .marker.below .tick { margin: 0 auto 2px; }
+  .marker.now .tick { background: var(--text-primary); width: 3px; height: 20px; }
+  .marker.now .prc, .marker.now .lbl { color: var(--text-primary); font-weight: 800; }
+  .range-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } .meter-row { grid-template-columns: 120px 1fr 70px; } }
+  .src { font-size: 12.5px; color: var(--text-muted); }
+  .src a { color: var(--series-1); text-decoration: none; }
+  .src li { margin-bottom: 4px; }
+  .disclaimer { border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">가치투자 체크리스트 기반 종목 분석 · 2026년 10월 12일 최초 작성 · <b>FY27 2Q 실적(10/22 추정) 전 기준</b></div>
+  <h1>데커스 <span style="color:var(--text-muted);font-weight:600">Deckers Outdoor Corp. · NYSE: DECK</span></h1>
+  <div class="sub">HOKA(러닝) + UGG(부츠) 두 브랜드를 소유한 신발 회사. 52주 고점 대비 −32%, PER 25배 → 11.8배. <b>시장은 HOKA의 성장이 끝났다고 가격을 매겼다(역DCF +1.5%) — 이 분석의 질문은 단 하나, "그게 룰루레몬형 꺾임인가, 고성장 뒤의 정상 감속인가."</b></div>
+</header>
+
+<div class="notice">🔶 <b>판정은 "매수 가능"이지만 행동은 "관망"이다.</b> 안전마진 37.5%로 가격 관문은 통과했으나, 02 §1 "목표가 도달 ≠ 자동 매수 — 최신 분기 실적을 반영하지 않았다면 재확인 후 진입"에 따라 <b>10/22(추정) FY27 2Q 실적을 보고 들어간다.</b> 인튜잇(8/25 실적 전 매수 → 20일 만에 논제 붕괴로 청산)이 정확히 이 상황의 교훈이다. <b>판단 기한 10/23.</b> 확인할 것 4개 — ① HOKA 매출 YoY ≥ +5% ② GM ≥ 55.5% ③ 연간 가이던스 유지 ④ 미국 매출 플러스. <b>3개 이상이면 3~4주 진입, 2개 이하면 대기 사유를 적고 관망, HOKA 역성장이면 패스.</b></div>
+
+<!-- 종합 판정 -->
+<section class="card">
+  <div class="hero">
+    <div class="hero-score">
+      <div class="num">83<span class="den">/100</span></div>
+      <div class="label">종합 평가 점수 (참고용 — 판정은 관문 방식) · 사업 점수 최저, 밸류 점수 최고</div>
+    </div>
+    <div class="hero-main">
+      <div class="verdict"><span class="dot"></span>판정: 매수 가능 → <b>관망 (10/22 실적 확인 후 진입 · 기한 10/23)</b></div>
+      <p class="body"><strong>"괜찮은 회사를 아주 싼 가격에"</strong> 유형이다 — 이 체계가 선호하는 "좋은 회사를 적당한 가격에"(코파트·NXP)가 아니다. 숫자는 전부 좋다(ROIC 38%, 무부채, 현금 $1.6B, FCF가 순이익의 107%, 자사주 잔여 승인이 시총의 42%). 문제는 <strong>해자가 브랜드 하나뿐</strong>이고, 그 브랜드(HOKA)의 성장이 +24% → +16% → +7.7%로 감속 중이며, <strong>전문 러너 채널에서 이탈 신호</strong>(−7.4%)와 <strong>품질 불만</strong>이 함께 나타났다는 것. 1단계는 ⚠️ 2개로 조건부 통과 → 확신도는 "보통"까지.</p>
+      <div class="facts">
+        <div class="fact"><div class="k">현재 주가 (10/9)</div><div class="v">$82.89</div><div class="d">시총 $11.3B · 52주 $77.20~$122.29 · 고점 대비 −32%</div></div>
+        <div class="fact"><div class="k">내재가치 (기본)</div><div class="v">$133</div><div class="d">기준 EPS $7.02 (FY26 확정 GAAP) · +8%/+4% · PER 14</div></div>
+        <div class="fact"><div class="k">목표 매수가</div><div class="v">$106.2</div><div class="d">현재가가 22% 아래 — 가격은 이미 통과</div></div>
+        <div class="fact"><div class="k">안전마진</div><div class="v up">+37.5%</div><div class="d">보유·관망 전 종목 중 최대 · 보수 내재가치 $81 = 현재가</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 단계별 점수 -->
+<section class="card">
+  <h2>단계별 점수</h2>
+  <div class="meter-row"><div class="name">① 사업의 질<small>조건부 통과 (⚠️ 2)</small></div><div class="track"><div class="fill" style="width:77%;background:var(--status-serious)"></div></div><div class="val">23<small>/30</small></div></div>
+  <div class="meter-row"><div class="name">② 경영진<small>통과 (⚠️ 1)</small></div><div class="track"><div class="fill" style="width:85%"></div></div><div class="val">17<small>/20</small></div></div>
+  <div class="meter-row"><div class="name">③ 재무<small>통과 (⚠️ 1)</small></div><div class="track"><div class="fill" style="width:84%"></div></div><div class="val">21<small>/25</small></div></div>
+  <div class="meter-row"><div class="name">④ 밸류에이션<small>매수 가능 (안전마진 37.5%)</small></div><div class="track"><div class="fill" style="width:88%;background:var(--status-good)"></div></div><div class="val">22<small>/25</small></div></div>
+  <p class="muted" style="margin-top:6px">비교: 코파트 85 → 77(10/12 갱신) · UHS 84 · PTC 85 · NXPI 79. DECK는 사업 점수가 가장 낮고 밸류 점수가 가장 높다.</p>
+</section>
+
+<!-- 1단계 -->
+<section class="card">
+  <h2>① 사업의 질 <span class="w">23/30 — 조건부 통과 (⚠️ 2개) · 이 분석의 승부점</span></h2>
+  <p class="body">두 개의 신발 브랜드를 소유하고 디자인·마케팅만 하며 생산은 베트남·인도네시아 외주(중국 &lt;5%)다. <b>HOKA</b>(매출 47%)는 두꺼운 쿠션의 러닝화로 전문 러너에서 시작해 일상화로 확장했고, <b>UGG</b>(50%)는 양털 부츠로 겨울(3분기)에 매출이 몰리는 아이콘 브랜드다. 도매 59% / 직판 41%(온라인 + 203개 매장). FY26 매출 $5.47B, 영업이익률 23%.</p>
+  <ul class="check">
+    <li><span class="tag pass">해자</span><span><b>브랜드 파워 — 유일한 해자.</b> HOKA는 미국 성인 러닝화 전 채널 점유 <b>약 23%로 브룩스와 공동 1위</b>(Circana), 2025-09까지 12개월 +2%p. UGG는 2012년 붕괴를 겪고도 FY26 사상 최대 매출 — 한 번 죽었다 살아난 브랜드는 유행이 아니라 자산. 증거는 <b>매출총이익률 56~58%</b>(나이키 ~44%)와 정가 판매 규율("주문 취소 없음", 재고 −5%).</span></li>
+    <li><span class="tag fail">없음</span><span><b>전환비용 ❌ · 네트워크 효과 ❌ · 원가 우위 ❌ · 무형자산 ❌.</b> 신발은 매 구매가 새 선택이다 — 코파트(야드·네트워크)·NXP(설계 인 락인)·PTC(PLM 전환비용)와 <b>근본적으로 다른 점</b>. 해자가 브랜드 하나뿐이라는 것은, 브랜드가 식으면 지켜줄 것이 없다는 뜻. 확신도 조건 ③("해자 2개 이상") 미충족.</span></li>
+    <li><span class="tag pass">통과</span><span><b>가격 결정력 (현재)</b> — ASP 상승, GM 56.4%(1Q FY27, +0.6%p)로 <b>관세 12.5% 가정에도 마진 유지</b>. 할인 확대 신호 없음.</span></li>
+    <li><span class="tag warn">⚠️①</span><span><b>브랜드 사이클 — 데커스 자신의 역사가 증거.</b> <b>2012년 UGG</b>: 매출 −9%, 이익 −33%, GM 49% → 42%(양모 원가 +80% + 재고 과잉 + 할인점 유출), 주가 반토막. 지금 HOKA 비중 47%가 그 자리에 있다. 성장 궤적 <b>FY25 +24% → FY26 +16% → 1Q FY27 +7.7%</b>(첫 한 자릿수). "정상 감속"인지 "꺾임"인지가 이 종목의 전부.</span></li>
+    <li><span class="tag warn">⚠️②</span><span><b>경쟁 — 미국 러닝 전문점 채널에서 이탈 신호.</b> 12개월(~2025-09, Karnan): <b>HOKA −7.4%</b>, 브룩스 −6.8%, On −19.7%, <b>나이키 +35.4%</b>, Topo +30.9%. 전 채널(Circana)에서는 HOKA 점유 상승. <b>해석: 매스 채널에서는 아직 이기고, 코어(전문 러너) 채널에서는 밀리기 시작했다.</b> 약세론의 "코어를 잃으면 프리미엄이 사라진다"가 이 지점. 경쟁사 — On(2Q 2026 환율중립 +22%, Americas +13%), 나이키(러닝 재정비), 브룩스(1위 11분기 연속). 회사: "performance run·trail에서 $120 이상 가격대 점유 유지·확대"(1Q FY27 콜).</span></li>
+    <li><span class="tag warn">수소문</span><span><b>내구성 불만이 뚜렷하다.</b> Clifton 10 포럼: "300km에 폼이 주저앉음(경쟁사 500km)", "밑창 4개월에 분리", 보증 거부 사례. <b>전문 러너의 품질 불신 = 약세론의 "코어 이탈" 조기 신호와 일치</b> → R1에 반영. 긍정: Clifton Pro(신소재) 출시 2주 만에 재주문 발생, 트레일·라이프스타일이 HOKA DTC 성장의 절반 이상.</span></li>
+  </ul>
+  <p class="body" style="margin-top:12px"><b>룰루레몬(0726 탈락)과의 대조</b> — 룰루레몬은 "EPS 2년 연속 감소 + 본토 역성장 + 경쟁사는 성장"으로 탈락했다. DECK는 <b>EPS 증가 중 + 본토 +3.2% + 경쟁사 On 성장</b> — 세 조건 중 하나만 겹친다. <b>탈락 조건은 아니지만 같은 길의 입구에 서 있다.</b> 그래서 ❌가 아니라 ⚠️다.</p>
+</section>
+
+<!-- 2단계 -->
+<section class="card">
+  <h2>② 경영진 <span class="w">17/20 — 통과 (⚠️ 1개)</span></h2>
+  <ul class="check">
+    <li><span class="tag pass">통과</span><span><b>자본배분 — 배당 없음, 대형 M&A 없음, 전부 자사주.</b> FY22~26 매입 $371M → $314M → $425M → $586M → <b>$1,089M</b>(FY26 1,050만 주 @ $102.43). 1Q FY27 $338M 추가, <b>잔여 승인 $4.71B = 시총의 42%</b>. FY27 계획: FCF의 ~80%. 희석주식수 <b>149.6M → 138.6M(−7.4% YoY)</b>. 비핵심 정리: Sanuk 매각(2024), Koolaburra·Ahnu 단종(FY26). CapEx 매출의 1.6%. <span class="muted">메모: FY26 평균 매입가 $102~104가 현재가보다 24% 높다 — PER 14~15배에서의 매입이라 규율 위반은 아님.</span></span></li>
+    <li><span class="tag pass">통과</span><span><b>솔직한 소통</b> — 2025-10 FY26 가이던스 하향(HOKA 24% → low-teens)을 선제 공시(당일 −15%). 1Q FY27 콜에서 관세율 가정을 10% → 12.5%로 올리면서도 GM 가이던스를 올렸다(상쇄 근거 제시). 경쟁·날씨·프로모션 질문에 회피 없음.</span></li>
+    <li><span class="tag pass">통과</span><span><b>보수·희석</b> — CEO <b>Stefano Caroti</b>(2024-08 취임, 내부 승진 — 전 Chief Commercial Officer, 그 전 나이키·푸마·컨버스) FY26 총보수 $11.9M, 성과연동 88%. SBC $45M = 순이익의 4.4%. 희석 없음(순감소). 2026-09-14 주총 이사 10인 전원 선임, 보수 승인 — 지배구조 이슈 없음.</span></li>
+    <li><span class="tag warn">⚠️</span><span><b>내부자 보유 미미 + 상시 매도.</b> 내부자 합계 <b>1.28%</b>. CEO 보유 약 31~46만 주($26~38M, 보수의 2~3배 — 적지 않음)이나 2024~2025년 $2.6M·$3.0M 등 정기 매도 반복. 창업가 지분 없는 전문경영 체제 — 주주와 이해가 일치하는 쪽은 자사주 정책이지 지분이 아니다.</span></li>
+  </ul>
+</section>
+
+<!-- 3단계 -->
+<section class="card">
+  <h2>③ 재무 <span class="w">21/25 — 통과 (⚠️ 1개)</span></h2>
+  <div class="table-scroll">
+  <table>
+    <tr><th>지표</th><th>수치</th><th>기준</th><th>판정</th></tr>
+    <tr><td>ROE</td><td><b>42.6%</b> (TTM) · FY22~26: 30.3 → 31.3 → 39.2 → 41.8 → 40.9%</td><td>15% 이상 꾸준히</td><td class="up">통과</td></tr>
+    <tr><td>ROIC</td><td><b>37.6%</b> (현금 포함) / 현금 제외 90~104%</td><td>15% 이상</td><td class="up">통과 (최상급)</td></tr>
+    <tr><td>영업이익률</td><td>FY22 18.0% → FY24 21.9% → FY25 23.7% → <b>FY26 23.1%</b> / <b>FY27 가이던스 ~21.5%</b></td><td>높고 안정</td><td class="warn-txt">⚠️ 첫 하향 (관세 + SG&A)</td></tr>
+    <tr><td>장기부채 상환능력</td><td><b>차입 0</b> (리스만) · 현금 $1.6B</td><td>≤ 3~4배</td><td class="up">통과</td></tr>
+    <tr><td>FCF</td><td>FY26 <b>$1,097M = 순이익의 107%</b> · 5년 합 FCF $3.58B vs 순이익 $3.72B</td><td>≈ 순이익</td><td class="up">통과</td></tr>
+    <tr><td>EPS 추세</td><td>FY17 $0.03 → 0.60 → 1.47 → 1.60 → 2.25 → 2.71 → 3.23 → 4.86 → 6.33 → <b>FY26 $7.02</b> (9년 연속 증가)</td><td>10년 우상향</td><td class="up">통과</td></tr>
+    <tr><td>CapEx 부담</td><td>FY26 $85M = 순이익의 8%, 매출의 1.6%</td><td>과도하지 않음</td><td class="up">통과</td></tr>
+    <tr><td>발행주식수</td><td>희석 149.6M → <b>138.6M</b> (1Q FY27), 유통 136.7M</td><td>유지·감소</td><td class="up">통과</td></tr>
+    <tr><td>1달러 테스트</td><td>FY17~26 누적 순이익 ≈ $4.8B / 시총 $1.7B(2016) → $11.3B = <b>+$9.6B</b></td><td>$1 → $1+</td><td class="up">통과</td></tr>
+    <tr><td>회계 적신호</td><td>OCF $1,182M &gt; 순이익 · GAAP 단일 보고(비GAAP 없음 — <b>스크리너 PER이 그대로 실질</b>) · CFO 2018년부터 재임 · <span class="warn-txt">단일 고객이 매출채권의 18.5%</span>(매출 10% 이상 고객은 없음)</td><td>—</td><td class="up">통과 (보조 ⚠️ 1)</td></tr>
+  </table>
+  </div>
+  <p class="body" style="margin-top:14px"><b>FY26 확정</b>: 매출 $5,472M(+9.8%) — HOKA $2,587M(<b>+15.9%</b>), UGG $2,739M(+8.2%) / DTC +6.3%, 도매 +12.3% / <b>미국 $3,192M(+0.2%)</b>, 해외 $2,281M(<b>+26.8%</b>) / EPS $7.02(+11%). <b>FY27 1Q</b>: 매출 $1,020M(+5.7%) — HOKA +7.7%, UGG +4.9% / DTC +13%, 도매 +2.2% / 미국 +3.2%, 해외 +8.4% / GM 56.4%(+0.6%p), <b>영업이익 −6.0%</b>(SG&A +12.7%) / EPS $0.94(+1%, 자사주 효과). <b>FY27 가이던스</b>: 매출 $5.86~5.91B, HOKA low-double-digit, UGG mid-single, 영업이익률 21.5%+, EPS $7.35~7.50.</p>
+
+  <div style="margin-top:22px">
+    <div class="chart-title">매출 · 순이익 10년 추이 (FY17~FY26, 3월 결산)</div>
+    <div class="chart-sub">단위: 10억 달러(B). FY17은 손상차손·구조조정 바닥. FY20 이후 HOKA가 성장을 이끌었다 — <b>그 엔진이 식는지가 질문</b></div>
+    <div class="legend"><span><span class="sw" style="background:var(--series-1)"></span>매출</span><span><span class="sw" style="background:var(--series-2)"></span>순이익</span></div>
+    <div class="chart-box" id="chart-rev"></div>
+    <details><summary>데이터 표로 보기</summary><div class="table-scroll"><table id="rev-table"></table></div></details>
+  </div>
+</section>
+
+<!-- 4단계 -->
+<section class="card">
+  <h2>④ 밸류에이션 <span class="w">22/25 — 매수 가능 (안전마진 +37.5% · 단 주가 &gt; 보수 내재가치)</span></h2>
+  <p class="body"><b>기준 EPS $7.02 — FY26 확정 GAAP.</b> TTM $7.09, 회사 FY27 가이던스 $7.35~7.50(자사주 효과 포함), 컨센서스 FY27 ~$7.56 / FY28 ~$8.37 중 <b>가장 낮은 확정치를 의도적으로 채택</b>했다. 일회성 없음, 비GAAP 없음 — PTC·MKC·NXPI와 달리 <b>착시 없는 깨끗한 EPS</b>. 가이던스 상단 성장률의 절반은 자사주 효과라 "사업 성장"이 아니고, 10/22 실적에서 하향될 수 있다.</p>
+  <div class="range-wrap" id="vicRangeWrap" title="클릭하면 차트가 새 창으로 열립니다" style="cursor:pointer">
+    <div class="range-track" id="vicTrack">
+      <div class="marker" style="left:15%"><div class="lbl">보수 (HOKA 정체)</div><div class="prc">$81</div><div class="tick"></div></div>
+      <div class="marker" style="left:52.1%"><div class="lbl">기본 (한 자릿수 후반 + 자사주)</div><div class="prc">$133</div><div class="tick"></div></div>
+      <div class="marker" style="left:95.7%"><div class="lbl">낙관 (글로벌 확장)</div><div class="prc">$194</div><div class="tick"></div></div>
+      <div class="marker now below" style="left:16.4%"><div class="tick"></div><div class="prc">$82.89</div><div class="lbl">현재 주가 (10/9) — 보수선 바로 위</div></div>
+    </div>
+    <div class="range-foot"><span>$60</span><span>내재가치 추정 범위 (양끝은 표시 눈금일 뿐)</span><span>$200</span></div>
+  </div>
+
+  <script src="/reports/_dcfbox.js"></script>
+  <script>
+    vicDcfBox({ eps0: 7.02, g1: 0.08, g2: 0.04, r: 0.095, per: 14, perSrc: '기재 (5년 평균 PER 약 20의 70%)' });
+  </script>
+  <script src="/reports/_quotebar.js"></script>
+  <script>
+    vicQuoteBar({ ticker:'DECK', lo:60, hi:200, target:106.2,
+                  chart:'https://stockanalysis.com/stocks/deck/' });
+  </script>
+
+  <div class="table-scroll" style="margin-top:18px">
+    <table>
+      <tr><th>시나리오</th><th>기준 EPS</th><th>성장 (1~5년/6~10년)</th><th>할인율</th><th>종료 PER</th><th>내재가치</th><th>안전마진 ($82.89)</th><th>20% 매수가</th></tr>
+      <tr><td>보수 (HOKA 정체·UGG 사이클 하강)</td><td>$7.02</td><td>+2% / +1%</td><td>10%</td><td>11</td><td><b>$81</b></td><td class="warn-txt">−1.8%</td><td>$65</td></tr>
+      <tr><td><b>기본 (HOKA high-single + 자사주)</b></td><td><b>$7.02</b></td><td>+8% / +4%</td><td>9.5%</td><td>14</td><td><b>$133</b></td><td class="up"><b>+37.5%</b></td><td><b>$106.2</b></td></tr>
+      <tr><td>낙관 (글로벌 확장 + 마진 회복)</td><td>$7.02</td><td>+12% / +6%</td><td>9%</td><td>17</td><td><b>$194</b></td><td class="up">+57.3%</td><td>$155</td></tr>
+    </table>
+  </div>
+  <p class="body" style="margin-top:10px"><b>기본 +8%의 구성</b>: 매출 +6~7%(HOKA high-single + UGG mid-single) + 영업이익률 −1%p + 자사주 연 4~5% ≈ EPS +8%. 회사 가이던스(FY27 EPS +5~7%)와 컨센서스 FY28(+10.7%)의 사이. <b>보수 +2%는 "HOKA 성장 정지 + 자사주로만 EPS 유지"이고, 그 값 $81이 지금 주가다.</b> 터미널 비중 53%(코파트·NXPI 58%보다 낮음 — 종료 PER 14배를 낮게 잡은 결과).</p>
+  <div class="notice" style="margin-top:14px"><b>역DCF 검산</b> — 현재가 $82.89를 정당화하는 성장률 = <b>1~5년 +1.5% / 6~10년 −2.5%</b>(같은 모델). <b>시장은 HOKA 성장이 끝났고 6년 뒤부터 이익이 줄어든다고 가격을 매겼다.</b> 내 기본 가정(+8%)보다 훨씬 낮다 → 저평가 쪽. 단 NXPI 교훈대로 이것은 안전마진의 다른 표현일 뿐 독립 증거가 아니다 — 값어치는 "연 1.5%도 못 할 회사인가"를 눈으로 보게 하는 것. FY26 +11%, 1Q FY27 EPS +1%(영업이익 −6%)라는 최근 궤적을 보면 시장의 비관이 전혀 근거 없는 것은 아니다.</div>
+  <p class="muted">참고: PER 11.8(fwd 9.9, 5년 평균 약 20.5) · PBR 4.9 · PEG 1.0 · EV/EBITDA 7.7 · 배당 0%(전액 자사주) · 공매도 비율 8.8%(코파트 3.4%) · 애널리스트 목표가 평균 $119.67, Recom 2.27</p>
+</section>
+
+<!-- 5단계 -->
+<section class="card">
+  <h2>⑤ 최종 점검 (거부권) + 사전 부검</h2>
+  <ul class="check">
+    <li><span class="tag warn">조건부</span><span><b>10년 보유 의향</b> — 러닝화 시장은 10년 뒤에도 있고(카테고리 +8.9%/년), 데커스는 두 번째 브랜드(HOKA)를 키워낸 운영 역량을 증명했다. 그러나 <b>"10년 뒤 HOKA가 지금의 지위"라고 서술하기는 어렵다.</b> 10년 서술은 "브랜드 포트폴리오 운영사"로는 가능, "HOKA 단일 브랜드"로는 불가 → 확신도 조건 ④ 미충족.</span></li>
+    <li><span class="tag pass">통과</span><span><b>5년간 못 팔아도 편안한가</b> — 무부채 + 현금 $1.6B + FCF $1.1B/년. 2012년형 침체가 와도 파산 리스크 0. 가격은 흔들려도 회사는 남는다.</span></li>
+    <li><span class="tag pass">실시</span><span><b>약세론 스틸맨 (실제로 읽었다)</b> — <b>StableBread</b>: HOKA 매출 +7.7%인데 <b>세그먼트 영업이익 $253.5M → $255.5M 제자리, 마진 38.8% → 36.3%</b>("매출 $50M 더 팔고 이익은 안 늘었다"). SG&A +12.7% vs 매출 +5.7%. 전문 러너의 품질 불만 → "코어의 신뢰를 대중성과 맞바꾸면 프리미엄과 가격결정력이 함께 사라진다". 약세 목표 $81~89, 현금·FCF 바닥 $68. <b>하향</b>: Wells Fargo·Raymond James·KeyBanc. <b>공매도 8.8%</b>, 증가 중(Ortex). <b>핵심 주장 = "HOKA의 마진이 매출보다 먼저 꺾였다"</b> → R1·R2에 반영. <b>반론</b>: 역DCF가 보여주듯 주가는 이미 "무성장" 반영, 보수 시나리오 $81 = 현재가, 자사주 42% 승인 잔여, 해외 +27%, 전 채널 점유 상승. <b>약세론이 전부 맞아도 하방이 좁고, 절반만 틀려도 상방이 크다.</b></span></li>
+    <li><span class="tag pass">통과</span><span><b>남들이 사니까 아님</b> — −32%, 하향 3건, 공매도 증가 구간. "남들이 파니까 사는" 역발상 위치.</span></li>
+    <li><span class="tag pass">비교</span><span><b>기회비용 (10/12)</b> — DECK <b>37.5%</b> vs UHS 33.6%(비중 상한 ❌) · NXPI 19.9%(기준 미달·R2 정지 ❌) · CPRT 19.6%(갱신 후, 기준 근소 미달·비중 상한 ❌) · GOOGL·MSFT 목표가 −18~22% 거리. <b>"비슷하면 아는 종목 우선" 규칙을 적용할 상대가 없다</b> — 기존 보유 3종은 전부 자격이 막혀 있고 DECK가 최대. 신규 종목의 비용(새 판단오류 + 종목 수 4개)은 감수.</span></li>
+    <li><span class="tag fail">🔶 대기</span><span><b>거부권 "판단 대기" 1개 — 10/22(추정) FY27 2Q 실적. 판단 기한 10/23.</b> 2Q는 HOKA high-single-digit 가이던스의 첫 검증. 확인 항목 ① HOKA YoY ≥ +5% ② GM ≥ 55.5% ③ 연간 가이던스 유지 ④ 미국 매출 플러스 → <b>3개 이상 진입 / 2개 이하 대기 / HOKA 역성장 패스.</b></span></li>
+  </ul>
+  <div class="table-scroll" style="margin-top:14px">
+    <table>
+      <tr><th>R#</th><th style="text-align:left">리스크</th><th style="text-align:left">관찰 지표 · 임계값</th><th>주기</th></tr>
+      <tr><td>R1</td><td style="text-align:left"><b>HOKA 브랜드 매력도 하락 (룰루레몬형)</b></td><td style="text-align:left">HOKA 매출 YoY(기준값 1Q FY27 <b>+7.7%</b>, FY26 +15.9%). <b>2개 분기 연속 +5% 미만 → 논제 재평가 / 미국 HOKA 역성장 또는 전 채널 점유율 하락 → 경보.</b> 보조: 전문점 채널 데이터·품질 불만 추이</td><td>분기</td></tr>
+      <tr><td>R2</td><td style="text-align:left"><b>마진 침식 (관세 + 프로모션 + SG&A)</b></td><td style="text-align:left">GM(기준 FY26 57.7%, 가이던스 56.5%) / 영업이익률(23.1% → 가이던스 21.5%). <b>GM 55% 미달 또는 영업이익률 20% 미달 → 기준 EPS 재산정</b> (약세론의 핵심 지표)</td><td>분기</td></tr>
+      <tr><td>R3</td><td style="text-align:left"><b>UGG 2012형 재고·할인 사이클</b></td><td style="text-align:left">재고 YoY vs 매출 YoY(기준 1Q FY27 재고 −5%). <b>재고 증가율이 매출 증가율을 2개 분기 연속 상회 + 할인점 유출 → 경보.</b> 따뜻한 겨울이 트리거</td><td>분기 (3Q 핵심)</td></tr>
+      <tr><td>R4</td><td style="text-align:left">자본배분 변질</td><td style="text-align:left">대형 M&A·배당 전환·자사주 중단. <b>시총 10%($1.1B) 초과 인수 → 재평가</b></td><td>수시</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 결론 -->
+<section class="card">
+  <h2>결론 및 실행 계획</h2>
+  <ul class="check">
+    <li><span class="tag warn">판정</span><span><b>매수 가능 → 관망 (10/22 실적 확인 후 진입, 판단 기한 10/23)</b> — 참고 점수 83/100 (사업 23 조건부 / 경영진 17 / 재무 21 / 밸류 22).</span></li>
+    <li><span class="tag pass">사는 논리</span><span><i>"시장은 HOKA가 끝났다고 가격을 매겼다(역DCF +1.5%). 끝나지 않았다면 +60%, 정말 끝났다면 보수 시나리오 $81로 −2%. 무부채와 FCF $1.1B가 그 비대칭을 지탱한다."</i></span></li>
+    <li><span class="tag fail">안 사는 논리</span><span><i>"해자가 브랜드 하나뿐인 회사에서 브랜드의 코어 고객이 품질 불만을 말하기 시작했고, 마진이 매출보다 먼저 꺾였다 — 룰루레몬도 처음엔 '정상적 감속'이었다."</i></span></li>
+    <li><span class="tag warn">판별</span><span>싼 이유 = HOKA 성장 감속 + 미국 정체 + 관세 + 경쟁. 판별 질문 — ① 고객 이탈: 전문점 채널 예 / 전 채널 아니오(혼합) ② 해자 원천 공격: 부분적 예 ③ 3년 뒤에도: 관세 아니오, 경쟁 예 가능 ④ 이 회사만 + 모델 내재: 예. <b>4개 중 2~2.5개 "예" — 룰루레몬(3.5)보다 적고 코파트(0~1)보다 많다. 구조 신호가 절반.</b></span></li>
+    <li><span class="tag warn">확신도</span><span><b>보통</b> — ① 37.5% ≥ 30 ✓ / ② $82.89 &gt; 보수 $81 ✗(1.8%) / ③ 해자 2개 ✗(브랜드 1종) / ④ 10년 서술 ✗(조건부) / ⑤ 1단계 조건부 ✗ → 5개 중 1개. "높음" 승격 불가.</span></li>
+    <li><span class="tag pass">사이징</span><span>목표 비중 <b>8%</b>, 상한 <b>15%</b>(03 §1 확정 → 원금 1,000만 기준 ≈ 13주). <b>1회차 3~4주 = 3~4%</b>(주당 약 111,000원, 환율 1,340) — 목표의 1/3~1/2 ✓. 1주 11만 원이라 UHS·CPRT처럼 1회차가 상한을 넘는 문제 없음. 추가매수: 직전 매수가 −10~15%(<b>$70~74</b>)에서 R1·R2 점검 후 3주. 보수선 $81 아래면 확신도 조건 ② 충족 → 비중 확대 근거로만(승격은 ③④⑤ 때문에 불가).</span></li>
+    <li><span class="tag pass">분산</span><span>테마 = 미국 재량 소비. 보유 종목(보험 사이클·의료 재정·자동차 반도체) 어느 것과도 겹치지 않음. AI 테마 합산 무관.</span></li>
+    <li><span class="tag warn">점검</span><span>재검토 <b>2026-10-23</b>(2Q 실적 직후 진입 판정) → FY27 연간 2027-05(내재가치 갱신). 10/22 후 md 4단계 궤적 로그에 한 줄 추가.</span></li>
+  </ul>
+</section>
+
+<section class="card">
+  <h2>출처 (2026-10-12 조사)</h2>
+  <ul class="src">
+    <li><a href="https://ir.deckers.com/news-events/press-releases/detail/656/deckers-brands-reports-fourth-quarter-and-full-fiscal-year-2026-financial-results" target="_blank">FY26 4Q·연간 보도자료 (Deckers IR)</a> · <a href="https://www.sec.gov/Archives/edgar/data/0000910521/000091052126000015/deckex991pressrelease-6302.htm" target="_blank">FY27 1Q 8-K (SEC)</a> · <a href="https://www.sec.gov/Archives/edgar/data/0000910521/000162828026037664/deck-20260331.htm" target="_blank">FY26 10-K</a> · <a href="https://www.sec.gov/Archives/edgar/data/0000910521/000091052126000022/deck-20260630.htm" target="_blank">FY27 1Q 10-Q</a> · <a href="https://www.sec.gov/Archives/edgar/data/0000910521/000091052126000018/deck-20260724.htm" target="_blank">DEF 14A 2026</a></li>
+    <li><a href="https://stockanalysis.com/stocks/deck/transcripts/676608-q1-2027/" target="_blank">FY27 1Q 콜 (stockanalysis)</a> · <a href="https://stockanalysis.com/stocks/deck/financials/" target="_blank">재무 10년</a> · <a href="https://stockanalysis.com/stocks/deck/financials/ratios/" target="_blank">비율</a> · Finviz 스냅샷 10/9</li>
+    <li>약세론: <a href="https://stablebread.substack.com/p/deckers-gets-marked-down" target="_blank">StableBread — Deckers Gets Marked Down</a> · <a href="https://finance.yahoo.com/news/keybanc-downgrades-deckers-outdoor-deck-030001886.html" target="_blank">KeyBanc 하향</a> · <a href="https://ortex.news/articles/161437/deck-heads-into-earnings-with-bears-building-and-analysts-cautious" target="_blank">Ortex — 공매도 증가</a></li>
+    <li>경쟁·채널: <a href="https://sgbonline.com/the-tre-sessions-run-specialty-growth-trailing-broader-market/" target="_blank">SGB — 전문점 채널 TRE (2025-12)</a> · <a href="https://finance.yahoo.com/markets/stocks/articles/holding-ag-onon-q2-2026-190033429.html" target="_blank">On Q2 2026</a> · <a href="https://www.moomoo.com/news/post/73511370/hoka-s-growth-rate-has-slowed-to-single-digits-and" target="_blank">HOKA 둔화 분석</a> · <a href="https://sgbonline.com/hoka-brand-fiscal-2026-third-quarter/" target="_blank">Circana 점유 (SGB)</a></li>
+    <li>수소문·역사: <a href="https://redditrecs.com/road-running-shoes/model/hoka-clifton-10/" target="_blank">Clifton 10 Reddit 리뷰 모음</a> · <a href="https://hoka.pissedconsumer.com/review.html" target="_blank">PissedConsumer HOKA</a> · <a href="https://www.pacbiztimes.com/2012/10/25/ugg-maker-shears-profits/" target="_blank">2012 UGG 침체 (PacBizTimes)</a></li>
+  </ul>
+  <div class="disclaimer">이 문서는 개인의 투자 판단 기록이며 투자 권유가 아닙니다. 재무 수치는 FY2026(2026-03) 확정 + FY27 1Q(2026-06) 기준이고, 주가·안전마진은 2026-10-09 종가 $82.89 기준입니다. <b>FY27 2Q 실적(10/22 추정) 전에 작성되었으며, 진입 판단은 그 실적 확인 후에 합니다.</b> 내재가치는 명시된 가정 위에서만 성립하며, 가정이 바뀌면 결론도 바뀝니다. 원본은 02.종목분석/데커스_DECK_분석_20261012.md.</div>
+</section>
+
+</div>
+
+<script>
+(function () {
+  const years = ['FY17', 'FY18', 'FY19', 'FY20', 'FY21', 'FY22', 'FY23', 'FY24', 'FY25', 'FY26'];
+  const revenue = [1.790, 1.903, 2.020, 2.133, 2.546, 3.150, 3.627, 4.288, 4.986, 5.472];
+  const income = [0.006, 0.114, 0.264, 0.276, 0.383, 0.452, 0.517, 0.760, 0.966, 1.024];
+  const W = 880, H = 260, padL = 46, padR = 12, padT = 18, padB = 34;
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const max = Math.max(...revenue) * 1.15;
+  const yPix = v => H - padB - (v / max) * (H - padT - padB);
+  const n = years.length, slot = (W - padL - padR) / n, barW = Math.min(28, slot * 0.3), gap = 6;
+
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="260" preserveAspectRatio="none" role="img">`;
+  for (let i = 0; i <= 4; i++) {
+    const v = max * i / 4, y = yPix(v);
+    s += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${css('--gridline')}" stroke-width="1"/>`;
+    s += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" font-size="11" fill="${css('--text-muted')}">${v.toFixed(1)}</text>`;
+  }
+  const bars = [];
+  years.forEach((yr, i) => {
+    const cx = padL + slot * i + slot / 2;
+    s += `<rect x="${cx - gap / 2 - barW}" y="${yPix(revenue[i])}" width="${barW}" height="${yPix(0) - yPix(revenue[i])}" fill="${css('--series-1')}" rx="2"/>`;
+    s += `<rect x="${cx + gap / 2}" y="${yPix(income[i])}" width="${barW}" height="${yPix(0) - yPix(income[i])}" fill="${css('--series-2')}" rx="2"/>`;
+    s += `<text x="${cx}" y="${H - 12}" text-anchor="middle" font-size="11" fill="${css('--text-muted')}">${yr}</text>`;
+    bars.push({ x: cx, yr, rev: revenue[i], inc: income[i] });
+  });
+  s += `<line x1="${padL}" y1="${yPix(0)}" x2="${W - padR}" y2="${yPix(0)}" stroke="${css('--baseline')}" stroke-width="1"/></svg>`;
+
+  const box = document.getElementById('chart-rev');
+  box.innerHTML = s;
+  const tip = document.createElement('div'); tip.className = 'tooltip'; box.appendChild(tip);
+  const svg = box.querySelector('svg');
+  svg.addEventListener('mousemove', e => {
+    const rect = box.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) / rect.width * W;
+    let best = 0, bd = 1e9;
+    bars.forEach((b, i) => { const d = Math.abs(b.x - mx); if (d < bd) { bd = d; best = i; } });
+    const b = bars[best];
+    tip.innerHTML = `<b>${b.yr}</b><br>매출 <b>$${b.rev.toFixed(2)}B</b><br>순이익 <b>$${b.inc.toFixed(3)}B</b> <span style="color:${css('--text-muted')}">(이익률 ${(b.inc / b.rev * 100).toFixed(1)}%)</span>`;
+    tip.style.opacity = 1;
+    tip.style.left = Math.min(b.x / W * rect.width + 14, rect.width - 160) + 'px';
+    tip.style.top = '20px';
+  });
+  svg.addEventListener('mouseleave', () => tip.style.opacity = 0);
+
+  let t = '<tr><th>연도</th>' + years.map(y => `<th>${y}</th>`).join('') + '</tr>';
+  t += '<tr><td>매출 ($B)</td>' + revenue.map(v => `<td>${v.toFixed(2)}</td>`).join('') + '</tr>';
+  t += '<tr><td>순이익 ($B)</td>' + income.map(v => `<td>${v.toFixed(3)}</td>`).join('') + '</tr>';
+  document.getElementById('rev-table').innerHTML = t;
+})();
+</script>
+</body>
+</html>
