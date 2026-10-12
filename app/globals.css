@@ -151,3 +151,9 @@ body {
   display: flex;
   bottom: calc(1.25rem + env(safe-area-inset-bottom));
 }
+
+/* 데스크톱 전용 사이드바 숨기기/펼치기 버튼 — 모바일은 햄버거 방식이므로 감춘다 */
+.vic-mobile .vic-collapse-btn,
+.vic-mobile .vic-expand-btn {
+  display: none;
+}

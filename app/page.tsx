@@ -10,6 +10,7 @@ export default function HomePage() {
       <ul className="mt-9 space-y-3 text-[17px] leading-relaxed text-ink-2">
         <li>🌱 일찍 시작하라</li>
         <li>🎯 타이밍을 맞추려 하지 마라</li>
+        <li>🐢 서두르지 마라, 천천히 가라</li>
         <li>🌳 오랫동안 유지하라</li>
       </ul>
 
