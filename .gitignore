@@ -18,6 +18,15 @@ content/private/
 포트폴리오_*.html
 *포트폴리오_현황*.md
 
+# 폭락 알림 모니터 — 메일 주소·알림 상태·로그 (코드만 커밋)
+종목 모니터링/drawdown-monitor/config.json
+종목 모니터링/drawdown-monitor/state.json
+종목 모니터링/drawdown-monitor/history_cache.json
+종목 모니터링/drawdown-monitor/*.tmp
+종목 모니터링/drawdown-monitor/monitor.lock
+종목 모니터링/drawdown-monitor/logs/
+__pycache__/
+
 # OS/에디터
 .DS_Store
 Thumbs.db

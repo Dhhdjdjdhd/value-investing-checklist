@@ -194,6 +194,8 @@
     public/reports/_quotebar.js   실시간 시세 점 + 바 아래 한 줄 + 차트 팝업
     public/reports/_dcfbox.js     "계산 과정" 접이식 박스 (숫자는 매번 계산)
     app/api/quote/[ticker]        야후 시세 프록시 (60초 캐시, 장중에만 갱신)
+    app/api/history/[ticker]      가격 히스토리 프록시 (range=all → 전체 일봉, 폭락 알림 모니터용)
+                                  ※ 모니터: 종목 모니터링/drawdown-monitor/ (사용법.md)
     lib/content.ts                md를 읽어 탭 목록·상세 페이지를 만든다
 
 

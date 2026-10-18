@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>기술주 20년 비교 — 360750 · 133690 · 381170</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Malgun Gothic", "맑은 고딕", -apple-system, sans-serif;
+    background: #f4f6f9;
+    color: #2c3e50;
+    line-height: 1.7;
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  header {
+    background: linear-gradient(135deg, #1a3a5c, #2c5f8a);
+    color: #fff;
+    border-radius: 14px;
+    padding: 32px 28px;
+    margin-bottom: 24px;
+  }
+  header h1 { font-size: 24px; margin-bottom: 8px; }
+  header p { opacity: .85; font-size: 14px; }
+  .badge {
+    display: inline-block; background: rgba(255,255,255,.18);
+    border-radius: 20px; padding: 3px 12px; font-size: 12px; margin-top: 12px; margin-right: 6px;
+  }
+
+  section {
+    background: #fff; border-radius: 14px;
+    padding: 26px 28px; margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  h2 {
+    font-size: 18px; color: #1a3a5c;
+    padding-bottom: 10px; border-bottom: 2px solid #e8edf3;
+    margin-bottom: 16px;
+  }
+  h2 .num {
+    display: inline-block; background: #1a3a5c; color: #fff;
+    width: 26px; height: 26px; border-radius: 50%;
+    text-align: center; line-height: 26px; font-size: 14px; margin-right: 8px;
+  }
+  h3 { font-size: 15px; margin: 18px 0 8px; color: #2c5f8a; }
+  p, li { font-size: 14px; }
+  ul, ol { padding-left: 22px; margin: 8px 0; }
+  li { margin-bottom: 5px; }
+
+  .tbl { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13.5px; }
+  th {
+    background: #1a3a5c; color: #fff; padding: 9px 10px;
+    text-align: center; font-weight: 600; white-space: nowrap;
+  }
+  td { padding: 8px 10px; border-bottom: 1px solid #e8edf3; text-align: center; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  .highlight-row td { background: #fff6e0 !important; font-weight: 700; }
+  .num-r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .callout {
+    border-left: 4px solid #2c8a5f; background: #eef8f2;
+    border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 14px 0; font-size: 14px;
+  }
+  .warn {
+    border-left: 4px solid #c0703a; background: #fdf3ec;
+    border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 14px 0; font-size: 14px;
+  }
+  .small { font-size: 12px; color: #7a8a99; }
+  footer { text-align: center; margin-top: 24px; font-size: 12px; color: #96a4b2; }
+
+  /* 시뮬레이터 */
+  .inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 14px; }
+  .inputs label { font-size: 12.5px; color: #5a6b7c; display: block; }
+  .inputs input {
+    width: 100%; margin-top: 4px; padding: 8px 10px; font-size: 14px;
+    border: 1px solid #cfd8e3; border-radius: 8px; font-family: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+  table.assume input {
+    width: 70px; padding: 4px 6px; font-size: 13px; text-align: right;
+    border: 1px solid #cfd8e3; border-radius: 6px; font-family: inherit;
+  }
+  .btn {
+    background: #1a3a5c; color: #fff; border: 0; border-radius: 8px;
+    padding: 9px 18px; font-size: 14px; font-family: inherit; cursor: pointer;
+  }
+  .btn:hover { background: #2c5f8a; }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+  .seg button {
+    border: 1px solid #cfd8e3; background: #fff; color: #2c3e50; border-radius: 16px;
+    padding: 4px 12px; font-size: 12.5px; font-family: inherit; cursor: pointer;
+  }
+  .seg button.on { background: #1a3a5c; color: #fff; border-color: #1a3a5c; }
+  .chart-box { position: relative; }
+  #chart { width: 100%; height: auto; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; margin-top: 6px; }
+  .legend i { display: inline-block; width: 14px; height: 3px; vertical-align: middle; margin-right: 5px; border-radius: 2px; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  #tip {
+    position: absolute; pointer-events: none; display: none;
+    background: #1a3a5c; color: #fff; font-size: 12px; line-height: 1.5;
+    padding: 8px 10px; border-radius: 8px; white-space: nowrap;
+    font-variant-numeric: tabular-nums; box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  }
+
+  @media (max-width: 600px) {
+    section { padding: 20px 16px; }
+    header { padding: 24px 18px; }
+    header h1 { font-size: 20px; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    section, header { box-shadow: none; border: 1px solid #ddd; border-radius: 6px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>💻 기술주 20년 보유 비교 — S&amp;P500 vs 나스닥100 vs 테크TOP10</h1>
+  <p>"빅테크만 골라 담으면 20년 뒤 얼마나 더 벌까?" — 기대값만이 아니라 결과의 퍼짐(운)까지 같이 본다</p>
+  <span class="badge">360750 · 133690 · 381170</span>
+  <span class="badge">20년 · 원화 기준</span>
+  <span class="badge">2026.10.14 작성</span>
+</header>
+
+<!-- 1. 상품 비교 -->
+<section>
+  <h2><span class="num">1</span>세 상품 한눈에</h2>
+  <div class="tbl">
+  <table>
+    <tr><th></th><th>360750</th><th>133690</th><th>381170</th></tr>
+    <tr><td>상품명</td><td>TIGER 미국S&amp;P500</td><td>TIGER 미국나스닥100</td><td>TIGER 미국테크TOP10 INDXX</td></tr>
+    <tr><td>추종 지수</td><td>S&amp;P500</td><td>나스닥100</td><td>Indxx US Tech Top 10</td></tr>
+    <tr><td>종목 수</td><td class="num-r">~500</td><td class="num-r">~100</td><td class="num-r"><b>10</b></td></tr>
+    <tr><td>상위 10종목 비중</td><td class="num-r">~35%</td><td class="num-r">~50%</td><td class="num-r"><b>100%</b></td></tr>
+    <tr><td>총보수 (연)</td><td class="num-r">~0.07%</td><td class="num-r">~0.07%</td><td class="num-r"><b>~0.49%</b></td></tr>
+    <tr><td>상장</td><td>2020.08</td><td>2010.10</td><td>2021.04</td></tr>
+    <tr><td>분배율</td><td class="num-r">~1.2%</td><td class="num-r">~0.5%</td><td class="num-r">~0.1%</td></tr>
+    <tr><td>환헤지</td><td colspan="3">셋 다 환노출 — 원화 가격 = 지수 × 원/달러 환율</td></tr>
+  </table>
+  </div>
+  <p class="small">※ 보수·비중은 작성 시점의 대략치 — 매수 전 미래에셋 TIGER 홈페이지에서 최신값 확인.
+  세 상품 모두 상장 기간이 20년이 안 되므로, 장기 판단은 추종 지수 기준으로 한다.</p>
+</section>
+
+<!-- 2. 시뮬레이터 -->
+<section>
+  <h2><span class="num">2</span>20년 시뮬레이터 — 몬테카를로 3,000회</h2>
+  <p>같은 돈을 20년 넣었을 때 결과가 <b>어디쯤에서, 얼마나 넓게</b> 퍼지는지 본다.
+  가운데 선은 중앙값(절반은 이보다 잘되고 절반은 못됨), 띠는 하위 10% ~ 상위 10% 구간이다.</p>
+
+  <div class="inputs">
+    <label>처음 넣는 돈 (만원)<input id="inInit" type="number" min="0" step="100" value="5000"></label>
+    <label>매월 적립 (만원)<input id="inMonthly" type="number" min="0" step="10" value="100"></label>
+    <label>보유 기간 (년)<input id="inYears" type="number" min="1" max="40" step="1" value="20"></label>
+  </div>
+
+  <h3>수익률·변동성 가정 (원화 기준, 수정 가능)</h3>
+  <div class="tbl">
+  <table class="assume">
+    <tr><th>상품</th><th>지수 기대수익<br>(연, 보수 전)</th><th>총보수</th><th>순 기대수익</th><th>변동성<br>(연 표준편차)</th></tr>
+    <tr><td><span class="dot" style="background:#1a3a5c"></span>360750</td>
+      <td><input id="r0" type="number" step="0.1" value="7.1">%</td><td><input id="f0" type="number" step="0.01" value="0.07">%</td>
+      <td class="num-r" id="n0"></td><td><input id="v0" type="number" step="1" value="15">%</td></tr>
+    <tr><td><span class="dot" style="background:#2c8a5f"></span>133690</td>
+      <td><input id="r1" type="number" step="0.1" value="8.1">%</td><td><input id="f1" type="number" step="0.01" value="0.07">%</td>
+      <td class="num-r" id="n1"></td><td><input id="v1" type="number" step="1" value="21">%</td></tr>
+    <tr><td><span class="dot" style="background:#d9822b"></span>381170</td>
+      <td><input id="r2" type="number" step="0.1" value="8.5">%</td><td><input id="f2" type="number" step="0.01" value="0.49">%</td>
+      <td class="num-r" id="n2"></td><td><input id="v2" type="number" step="1" value="27">%</td></tr>
+  </table>
+  </div>
+  <p style="margin:8px 0 6px"><button class="btn" id="run">다시 계산</button>
+  <span class="small" style="margin-left:8px">상관계수 S&amp;P–나스닥 0.90 · S&amp;P–TOP10 0.85 · 나스닥–TOP10 0.95 · 혼합안은 연 1회 리밸런싱</span></p>
+
+  <div class="seg" id="seg"></div>
+  <div class="chart-box">
+    <svg id="chart" viewBox="0 0 840 360" role="img" aria-label="20년 자산 추이 시뮬레이션"></svg>
+    <div id="tip"></div>
+  </div>
+  <div class="legend" id="legend"></div>
+
+  <h3>20년 뒤 결과</h3>
+  <div class="tbl">
+  <table id="result">
+    <thead><tr><th>전략</th><th>하위 10%<br>(운 나쁨)</th><th>중앙값</th><th>상위 10%<br>(운 좋음)</th><th>원금 손실<br>확률</th><th>최대낙폭<br>(중앙값)</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  </div>
+  <p class="small" id="principal"></p>
+  <p class="small">※ 월간 로그정규 수익률 가정. 순 기대수익은 기하평균(복리) 기준이라 중앙값 경로가 곧 "기대수익으로 꾸준히 굴렀을 때"의 결과와 같다.
+  최대낙폭은 적립금 효과를 뺀 상품 자체의 가격 기준. 세금·환전 비용은 반영하지 않음.</p>
+</section>
+
+<!-- 3. 가정 근거 -->
+<section>
+  <h2><span class="num">3</span>가정의 근거 — 왜 이 숫자인가</h2>
+  <div class="tbl">
+  <table>
+    <tr><th>지수 (달러, 배당 재투자)</th><th>최근 10년</th><th>장기 전체</th><th>최악의 하락</th><th>기본 가정</th></tr>
+    <tr><td>S&amp;P500</td><td class="num-r">~13%</td><td class="num-r">1957년 후 ~10%</td><td class="num-r">-55% (2007~09)</td><td class="num-r"><b>7.1%</b></td></tr>
+    <tr><td>나스닥100</td><td class="num-r">~18%+</td><td class="num-r">1999년 후 ~10%</td><td class="num-r"><b>-83%</b> (2000~02)</td><td class="num-r"><b>8.1%</b></td></tr>
+    <tr><td>US Tech Top 10</td><td colspan="2">2019년경부터의 짧은 기록뿐 — 장기 검증 불가</td><td class="num-r">-45% 안팎 (2022)</td><td class="num-r"><b>8.5%</b></td></tr>
+  </table>
+  </div>
+  <ul>
+    <li><b>LTP·LTP-2와 같은 보수화 원칙</b> — S&amp;P500 7%, 나스닥 8%(성장 프리미엄 +1%p만 인정). 최근 10년 숫자는 역사상 손꼽히는 강세장이라 가정치로 쓰지 않는다.</li>
+    <li><b>TOP10에는 +0.4%p를 더 얹어줬다</b> — 가장 강한 기업에 집중한 데 대한 후한 프리미엄. 그런데도 보수 0.49%를 빼면 순 기대수익이 나스닥100과 거의 같아진다(약 8.0%).</li>
+    <li><b>변동성</b> — 원화 기준 S&amp;P500은 위기 때 환율이 오르며 일부 완충돼 달러 기준(~16%)보다 낮게 잡았다. 종목이 적을수록 변동성은 커진다: 100종목 21%, 10종목 27%.</li>
+  </ul>
+  <div class="callout">
+    💡 가정을 바꿔보고 싶으면 2번 표의 숫자를 고치고 "다시 계산"을 누르면 된다.
+    기본 가정(5,000만 + 월 100만)에서 TOP10 단독의 중앙값은 셋 중 가장 높지만, <b>하위 10% 결과는 약 2.9억으로 원금 수준</b>이다.
+    S&amp;P500 단독(약 3.9억)보다 1억 낮다. 기대값이 비슷해도 변동성이 크면 결과의 폭이 그만큼 넓어진다.
+  </div>
+</section>
+
+<!-- 4. 20년에서 갈리는 것 -->
+<section>
+  <h2><span class="num">4</span>20년 보유에서 실제로 차이를 만드는 세 가지</h2>
+
+  <h3>① 보수 차이 0.42%p의 복리</h3>
+  <p>1억을 20년 묻어두면 연 8.0%면 <b>약 4.66억</b>, 연 7.58%면 <b>약 4.31억</b>이 된다.
+  <b>약 3,500만원, 최종 자산의 7~8%</b>가 보수로 나간다. 매년 확실히 빠지는 비용이고, 기대수익과 달리 운에 따라 줄어들지도 않는다.</p>
+
+  <h3>② "지금 1등"은 20년 뒤 1등이 아닐 가능성이 높다</h3>
+  <div class="tbl">
+  <table>
+    <tr><th>2000년 미국 기술주 시총 상위권</th><th>20여 년 뒤</th></tr>
+    <tr><td>마이크로소프트</td><td>여전히 최상위 ✅</td></tr>
+    <tr><td>시스코 · 인텔 · 오라클 · IBM</td><td>살아남았지만 상위 10위권 밖 — 시스코·인텔은 2000년 고점을 20년 넘게 회복 못함</td></tr>
+    <tr><td>루슨트 · 노텔 · 선마이크로시스템즈</td><td>사라지거나 피인수</td></tr>
+  </table>
+  </div>
+  <p>TOP10 지수도 매번 순위를 다시 매기기 때문에 결국 새 1등을 사게 된다. 문제는 <b>그 기업이 이미 커진 뒤에, 비싼 값에</b> 편입한다는 점이다.
+  나스닥100이나 S&amp;P500은 다음 승자가 작을 때부터 들고 있다.</p>
+
+  <h3>③ 낙폭과 회복 기간 — 20년 중 몇 년을 물려 있을 수 있나</h3>
+  <ul>
+    <li>나스닥100: 2000년 고점을 회복하기까지 <b>약 15년</b> (달러 기준 가격)</li>
+    <li>S&amp;P500: 2000년 고점 회복까지 약 7년, 2007년 고점 회복까지 약 5년</li>
+    <li>10종목 집중 상품은 이론상 나스닥100보다 낙폭이 더 깊다. 2022년에 실제로 S&amp;P500보다 훨씬 크게 빠졌다.</li>
+  </ul>
+  <div class="warn">
+    ⚠️ 20년 보유에서 수익률을 망치는 1등 원인은 상품 선택이 아니라 <b>-50% 구간에서 파는 것</b>이다.
+    시뮬레이터의 "최대낙폭" 칸을 보고, 그 숫자가 내 계좌에 찍혔을 때 버틸 수 있는 상품만 고를 것.
+  </div>
+</section>
+
+<!-- 5. 결론 -->
+<section>
+  <h2><span class="num">5</span>결론 — 기술주를 담는다면</h2>
+  <div class="tbl">
+  <table>
+    <tr><th>순위</th><th>구성</th><th>이유</th></tr>
+    <tr class="highlight-row"><td>1</td><td>360750 85% + 133690 15%</td><td>기술주 비중을 늘리면서 보수는 그대로, 낙폭은 S&amp;P500과 크게 다르지 않음</td></tr>
+    <tr><td>2</td><td>360750 100%</td><td>이미 빅테크 ~35% 포함. 가장 단순하고, 하위 시나리오가 1번과 거의 같음</td></tr>
+    <tr><td>3</td><td>360750 85% + 381170 15%</td><td>중앙값은 1번과 비슷(+0.1억 안팎)하지만 하위 결과가 조금 더 나쁘고, 가정이 틀렸을 때 보수 0.49%는 그대로 남음</td></tr>
+    <tr><td>—</td><td>381170 단독</td><td>20년 핵심 자산으로는 비추천. 상위 결과는 화려하지만 하위 결과 폭도 가장 넓음</td></tr>
+  </table>
+  </div>
+  <ul>
+    <li><b>담는 계좌는 연금저축·ISA</b> — 리밸런싱으로 팔아도 그 자리에서 세금이 안 생긴다. 법인 계좌는 LTP대로 360750 단독 유지.</li>
+    <li><b>상한 15%, 연 1회 리밸런싱</b> — 기술주가 많이 오르면 일부를 자동으로 익절하는 규칙이 된다.</li>
+    <li>381170을 고른다면 "빅테크 10개가 20년 뒤에도 1등"이라는 <b>확신에 대한 베팅</b>임을 알고 고를 것.</li>
+  </ul>
+</section>
+
+<footer>
+  수익률·변동성은 2026.10 기준 장기 지수 기록을 보수적으로 할인한 가정치이며, 시뮬레이션은 미래 수익을 보장하지 않음 · 보수·구성은 매수 전 운용사 확인
+</footer>
+
+</div>
+
+<script>
+(function () {
+  var COLORS = ['#1a3a5c', '#2c8a5f', '#d9822b', '#7b5ea7', '#c0503a'];
+  // 전략 = 세 상품의 비중. 앞의 셋은 단독, 뒤의 둘은 360750 85% 코어 + 기술주 15% 위성
+  var STRATS = [
+    { name: '360750 단독',          w: [1, 0, 0] },
+    { name: '133690 단독',          w: [0, 1, 0] },
+    { name: '381170 단독',          w: [0, 0, 1] },
+    { name: '360750 85 + 133690 15', w: [0.85, 0.15, 0] },
+    { name: '360750 85 + 381170 15', w: [0.85, 0, 0.15] }
+  ];
+  // 상관행렬 [[1,.90,.85],[.90,1,.95],[.85,.95,1]]의 촐레스키 분해
+  var L = (function () {
+    var c01 = 0.90, c02 = 0.85, c12 = 0.95;
+    var l11 = Math.sqrt(1 - c01 * c01);
+    var l21 = (c12 - c01 * c02) / l11;
+    var l22 = Math.sqrt(1 - c02 * c02 - l21 * l21);
+    return [[1, 0, 0], [c01, l11, 0], [c02, l21, l22]];
+  })();
+  var PATHS = 3000;
+  var shown = 0;          // 띠를 그릴 전략
+  var last = null;        // 마지막 계산 결과 (툴팁용)
+
+  function $(id) { return document.getElementById(id); }
+  function num(id) { var v = parseFloat($(id).value); return isFinite(v) ? v : 0; }
+
+  // 시드 고정 난수 — 같은 입력이면 같은 결과가 나와야 비교가 된다
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function pct(sorted, p) {
+    var i = (sorted.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i);
+    return sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
+  }
+
+  function fmt(man) {  // 만원 → "x.xx억" / "x,xxx만"
+    if (Math.abs(man) >= 10000) return (man / 10000).toFixed(2) + '억';
+    return Math.round(man).toLocaleString('ko-KR') + '만';
+  }
+
+  function simulate() {
+    var init = Math.max(0, num('inInit'));
+    var monthly = Math.max(0, num('inMonthly'));
+    var years = Math.min(40, Math.max(1, Math.round(num('inYears'))));
+    var months = years * 12;
+
+    var mu = [], sd = [];
+    for (var k = 0; k < 3; k++) {
+      var net = num('r' + k) - num('f' + k);
+      $('n' + k).textContent = net.toFixed(2) + '%';
+      mu.push(Math.log(1 + net / 100) / 12);    // 기하평균 → 월 로그수익 중앙
+      sd.push(num('v' + k) / 100 / Math.sqrt(12));
+    }
+
+    var S = STRATS.length;
+    // yearly[s][y] = 모든 경로의 y년차 말 자산
+    var yearly = [], finals = [], mdds = [];
+    for (var s = 0; s < S; s++) {
+      yearly.push([]);
+      for (var y = 0; y <= years; y++) yearly[s].push(new Float64Array(PATHS));
+      finals.push(new Float64Array(PATHS));
+      mdds.push(new Float64Array(PATHS));
+    }
+
+    var rnd = mulberry32(20261014);
+    function gauss() {
+      var u = 0, v = 0;
+      while (u === 0) u = rnd();
+      v = rnd();
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+
+    var hold = [], nav = [], peak = [], mdd = [];
+    for (var p = 0; p < PATHS; p++) {
+      for (s = 0; s < S; s++) {
+        var w = STRATS[s].w;
+        hold[s] = [init * w[0], init * w[1], init * w[2]];
+        nav[s] = 1; peak[s] = 1; mdd[s] = 0;
+        yearly[s][0][p] = init;
+      }
+      for (var m = 1; m <= months; m++) {
+        // 세 상품의 이번 달 수익률 — 모든 전략이 같은 시장을 겪는다
+        var z0 = gauss(), z1 = gauss(), z2 = gauss();
+        var e = [z0, L[1][0] * z0 + L[1][1] * z1, L[2][0] * z0 + L[2][1] * z1 + L[2][2] * z2];
+        var g = [Math.exp(mu[0] + sd[0] * e[0]), Math.exp(mu[1] + sd[1] * e[1]), Math.exp(mu[2] + sd[2] * e[2])];
+
+        for (s = 0; s < S; s++) {
+          w = STRATS[s].w;
+          var h = hold[s];
+          // 월초 적립 → 한 달 운용
+          h[0] = (h[0] + monthly * w[0]) * g[0];
+          h[1] = (h[1] + monthly * w[1]) * g[1];
+          h[2] = (h[2] + monthly * w[2]) * g[2];
+          // 적립 효과를 뺀 상품 자체 가격 — 최대낙폭 계산용
+          nav[s] *= w[0] * g[0] + w[1] * g[1] + w[2] * g[2];
+          if (nav[s] > peak[s]) peak[s] = nav[s];
+          var dd = nav[s] / peak[s] - 1;
+          if (dd < mdd[s]) mdd[s] = dd;
+
+          if (m % 12 === 0) {
+            var tot = h[0] + h[1] + h[2];
+            // 연 1회 리밸런싱 (단독 전략은 영향 없음)
+            h[0] = tot * w[0]; h[1] = tot * w[1]; h[2] = tot * w[2];
+            yearly[s][m / 12][p] = tot;
+          }
+        }
+      }
+      for (s = 0; s < S; s++) {
+        finals[s][p] = yearly[s][years][p];
+        mdds[s][p] = mdd[s];
+      }
+    }
+
+    var principal = init + monthly * months;
+    var out = [];
+    for (s = 0; s < S; s++) {
+      var band = [];
+      for (y = 0; y <= years; y++) {
+        var arr = Array.prototype.slice.call(yearly[s][y]).sort(function (a, b) { return a - b; });
+        band.push({ p10: pct(arr, 0.1), p50: pct(arr, 0.5), p90: pct(arr, 0.9) });
+      }
+      var loss = 0;
+      for (p = 0; p < PATHS; p++) if (finals[s][p] < principal) loss++;
+      var md = Array.prototype.slice.call(mdds[s]).sort(function (a, b) { return a - b; });
+      out.push({ band: band, loss: loss / PATHS, mdd: pct(md, 0.5) });
+    }
+    return { years: years, principal: principal, init: init, monthly: monthly, res: out };
+  }
+
+  function renderTable(r) {
+    var tb = $('result').querySelector('tbody');
+    tb.innerHTML = '';
+    var best = 3;  // 추천안 강조
+    r.res.forEach(function (x, s) {
+      var b = x.band[r.years];
+      var tr = document.createElement('tr');
+      if (s === best) tr.className = 'highlight-row';
+      tr.innerHTML =
+        '<td style="text-align:left"><span class="dot" style="background:' + COLORS[s] + '"></span>' + STRATS[s].name + (s === best ? ' ⭐' : '') + '</td>' +
+        '<td class="num-r">' + fmt(b.p10) + '</td>' +
+        '<td class="num-r"><b>' + fmt(b.p50) + '</b></td>' +
+        '<td class="num-r">' + fmt(b.p90) + '</td>' +
+        '<td class="num-r">' + (x.loss * 100).toFixed(1) + '%</td>' +
+        '<td class="num-r">' + (x.mdd * 100).toFixed(0) + '%</td>';
+      tb.appendChild(tr);
+    });
+    $('principal').textContent = '※ ' + r.years + '년간 넣은 원금 합계: ' + fmt(r.principal) +
+      ' (처음 ' + fmt(r.init) + ' + 월 ' + fmt(r.monthly) + ' × ' + (r.years * 12) + '개월)';
+  }
+
+  function renderSeg() {
+    var seg = $('seg');
+    seg.innerHTML = '';
+    STRATS.forEach(function (st, s) {
+      var b = document.createElement('button');
+      b.textContent = st.name;
+      if (s === shown) b.className = 'on';
+      b.onclick = function () { shown = s; renderSeg(); renderChart(last); };
+      seg.appendChild(b);
+    });
+  }
+
+  function renderChart(r) {
+    var svg = $('chart');
+    var W = 840, H = 360, padL = 64, padR = 16, padT = 14, padB = 34;
+    var cw = W - padL - padR, ch = H - padT - padB;
+    // 축 상한은 보이는 띠의 상위 10%와 모든 중앙값 중 큰 값
+    var maxV = r.res[shown].band[r.years].p90;
+    r.res.forEach(function (x) { maxV = Math.max(maxV, x.band[r.years].p50); });
+    maxV *= 1.05;
+    function X(y) { return padL + cw * y / r.years; }
+    function Y(v) { return padT + ch * (1 - v / maxV); }
+
+    var h = '';
+    // 가로 눈금 5개
+    var step = maxV / 5;
+    for (var i = 0; i <= 5; i++) {
+      var v = step * i, yy = Y(v);
+      h += '<line x1="' + padL + '" x2="' + (W - padR) + '" y1="' + yy + '" y2="' + yy + '" stroke="#e8edf3"/>';
+      h += '<text x="' + (padL - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="11" fill="#7a8a99">' + fmt(v) + '</text>';
+    }
+    var xs = r.years <= 20 ? 5 : 10;
+    for (var y = 0; y <= r.years; y += xs) {
+      h += '<text x="' + X(y) + '" y="' + (H - 10) + '" text-anchor="middle" font-size="11" fill="#7a8a99">' + y + '년</text>';
+    }
+    // 원금 누적선
+    var pp = '';
+    for (y = 0; y <= r.years; y++) pp += (y ? 'L' : 'M') + X(y) + ' ' + Y(r.init + r.monthly * 12 * y);
+    h += '<path d="' + pp + '" fill="none" stroke="#96a4b2" stroke-width="1.5" stroke-dasharray="5 4"/>';
+
+    // 선택 전략의 10~90% 띠
+    var b = r.res[shown].band, up = '', dn = '';
+    for (y = 0; y <= r.years; y++) up += (y ? 'L' : 'M') + X(y) + ' ' + Y(b[y].p90);
+    for (y = r.years; y >= 0; y--) dn += 'L' + X(y) + ' ' + Y(b[y].p10);
+    h += '<path d="' + up + dn + 'Z" fill="' + COLORS[shown] + '" fill-opacity="0.14"/>';
+
+    // 모든 전략 중앙값 선 — 선택한 것만 굵게
+    r.res.forEach(function (x, s) {
+      var d = '';
+      for (var y2 = 0; y2 <= r.years; y2++) d += (y2 ? 'L' : 'M') + X(y2) + ' ' + Y(x.band[y2].p50);
+      h += '<path d="' + d + '" fill="none" stroke="' + COLORS[s] + '" stroke-width="' + (s === shown ? 3 : 1.5) +
+        '" stroke-opacity="' + (s === shown ? 1 : 0.55) + '"/>';
+    });
+    h += '<line id="hair" x1="0" x2="0" y1="' + padT + '" y2="' + (padT + ch) + '" stroke="#2c3e50" stroke-opacity=".35" style="display:none"/>';
+    h += '<rect x="' + padL + '" y="' + padT + '" width="' + cw + '" height="' + ch + '" fill="transparent" id="hit"/>';
+    svg.innerHTML = h;
+
+    var lg = '<span><i style="background:#96a4b2"></i>넣은 원금</span>';
+    STRATS.forEach(function (st, s) { lg += '<span><i style="background:' + COLORS[s] + '"></i>' + st.name + ' 중앙값</span>'; });
+    lg += '<span><i style="background:' + COLORS[shown] + ';opacity:.3;height:10px"></i>선택 전략 하위10~상위10%</span>';
+    $('legend').innerHTML = lg;
+
+    // 툴팁 — 마우스/터치 위치의 연차 값
+    var hit = $('hit'), tip = $('tip'), hair = $('hair');
+    function move(ev) {
+      var rect = svg.getBoundingClientRect();
+      var cx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - rect.left;
+      var sx = cx * W / rect.width;
+      var yr = Math.round((sx - padL) / cw * r.years);
+      yr = Math.max(0, Math.min(r.years, yr));
+      hair.setAttribute('x1', X(yr)); hair.setAttribute('x2', X(yr)); hair.style.display = '';
+      var t = '<b>' + yr + '년차</b> · 원금 ' + fmt(r.init + r.monthly * 12 * yr);
+      r.res.forEach(function (x, s) {
+        t += '<br><span class="dot" style="background:' + COLORS[s] + '"></span>' + STRATS[s].name + ' ' + fmt(x.band[yr].p50);
+      });
+      var bb = r.res[shown].band[yr];
+      t += '<br><span style="opacity:.75">선택 전략 범위 ' + fmt(bb.p10) + ' ~ ' + fmt(bb.p90) + '</span>';
+      tip.innerHTML = t; tip.style.display = 'block';
+      var px = X(yr) * rect.width / W;
+      var left = px + 12;
+      if (left + tip.offsetWidth > rect.width) left = px - tip.offsetWidth - 12;
+      tip.style.left = Math.max(0, left) + 'px';
+      tip.style.top = '10px';
+    }
+    function leave() { tip.style.display = 'none'; hair.style.display = 'none'; }
+    hit.addEventListener('mousemove', move);
+    hit.addEventListener('touchmove', move, { passive: true });
+    hit.addEventListener('mouseleave', leave);
+  }
+
+  function run() {
+    last = simulate();
+    renderSeg();
+    renderChart(last);
+    renderTable(last);
+  }
+
+  $('run').onclick = run;
+  ['inInit', 'inMonthly', 'inYears'].forEach(function (id) { $(id).addEventListener('change', run); });
+  run();
+})();
+</script>
+</body>
+</html>

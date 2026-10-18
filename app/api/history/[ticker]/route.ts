@@ -13,7 +13,13 @@ const INTERVAL: Record<string, string> = {
   '1y': '1d',
   '3y': '1wk',
   max: '1wk',
+  // 전체 기간 일봉 — 폭락 알림 모니터의 사상 최고가·낙폭 통계용.
+  // 야후는 range=max에 1wk를 줘도 월봉으로 내려주므로 일봉이 필요하면 이 값을 쓴다.
+  all: '1d',
 };
+
+// 야후에 넘길 range — all은 야후에 없는 값이라 max로 바꿔 보낸다
+const YAHOO_RANGE: Record<string, string> = { all: 'max' };
 
 export async function GET(
   req: Request,
@@ -33,7 +39,7 @@ export async function GET(
 
   try {
     const res = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=${interval}&range=${range}`,
+      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=${interval}&range=${YAHOO_RANGE[range] ?? range}`,
       {
         headers: { 'User-Agent': 'Mozilla/5.0' },
         next: { revalidate: 300 }, // 종가 기반 차트라 5분 캐시면 충분
