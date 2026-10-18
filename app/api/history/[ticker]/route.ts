@@ -18,8 +18,13 @@ const INTERVAL: Record<string, string> = {
   all: '1d',
 };
 
-// 야후에 넘길 range — all은 야후에 없는 값이라 max로 바꿔 보낸다
-const YAHOO_RANGE: Record<string, string> = { all: 'max' };
+// 야후 기간 파라미터. all은 range=max가 아니라 period1=0~지금으로 보낸다 —
+// range=max&interval=1d는 일봉이 아니라 2주~3개월 간격으로 솎아 내려준다(2026-10 확인:
+// CDNS 고점 $416이 $375로 잡혀 낙폭이 −23%가 아니라 −15%로 계산됐다). 기간을 직접 주면 전체 일봉이 온다.
+function yahooPeriod(range: string): string {
+  if (range === 'all') return `period1=0&period2=${Math.floor(Date.now() / 1000)}`;
+  return `range=${range}`;
+}
 
 export async function GET(
   req: Request,
@@ -39,7 +44,7 @@ export async function GET(
 
   try {
     const res = await fetch(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=${interval}&range=${YAHOO_RANGE[range] ?? range}`,
+      `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=${interval}&${yahooPeriod(range)}`,
       {
         headers: { 'User-Agent': 'Mozilla/5.0' },
         next: { revalidate: 300 }, // 종가 기반 차트라 5분 캐시면 충분

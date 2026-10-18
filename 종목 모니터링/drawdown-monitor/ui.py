@@ -2,6 +2,7 @@
 import datetime as dt
 import os
 import queue
+import re
 import threading
 import tkinter as tk
 from tkinter import messagebox, ttk
@@ -17,11 +18,25 @@ def _levels_text(levels):
     return ', '.join(str(v) for v in levels)
 
 
+_UNIT = {'T': 1e12, 'B': 1e9, '조': 1e12, '억': 1e8}
+
+
+def _sort_key(text):
+    """화면 문자열을 정렬 키로 — 숫자('1,234.56 USD', '+1.2%', '$1.81T', '529 (-12%)')는 숫자로, 날짜·이름은 문자로."""
+    s = str(text).strip()
+    if re.match(r'^\d{4}-\d\d-\d\d', s):
+        return (1, s)
+    m = re.match(r'^\$?([+-]?[\d,]*\.?\d+)\s*(T|B|조|억)?', s)
+    if m:
+        return (0, float(m[1].replace(',', '')) * _UNIT.get(m[2], 1))
+    return (1, s)
+
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('폭락 알림 모니터')
-        self.geometry('1300x600')
+        self.geometry('1390x600')
         self.minsize(900, 480)
         self.option_add('*Font', FONT)
         ttk.Style(self).configure('Treeview', rowheight=24, font=FONT)
@@ -76,18 +91,27 @@ class App(tk.Tk):
     def _tickers_tab(self, parent):
         f = ttk.Frame(parent, padding=8)
         cols = [('on', '사용', 50), ('sym', '심볼', 90), ('name', '이름', 140), ('levels', '고점대비 낙폭(%)', 120),
-                ('daily', '하루급락', 70), ('price', '현재가', 110), ('chg', '전일 대비', 80),
+                ('daily', '하루급락', 70), ('price', '현재가', 110), ('cap', '시가총액', 85), ('chg', '전일 대비', 80),
                 ('dd', '고점 대비', 80), ('iv', '내재가치', 80), ('mos', '안전마진', 75),
                 ('stage', '알림 단계', 75), ('next', '다음 가격선', 120), ('earn', '다음 실적', 105),
                 ('checked', '마지막 점검', 125)]
         self.tree = ttk.Treeview(f, columns=[c[0] for c in cols], show='headings', selectmode='browse')
+        self.col_labels = {key: label for key, label, _ in cols}
         for key, label, w in cols:
             self.tree.heading(key, text=label)
             self.tree.column(key, width=w, anchor='w' if key in ('sym', 'name', 'levels', 'checked') else 'center')
         self.tree.tag_configure('off', foreground='#aaa')
         self.tree.tag_configure('alert', foreground='#c0392b')
         self.tree.grid(row=0, column=0, sticky='nsew')
-        self.tree.bind('<Double-1>', lambda e: self.edit_ticker())
+        self.tree.bind('<Double-1>', self._on_double)
+        # 머리글: 클릭 = 정렬(다시 누르면 반대 방향, 세 번째는 해제), 끌어 놓기 = 열 순서 변경. 둘 다 config의 ui에 저장
+        self.tree.bind('<ButtonPress-1>', self._head_press, add='+')
+        self.tree.bind('<B1-Motion>', self._head_motion, add='+')
+        self.tree.bind('<ButtonRelease-1>', self._head_release, add='+')
+        self._drag_col = None
+        order = (self.cfg.get('ui') or {}).get('columns')
+        if order and set(order) == set(self.col_labels):
+            self.tree['displaycolumns'] = order
         f.rowconfigure(0, weight=1)
         f.columnconfigure(0, weight=1)
 
@@ -121,11 +145,82 @@ class App(tk.Tk):
             self.tree.insert('', 'end', iid=str(i), tags=tags, values=(
                 '●' if on else '○', t['symbol'], t['name'], _levels_text(t['levels']), f'-{t["daily_drop_pct"]}%',
                 f'{last["price"]:,.2f} {last.get("currency", "")}' if last else '-',
+                core.cap_text(st.get('mcap')),
                 f'{last["change"] * 100:+.1f}%' if last else '-',
                 f'{last["dd"] * 100:+.1f}%' if last else '-',
                 f'{iv:,.0f}' if iv else '-', mos,
                 f'-{st["level"]}%' if st.get('level') else '-',
                 nxt, earn, last.get('checked', '-')))
+        self._apply_sort()
+
+    # ── 표 머리글: 정렬 · 열 끌어 옮기기 ──
+    def _ui(self):
+        return self.cfg.setdefault('ui', {})
+
+    def _display_cols(self):
+        cols = list(self.tree['displaycolumns'])
+        return list(self.tree['columns']) if cols in ([], ['#all']) else cols
+
+    def _col_at(self, x):
+        idx = int(self.tree.identify_column(x)[1:]) - 1   # '#3' → 2 (표시 순서 기준)
+        cols = self._display_cols()
+        return cols[idx] if 0 <= idx < len(cols) else None
+
+    def _head_press(self, e):
+        self._drag_col = self._col_at(e.x) if self.tree.identify_region(e.x, e.y) == 'heading' else None
+
+    def _head_motion(self, e):
+        if self._drag_col:
+            moved = self.tree.identify_region(e.x, e.y) == 'heading' and self._col_at(e.x) != self._drag_col
+            self.tree.configure(cursor='exchange' if moved else '')
+
+    def _head_release(self, e):
+        src, self._drag_col = self._drag_col, None
+        self.tree.configure(cursor='')
+        if not src or self.tree.identify_region(e.x, e.y) != 'heading':
+            return
+        dst = self._col_at(e.x)
+        if dst == src:
+            self._toggle_sort(src)
+        elif dst:
+            cols = self._display_cols()
+            right = cols.index(dst) > cols.index(src)   # 오른쪽으로 끌면 놓은 열의 뒤, 왼쪽이면 앞
+            cols.remove(src)
+            cols.insert(cols.index(dst) + right, src)
+            self.tree['displaycolumns'] = cols
+            self._ui()['columns'] = cols
+            self.save_config()
+
+    def _toggle_sort(self, col):
+        """오름차순 → 내림차순 → 해제(설정 파일 순서)."""
+        cur = self._ui().get('sort')
+        if not cur or cur[0] != col:
+            self._ui()['sort'] = [col, False]
+        elif not cur[1]:
+            self._ui()['sort'] = [col, True]
+        else:
+            self._ui().pop('sort', None)
+        self.save_config()
+        self.refresh_tickers()
+
+    def _apply_sort(self):
+        sort = self._ui().get('sort')
+        for key, label in self.col_labels.items():
+            mark = (' ▼' if sort[1] else ' ▲') if sort and sort[0] == key else ''
+            self.tree.heading(key, text=label + mark)
+        if not sort or sort[0] not in self.col_labels:
+            return
+        col, desc = sort
+        rows = [(self.tree.set(iid, col), iid) for iid in self.tree.get_children('')]
+        have = [(_sort_key(v), iid) for v, iid in rows if v.strip() not in ('', '-')]
+        none = [iid for v, iid in rows if v.strip() in ('', '-')]
+        have.sort(key=lambda r: r[0], reverse=desc)
+        for pos, iid in enumerate([iid for _, iid in have] + none):   # 값 없는 행('-')은 방향과 무관하게 맨 아래
+            self.tree.move(iid, '', pos)
+
+    def _on_double(self, e):
+        if self.tree.identify_region(e.x, e.y) == 'cell':
+            self.edit_ticker()
 
     def _selected(self):
         sel = self.tree.selection()
@@ -172,6 +267,7 @@ class App(tk.Tk):
             return
         ts = self.cfg['tickers']
         ts[i], ts[i + d] = ts[i + d], ts[i]
+        self._ui().pop('sort', None)   # ▲▼는 설정 파일 순서를 바꾼다 — 정렬 중이면 결과가 안 보이므로 정렬 해제
         self.save_config()
         self.refresh_tickers()
         self.tree.selection_set(str(i + d))

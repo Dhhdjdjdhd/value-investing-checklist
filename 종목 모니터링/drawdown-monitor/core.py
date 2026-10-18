@@ -158,18 +158,78 @@ def fetch_quote(cfg, symbol):
     return q
 
 
+def fetch_market_cap(symbol):
+    """시가총액 (값, 통화). 한국 종목은 네이버, 그 외는 나스닥 API(미국 상장 주식·ADR).
+    지수·선물·환율(^, =)은 시총이 없으니 None. 사이트 시세 API(야후 chart)는 시총을 주지 않는다."""
+    if '^' in symbol or '=' in symbol:
+        return None
+    hdr = {'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json'}
+    kr = re.match(r'^(\d{6})\.(KS|KQ)$', symbol)
+    if kr:
+        req = urllib.request.Request(f'https://m.stock.naver.com/api/stock/{kr[1]}/integration', headers=hdr)
+        with urllib.request.urlopen(req, timeout=30) as r:
+            infos = json.load(r)['totalInfos']
+        text = next(i['value'] for i in infos if i['code'] == 'marketValue')   # 예: "1,268조 6,425억"
+        jo = re.search(r'([\d,]+)조', text)
+        eok = re.search(r'([\d,]+)억', text)
+        num = lambda m: int(m[1].replace(',', '')) if m else 0  # noqa: E731
+        return num(jo) * 10**12 + num(eok) * 10**8, 'KRW'
+    req = urllib.request.Request(
+        f'https://api.nasdaq.com/api/quote/{urllib.parse.quote(symbol)}/summary?assetclass=stocks', headers=hdr)
+    with urllib.request.urlopen(req, timeout=30) as r:
+        data = json.load(r).get('data') or {}
+    v = ((data.get('summaryData') or {}).get('MarketCap') or {}).get('value', '')
+    v = str(v).replace(',', '').replace('$', '')
+    return (float(v), 'USD') if v.replace('.', '').isdigit() else None
+
+
+def update_market_cap(symbol, st):
+    """하루 한 번만 받는다. 실패하면 이전 값을 그대로 둔다 — 시총은 알림 판정에 쓰지 않는 참고 정보."""
+    today = dt.date.today().isoformat()
+    if (st.get('mcap') or {}).get('date') == today:
+        return
+    try:
+        r = fetch_market_cap(symbol)
+    except Exception as e:  # noqa: BLE001
+        log.warning('%s 시총 조회 실패: %s', symbol, e)
+        return
+    st['mcap'] = {'value': r[0], 'currency': r[1], 'date': today} if r else {'value': None, 'date': today}
+
+
+def cap_text(m):
+    """1.81T USD → '$1.81T', 84B → '$84.0B', 한국 → '1,268조'."""
+    if not m or not m.get('value'):
+        return '-'
+    v = m['value']
+    if m.get('currency') == 'KRW':
+        return f'{v / 1e12:,.1f}조' if v >= 1e12 else f'{v / 1e8:,.0f}억'
+    return f'${v / 1e12:.2f}T' if v >= 1e12 else f'${v / 1e9:.1f}B'
+
+
+def _is_daily(ts):
+    """최근 60개 포인트의 간격 중앙값이 4일 이하면 일봉 (주말·연휴 3~4일 간격은 정상)."""
+    gaps = [b - a for a, b in zip(ts[-61:], ts[-60:])]
+    return bool(gaps) and statistics.median(gaps) <= 4 * 86400
+
+
 def fetch_history(cfg, symbol):
-    """전체 일봉. 사이트에 range=all이 배포되기 전이면 월봉(range=max) + 최근 1년 일봉(range=1y)으로 대신한다.
-    월봉은 월말 종가만 있어 월중 고점을 놓치므로, 최근 1년만이라도 일봉으로 바꿔 끼워 최고가를 맞춘다."""
+    """전체 일봉. range=all이 실패하거나 일봉이 아니면 월봉(max) + 3년 주봉 + 최근 1년 일봉으로 대신한다.
+    월봉은 월말 종가만 있어 월중 고점을 놓치므로, 최근 구간일수록 촘촘한 데이터로 바꿔 끼워 최고가를 맞춘다."""
     sym = urllib.parse.quote(symbol, safe='')
     try:
         h, resolution = _get(cfg, f'/history/{sym}?range=all'), '일봉'
-    except RuntimeError:
-        log.warning('%s range=all 실패 — 월봉 + 최근 1년 일봉으로 대신 계산', symbol)
-        m, d = _get(cfg, f'/history/{sym}?range=max'), _get(cfg, f'/history/{sym}?range=1y')
-        old = [(t, c) for t, c in zip(m['t'], m['c']) if t < d['t'][0]]
-        h = {'t': [t for t, _ in old] + d['t'], 'c': [c for _, c in old] + d['c']}
-        resolution = '월봉(최근 1년 일봉)'
+        if not _is_daily(h['t']):
+            # 응답은 성공인데 일봉이 아닌 경우 — 야후가 range=max를 2주~3개월 간격으로 솎아 준 적이 있다(2026-10).
+            # 그대로 쓰면 그 사이의 고점을 놓쳐 낙폭이 작게 나오므로 실패와 같이 취급한다
+            raise RuntimeError('range=all이 일봉이 아님')
+    except RuntimeError as e:
+        log.warning('%s %s — 월봉 + 3년 주봉 + 최근 1년 일봉으로 대신 계산', symbol, e)
+        # 거친 데이터일수록 앞쪽에만 쓴다: 전체(월봉) → 최근 3년(주봉) → 최근 1년(일봉)
+        m, w, d = (_get(cfg, f'/history/{sym}?range={r}') for r in ('max', '3y', '1y'))
+        old = [(t, c) for t, c in zip(m['t'], m['c']) if t < w['t'][0]]
+        mid = [(t, c) for t, c in zip(w['t'], w['c']) if t < d['t'][0]]
+        h = {'t': [t for t, _ in old + mid] + d['t'], 'c': [c for _, c in old + mid] + d['c']}
+        resolution = '월봉(3년 주봉·1년 일봉)'
     rows = [[dt.datetime.fromtimestamp(t, dt.timezone.utc).date().isoformat(), c] for t, c in zip(h['t'], h['c'])]
     return rows, resolution
 
@@ -538,16 +598,48 @@ def _is_earnings(f):
     return f['form'].startswith('8-K') and '2.02' in f['items'].split(',')
 
 
+_MONTHS = {m: i for i, m in enumerate(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], 1)}
+
+
+def fetch_earnings_date(symbol):
+    """나스닥 API의 다음 실적 발표 예정일(ISO). 지수·선물·한국 종목은 None.
+    응답 예: "Earnings announcement* for V: Oct 27, 2026" (* = 회사 확정 전 예상일일 수 있음)"""
+    if '^' in symbol or '=' in symbol or re.match(r'^\d{6}\.(KS|KQ)$', symbol):
+        return None
+    req = urllib.request.Request(f'https://api.nasdaq.com/api/analyst/{urllib.parse.quote(symbol)}/earnings-date',
+                                 headers={'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json'})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        text = ((json.load(r).get('data') or {}).get('announcement') or '')
+    m = re.search(r'([A-Z][a-z]{2})\w*\s+(\d{1,2}),\s*(\d{4})', text)
+    return dt.date(int(m[3]), _MONTHS[m[1]], int(m[2])).isoformat() if m and m[1] in _MONTHS else None
+
+
+def update_nasdaq_earnings(symbol, st):
+    """하루 한 번만 받는다. 실패하면 이전 값을 그대로 둔다."""
+    today = dt.date.today().isoformat()
+    if (st.get('nasdaq_earn') or {}).get('date') == today:
+        return
+    try:
+        st['nasdaq_earn'] = {'next': fetch_earnings_date(symbol), 'date': today}
+    except Exception as e:  # noqa: BLE001
+        log.warning('%s 실적일 조회 실패: %s', symbol, e)
+
+
 def update_earnings(t, st, filings):
-    """최근 실적 발표일(8-K 2.02)과 다음 발표 예상일. 설정에 날짜를 넣었으면 그것을 쓴다.
-    추정은 작년 같은 분기 발표일 + 364일(같은 요일) — 없으면 직전 발표일 + 91일."""
+    """최근 실적 발표일(8-K 2.02)과 다음 발표 예상일.
+    우선순위: 설정에 넣은 날짜 > 나스닥 예정일 > SEC 기록 추정
+    (작년 같은 분기 발표일 + 364일(같은 요일) — 없으면 직전 발표일 + 91일)."""
     today = dt.date.today()
     dates = sorted({f['date'] for f in filings if _is_earnings(f)} | set(st.get('earnings_history', [])))
     st['earnings_history'] = dates[-8:]
     last = dates[-1] if dates else None
     manual = t.get('next_earnings')
+    nasdaq = (st.get('nasdaq_earn') or {}).get('next')
     if manual and manual >= today.isoformat():
         nxt, est = manual, False
+    elif nasdaq and nasdaq >= today.isoformat():
+        nxt, est = nasdaq, False
     elif last:
         target = dt.date.fromisoformat(last) + dt.timedelta(days=91)
         prior = [dt.date.fromisoformat(d) for d in dates
@@ -588,8 +680,15 @@ def filing_alerts(cfg, t, st):
         if earnings_text(st):
             body += f'<p style="font-size:13px">{earnings_text(st)}</p>'
         mails.append((subject, _wrap(subject, body + cur_html), undo))
+    return mails + earnings_reminder(t, st)
 
-    e = st['earnings']
+
+def earnings_reminder(t, st):
+    """실적 D-3 메일 (CIK 유무와 무관 — 실적일만 있으면 된다)."""
+    nm = f'{t["name"]}({t["symbol"]})'
+    cur_html = ticker_report(t, None, st['last'], None, brief=True) if st.get('last') else ''
+    mails = []
+    e = st.get('earnings') or {}
     if e.get('next'):
         left = _days(dt.date.today().isoformat(), e['next'])
         if 0 <= left <= 3 and st.get('earn_remind') != e['next']:
@@ -819,6 +918,7 @@ def _run(cfg):
         st = tstate[sym] = {**new_ticker_state(), **tstate.get(sym, {})}
         before = copy.deepcopy(st)
         alerts = evaluate(t, q, stats, st, cfg.get('hysteresis_pct', 3))
+        update_market_cap(sym, st)
         last = st['last']
         log.info('%s %.2f 전일 %+.2f%% 고점대비 %+.2f%% 단계 -%s%%',
                  sym, last['price'], last['change'] * 100, last['dd'] * 100, st['level'])
@@ -826,11 +926,15 @@ def _run(cfg):
 
         # 공시·실적일을 먼저 갱신한다 — 하락 알림의 원인 판별에 실적 발표일이 들어간다
         sec_mails = []
+        update_nasdaq_earnings(sym, st)
         if t.get('cik'):
             try:
                 sec_mails = filing_alerts(cfg, t, st)
             except Exception as e:  # noqa: BLE001 — 공시 조회 실패는 시세 알림을 막지 않는다
                 log.warning('%s 공시 조회 실패: %s', sym, e)
+        else:   # CIK 없는 종목은 공시 메일 없이 실적일·D-3만
+            update_earnings(t, st, [])
+            sec_mails = earnings_reminder(t, st)
 
         cause = None
         for a in alerts:
@@ -902,10 +1006,10 @@ def _weekly_summary(cfg, state, reports):
     def mos(t, l):
         return f'{(t["iv_base"] - l["price"]) / t["iv_base"] * 100:+.1f}%' if t.get('iv_base') else '-'
 
-    rows = [[f'{t["name"]} ({t["symbol"]})', _money(l['price'], l['currency']), _pct(l['change']),
-             f'<b>{_pct(l["dd"])}</b>', mos(t, l), nxt(st)] for t, _, l, st in reports]
+    rows = [[f'{t["name"]} ({t["symbol"]})', _money(l['price'], l['currency']), cap_text(st.get('mcap')),
+             _pct(l['change']), f'<b>{_pct(l["dd"])}</b>', mos(t, l), nxt(st)] for t, _, l, st in reports]
     body = '<p>모니터가 정상 동작 중입니다.</p>' + _table(
-        ['종목', '현재가', '전일 대비', '최고가 대비', '안전마진', '다음 실적'], rows)
+        ['종목', '현재가', '시가총액', '전일 대비', '최고가 대비', '안전마진', '다음 실적'], rows)
     try:
         send_mail(cfg, f'[폭락알림] 주간 요약 {today}', _wrap(f'주간 요약 {today}', body))
         state['weekly_date'] = today
