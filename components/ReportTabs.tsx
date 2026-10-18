@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import type { StockMeta } from '@/lib/content';
 
@@ -24,10 +24,32 @@ const PORTFOLIO = { ticker: 'PORTFOLIO', name: '포트폴리오', desc: '보유�
 // 기술주 ETF 20년 보유 비교 (360750·133690·381170) — 시뮬레이터 포함 고정 탭
 const TECH20 = { ticker: 'TECH20', name: '기술주 20년', desc: '360750·133690·381170' };
 
+// 데스크톱 사이드바 숨김 상태 저장 키 — 새로고침 후에도 유지
+const SIDEBAR_KEY = 'vic-sidebar-hidden';
+
 export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
   const [active, setActive] = useState(MONITOR.ticker);
   // 모바일 햄버거 메뉴 열림 여부 — 데스크톱에서는 버튼이 숨겨져 항상 false
   const [menuOpen, setMenuOpen] = useState(false);
+  // 데스크톱 사이드바 숨김 여부 — 모바일에서는 CSS가 별도 제어하므로 영향 없음
+  const [collapsed, setCollapsed] = useState(false);
+
+  // 저장된 숨김 상태 복원 (SSR 불일치 방지를 위해 마운트 후 읽는다)
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(SIDEBAR_KEY) === '1') setCollapsed(true);
+    } catch {}
+  }, []);
+
+  const toggleSidebar = () => {
+    setCollapsed((v) => {
+      const next = !v;
+      try {
+        localStorage.setItem(SIDEBAR_KEY, next ? '1' : '0');
+      } catch {}
+      return next;
+    });
+  };
 
   // 탭 선택 공통 — 모바일 메뉴가 열려 있었다면 닫는다
   const select = (ticker: string) => {
@@ -69,9 +91,22 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
         />
       )}
 
-      {/* vic-sidebar: 모바일(html.vic-mobile)에서는 globals.css가 숨기고, vic-open일 때 오버레이로 띄운다 */}
+      {/* vic-expand-btn: 데스크톱에서 사이드바를 숨겼을 때만 노출되는 펼침 버튼 (모바일은 globals.css가 감춤) */}
+      {collapsed && (
+        <button
+          onClick={toggleSidebar}
+          aria-label="메뉴 보이기"
+          title="메뉴 보이기"
+          className="vic-expand-btn fixed left-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-navy text-[15px] text-white shadow-soft opacity-60 transition-opacity hover:opacity-100"
+        >
+          ☰
+        </button>
+      )}
+
+      {/* vic-sidebar: 모바일(html.vic-mobile)에서는 globals.css가 숨기고, vic-open일 때 오버레이로 띄운다.
+          데스크톱에서는 collapsed일 때 hidden (모바일 vic-open 규칙이 더 구체적이라 모바일 메뉴는 영향 없음) */}
       <aside
-        className={`vic-sidebar ${menuOpen ? 'vic-open' : ''} flex w-48 shrink-0 flex-col border-r border-line bg-white`}
+        className={`vic-sidebar ${menuOpen ? 'vic-open' : ''} ${collapsed ? 'hidden' : 'flex'} w-48 shrink-0 flex-col border-r border-line bg-white`}
       >
         <nav className="flex-1 overflow-y-auto p-2">
           <button
@@ -202,12 +237,22 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
               체크리스트 원문 →
             </Link>
           )}
-          <Link
-            href="/"
-            className="block text-[12px] text-muted hover:text-navy hover:underline"
-          >
-            ← 홈
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link
+              href="/"
+              className="text-[12px] text-muted hover:text-navy hover:underline"
+            >
+              ← 홈
+            </Link>
+            {/* vic-collapse-btn: 데스크톱 전용 숨기기 버튼 (모바일은 globals.css가 감춤) */}
+            <button
+              onClick={toggleSidebar}
+              title="메뉴 숨기기"
+              className="vic-collapse-btn text-[12px] text-muted hover:text-navy hover:underline"
+            >
+              메뉴 숨기기 ◀
+            </button>
+          </div>
         </div>
       </aside>
 
