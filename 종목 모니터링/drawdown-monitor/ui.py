@@ -18,6 +18,11 @@ def _levels_text(levels):
     return ', '.join(str(v) for v in levels)
 
 
+def _iv_text(v):
+    """내재가치 표시 — $100 미만(KO $64.7 등)은 소수 한 자리까지."""
+    return '-' if not v else f'{v:,.0f}' if v >= 100 else f'{v:,.1f}'
+
+
 _UNIT = {'T': 1e12, 'B': 1e9, '조': 1e12, '억': 1e8}
 
 
@@ -36,7 +41,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('폭락 알림 모니터')
-        self.geometry('1390x600')
+        self.geometry('1550x600')
         self.minsize(900, 480)
         self.option_add('*Font', FONT)
         ttk.Style(self).configure('Treeview', rowheight=24, font=FONT)
@@ -91,8 +96,10 @@ class App(tk.Tk):
     def _tickers_tab(self, parent):
         f = ttk.Frame(parent, padding=8)
         cols = [('on', '사용', 50), ('sym', '심볼', 90), ('name', '이름', 140), ('levels', '고점대비 낙폭(%)', 120),
-                ('daily', '하루급락', 70), ('price', '현재가', 110), ('cap', '시가총액', 85), ('chg', '전일 대비', 80),
-                ('dd', '고점 대비', 80), ('iv', '내재가치', 80), ('mos', '안전마진', 75),
+                ('daily', '하루급락', 70), ('price', '현재가', 110), ('price_krw', '현재가(원)', 110),
+                ('cap', '시가총액', 85), ('chg', '전일 대비', 80),
+                ('dd', '고점 대비', 80), ('iv_low', '보수', 70), ('iv', '내재가치(기본)', 100),
+                ('iv_high', '낙관', 70), ('mos', '안전마진', 75),
                 ('stage', '알림 단계', 75), ('next', '다음 가격선', 120), ('earn', '다음 실적', 105),
                 ('checked', '마지막 점검', 125)]
         self.tree = ttk.Treeview(f, columns=[c[0] for c in cols], show='headings', selectmode='browse')
@@ -109,8 +116,15 @@ class App(tk.Tk):
         self.tree.bind('<B1-Motion>', self._head_motion, add='+')
         self.tree.bind('<ButtonRelease-1>', self._head_release, add='+')
         self._drag_col = None
-        order = (self.cfg.get('ui') or {}).get('columns')
-        if order and set(order) == set(self.col_labels):
+        order = [c for c in (self.cfg.get('ui') or {}).get('columns') or [] if c in self.col_labels]
+        if order:
+            # 저장된 순서 이후에 새로 생긴 열은 기본 순서상 바로 뒤 열의 앞에 끼워 넣는다 (저장 순서를 버리지 않는다).
+            # 뒤 열 기준이라 보수는 내재가치 앞, 낙관은 그 뒤에 붙는다 — 뒤 열이 없으면 맨 끝
+            keys = list(self.col_labels)
+            for k in reversed(keys):
+                if k not in order:
+                    nxt = next((n for n in keys[keys.index(k) + 1:] if n in order), None)
+                    order.insert(order.index(nxt) if nxt else len(order), k)
             self.tree['displaycolumns'] = order
         f.rowconfigure(0, weight=1)
         f.columnconfigure(0, weight=1)
@@ -129,7 +143,9 @@ class App(tk.Tk):
     def refresh_tickers(self):
         # 모니터가 분석 문서(md) 동기화로 config.json을 고쳤을 수 있으니 매번 디스크에서 다시 읽는다
         self.cfg = core.load_config()
-        state = core.load_json(core.STATE_PATH, {}).get('tickers', {})
+        full = core.load_json(core.STATE_PATH, {})
+        state = full.get('tickers', {})
+        usdkrw = (full.get('fx') or {}).get('USDKRW')   # 마지막 점검 때 받은 원/달러 환율
         self.tree.delete(*self.tree.get_children())
         for i, t in enumerate(self.cfg['tickers']):
             st = state.get(t['symbol'], {})
@@ -142,13 +158,17 @@ class App(tk.Tk):
             mos = f'{(iv - last["price"]) / iv:+.1%}' if iv and last else '-'
             e = st.get('earnings') or {}
             earn = (e['next'] + (' 추정' if e.get('estimated') else '')) if e.get('next') else '-'
+            cur = last.get('currency', '') if last else ''
+            krw = (last['price'] if cur == 'KRW' else last['price'] * usdkrw if cur == 'USD' and usdkrw else None) if last else None
+            krw_text = f'{krw:,.0f}원' if krw is not None else '-'
             self.tree.insert('', 'end', iid=str(i), tags=tags, values=(
                 '●' if on else '○', t['symbol'], t['name'], _levels_text(t['levels']), f'-{t["daily_drop_pct"]}%',
                 f'{last["price"]:,.2f} {last.get("currency", "")}' if last else '-',
+                krw_text,
                 core.cap_text(st.get('mcap')),
                 f'{last["change"] * 100:+.1f}%' if last else '-',
                 f'{last["dd"] * 100:+.1f}%' if last else '-',
-                f'{iv:,.0f}' if iv else '-', mos,
+                _iv_text(t.get('iv_low')), _iv_text(iv), _iv_text(t.get('iv_high')), mos,
                 f'-{st["level"]}%' if st.get('level') else '-',
                 nxt, earn, last.get('checked', '-')))
         self._apply_sort()

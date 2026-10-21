@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>진입대기 16 — 품질 등급별 목표가 감시판</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --seq-250: #86b6ef; --seq-450: #2a78d6;
+    --status-good: #0ca30c; --status-warning: #fab219; --status-serious: #ec835a; --status-critical: #d03b3b;
+    --delta-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  h2 .w { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 6px; }
+  p.body { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 10px; }
+  p.body strong { color: var(--text-primary); }
+  .notice { border: 1px solid var(--status-serious); border-radius: 10px; padding: 12px 16px; font-size: 13.5px; color: var(--text-secondary); margin-bottom: 20px; background: var(--surface-1); }
+  .notice b { color: var(--text-primary); }
+  .muted { color: var(--text-muted); font-size: 12.5px; }
+  .hero { display: flex; flex-wrap: wrap; gap: 24px; }
+  .hero-score { flex: 0 0 auto; text-align: center; padding: 8px 28px 8px 8px; border-right: 1px solid var(--gridline); }
+  .hero-score .num { font-size: 64px; font-weight: 800; line-height: 1.05; }
+  .hero-score .den { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+  .hero-score .label { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; max-width: 150px; }
+  .hero-main { flex: 1 1 320px; min-width: 280px; }
+  .verdict { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--status-serious); border-radius: 999px; padding: 4px 14px; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--status-serious); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .fact { border-top: 2px solid var(--gridline); padding-top: 8px; }
+  .fact .k { font-size: 12px; color: var(--text-muted); }
+  .fact .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fact .d { font-size: 12px; color: var(--text-secondary); }
+  .meter-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .meter-row .name { font-size: 14px; font-weight: 600; }
+  .meter-row .name small { display: block; font-weight: 400; font-size: 11.5px; color: var(--text-muted); }
+  .track { height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--seq-450); border-radius: 5px; }
+  .meter-row .val { font-size: 14px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .meter-row .val small { font-weight: 400; color: var(--text-muted); }
+  ul.check { list-style: none; }
+  ul.check li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--gridline); font-size: 14px; color: var(--text-secondary); align-items: baseline; }
+  ul.check li:last-child { border-bottom: none; }
+  .tag { flex: 0 0 auto; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+  .tag.pass { color: var(--status-good); border: 1px solid var(--status-good); }
+  .tag.warn { color: var(--status-serious); border: 1px solid var(--status-serious); }
+  .tag.fail { color: var(--status-critical); border: 1px solid var(--status-critical); }
+  ul.check b { color: var(--text-primary); font-weight: 600; }
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .chart-box { position: relative; }
+  svg text { font-family: inherit; }
+  .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
+  .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  details { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  details summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  .table-scroll { overflow-x: auto; }
+  .up { color: var(--delta-good); font-weight: 600; }
+  .warn-txt { color: var(--status-serious); font-weight: 600; }
+  .range-wrap { padding: 46px 10px 52px; }
+  .range-track { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--seq-250), var(--seq-450)); }
+  .marker { position: absolute; top: -40px; transform: translateX(-50%); text-align: center; }
+  .marker .lbl { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; }
+  .marker .prc { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .marker .tick { width: 2px; height: 14px; background: var(--baseline); margin: 2px auto 0; }
+  .marker.below { top: auto; bottom: -48px; }
+  .marker.below .tick { margin: 0 auto 2px; }
+  .marker.now .tick { background: var(--text-primary); width: 3px; height: 20px; }
+  .marker.now .prc, .marker.now .lbl { color: var(--text-primary); font-weight: 800; }
+  .range-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } .meter-row { grid-template-columns: 120px 1fr 70px; } }
+  .src { font-size: 12.5px; color: var(--text-muted); }
+  .src a { color: var(--series-1); text-decoration: none; }
+  .src li { margin-bottom: 4px; }
+  .disclaimer { border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+  td.g { font-weight: 800; text-align: center; }
+  .gS { color: var(--status-good); } .gA { color: var(--series-1); } .g일반 { color: var(--text-muted); }
+  tr.hit td { background: color-mix(in srgb, var(--status-good) 10%, transparent); }
+  td a { color: var(--text-primary); text-decoration: none; font-weight: 700; }
+  td a:hover { text-decoration: underline; }
+  .bar { position: relative; height: 6px; background: var(--gridline); border-radius: 3px; min-width: 90px; }
+  .bar i { position: absolute; top: -3px; width: 3px; height: 12px; background: var(--text-primary); border-radius: 1px; }
+  .bar b { position: absolute; top: 0; bottom: 0; background: var(--seq-250); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="wrap" style="max-width:1080px">
+<header>
+  <div class="kicker">가치투자 체크리스트 · 2026-10-21 품질 등급 판정 · 내재가치 2026-10-18 간이 DCF</div>
+  <h1>진입대기 16 <span style="color:var(--text-muted);font-weight:600">품질 등급별 목표가 감시판</span></h1>
+  <div class="sub">목표가 = 기본 내재가치 × 등급 배수 (S ×0.9 · A ×0.85 · 일반 ×0.8). 진입대기 14종목 + 완주 분석 2종목(MSFT·GOOGL). 정렬: 목표가까지 가까운 순. 종목명을 누르면 보고서가 열린다.</div>
+</header>
+<div class="notice">📌 <b>감시선이지 매수 규칙이 아니다.</b> 목표가 도달 → 그 종목만 템플릿 전체로 완주 분석 → 통과 시 매수. <span id="asof" class="muted">현재가 불러오는 중… (표의 값은 10/20 종가)</span></div>
+<section class="card">
+  <div class="table-scroll"><table id="t">
+    <thead><tr><th>종목</th><th style="text-align:center">등급</th><th>현재가</th><th>보수</th><th>기본</th><th>낙관</th><th>목표가</th><th>안전마진</th><th>목표가까지</th><th style="text-align:left">위치 (보수 ~ 낙관)</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+  <p class="muted" style="margin-top:10px">초록 행 = 현재가 ≤ 목표가. 위치 막대: 회색 = 보수~낙관 범위, 하늘색 = 목표가 이하 구간, 검은 눈금 = 현재가.</p>
+</section>
+<div class="disclaimer">원본: 02.종목분석/품질우주_20261021.md [3] · 진입대기_15종목_간이밸류에이션_20261018.md. 투자 권유가 아니다.</div>
+</div>
+<script>
+var ROWS = [{"t": "MA", "ko": "마스터카드", "g": "S", "price": 620.42, "ivc": 480, "ivb": 669, "ivo": 892, "target": 602}, {"t": "COST", "ko": "코스트코", "g": "S", "price": 994.61, "ivc": 480, "ivb": 641, "ivo": 823, "target": 577}, {"t": "ADP", "ko": "ADP", "g": "S", "price": 292.75, "ivc": 206, "ivb": 268, "ivo": 348, "target": 241}, {"t": "V", "ko": "비자", "g": "A", "price": 406.57, "ivc": 291, "ivb": 408, "ivo": 526, "target": 347}, {"t": "AAPL", "ko": "애플", "g": "A", "price": 339.5, "ivc": 136, "ivb": 192, "ivo": 251, "target": 163}, {"t": "RACE", "ko": "페라리", "g": "A", "price": 400.24, "ivc": 222, "ivb": 291, "ivo": 374, "target": 247}, {"t": "PG", "ko": "P&G", "g": "A", "price": 159.32, "ivc": 88.6, "ivb": 113, "ivo": 146, "target": 96.0}, {"t": "KO", "ko": "코카콜라", "g": "A", "price": 93.49, "ivc": 48.2, "ivb": 64.7, "ivo": 84.0, "target": 55.0}, {"t": "ISRG", "ko": "인튜이티브 서지컬", "g": "A", "price": 438.0, "ivc": 203, "ivb": 288, "ivo": 371, "target": 245}, {"t": "META", "ko": "메타", "g": "일반", "price": 694.25, "ivc": 529, "ivb": 778, "ivo": 1058, "target": 622}, {"t": "ASML", "ko": "ASML", "g": "일반", "price": 1630.84, "ivc": 852, "ivb": 1284, "ivo": 1724, "target": 1027}, {"t": "CTAS", "ko": "신타스", "g": "일반", "price": 217.03, "ivc": 118, "ivb": 164, "ivo": 212, "target": 131}, {"t": "MCO", "ko": "무디스", "g": "일반", "price": 475.35, "ivc": 324, "ivb": 452, "ivo": 583, "target": 362}, {"t": "CDNS", "ko": "케이던스", "g": "일반", "price": 319.87, "ivc": 126, "ivb": 190, "ivo": 254, "target": 152}, {"t": "MSFT", "ko": "마이크로소프트", "g": "A", "price": 531.87, "ivc": 373, "ivb": 543, "ivo": 729, "target": 462}, {"t": "GOOGL", "ko": "알파벳", "g": "일반", "price": 340.28, "ivc": 220, "ivb": 312, "ivo": 408, "target": 250}];
+function m(v) { return v >= 100 ? '$' + Math.round(v).toLocaleString() : '$' + v.toFixed(1); }
+function pct(v) { return (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%'; }
+function render() {
+  ROWS.forEach(function (r) { r.mos = (r.ivb - r.price) / r.ivb; r.gap = r.target / r.price - 1; });
+  ROWS.sort(function (a, b) { return b.gap - a.gap; });
+  document.querySelector('#t tbody').innerHTML = ROWS.map(function (r) {
+    var lo = Math.min(r.ivc, r.price) * 0.95, hi = Math.max(r.ivo, r.price) * 1.02, w = function (v) { return ((v - lo) / (hi - lo) * 100).toFixed(1) + '%'; };
+    return '<tr class="' + (r.price <= r.target ? 'hit' : '') + '"><td><a href="/reports/' + r.t + '.html">' + r.ko + '</a> <span class="muted">' + r.t + '</span></td>' +
+      '<td class="g g' + r.g + '">' + r.g + '</td><td><b>$' + r.price.toFixed(2) + '</b></td><td>' + m(r.ivc) + '</td><td>' + m(r.ivb) + '</td><td>' + m(r.ivo) + '</td>' +
+      '<td><b>' + m(r.target) + '</b></td><td class="' + (r.mos > 0 ? 'up' : 'warn-txt') + '">' + pct(r.mos) + '</td><td><b>' + pct(r.gap) + '</b></td>' +
+      '<td><div class="bar"><b style="left:' + w(lo) + ';width:' + w(r.target) + '"></b><i style="left:' + w(r.price) + '"></i></div></td></tr>';
+  }).join('');
+}
+render();
+Promise.all(ROWS.map(function (r) {
+  return fetch('/api/quote/' + r.t).then(function (x) { return x.ok ? x.json() : null; }).then(function (q) { if (q && q.price) r.price = q.price; }).catch(function () {});
+})).then(function () {
+  render();
+  document.getElementById('asof').textContent = '현재가: ' + new Date().toLocaleString('ko-KR') + ' 기준 실시간';
+});
+</script>
+</body>
+</html>

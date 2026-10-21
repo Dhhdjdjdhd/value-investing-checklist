@@ -24,6 +24,30 @@ const PORTFOLIO = { ticker: 'PORTFOLIO', name: '포트폴리오', desc: '보유�
 // 기술주 ETF 20년 보유 비교 (360750·133690·381170) — 시뮬레이터 포함 고정 탭
 const TECH20 = { ticker: 'TECH20', name: '기술주 20년', desc: '360750·133690·381170' };
 
+// 진입대기 감시판 — 품질 등급별 목표가 목록 (2026-10-21 품질 우주 1회차)
+const WATCH = { ticker: 'WATCH', name: '진입대기 16', desc: '등급별 목표가 감시판' };
+
+// 종목 탭 = 진입대기 14종목 + 완주 분석 2종목(MSFT·GOOGL) 보고서(public/reports/<티커>.html). 등급 순(S → A → 일반)
+// 종전에는 02.종목분석 md 목록으로 만들었으나, 시뮬레이터 재시작(2026-10-21)으로 보고서를 이 14개로 교체했다
+const WATCHLIST = [
+  { ticker: 'MA', name: '마스터카드', grade: 'S' },
+  { ticker: 'COST', name: '코스트코', grade: 'S' },
+  { ticker: 'ADP', name: 'ADP', grade: 'S' },
+  { ticker: 'V', name: '비자', grade: 'A' },
+  { ticker: 'AAPL', name: '애플', grade: 'A' },
+  { ticker: 'RACE', name: '페라리', grade: 'A' },
+  { ticker: 'PG', name: 'P&G', grade: 'A' },
+  { ticker: 'KO', name: '코카콜라', grade: 'A' },
+  { ticker: 'ISRG', name: '인튜이티브 서지컬', grade: 'A' },
+  { ticker: 'MSFT', name: '마이크로소프트', grade: 'A' },
+  { ticker: 'META', name: '메타', grade: '일반' },
+  { ticker: 'GOOGL', name: '알파벳', grade: '일반' },
+  { ticker: 'ASML', name: 'ASML', grade: '일반' },
+  { ticker: 'CTAS', name: '신타스', grade: '일반' },
+  { ticker: 'MCO', name: '무디스', grade: '일반' },
+  { ticker: 'CDNS', name: '케이던스', grade: '일반' },
+];
+
 // 데스크톱 사이드바 숨김 상태 저장 키 — 새로고침 후에도 유지
 const SIDEBAR_KEY = 'vic-sidebar-hidden';
 
@@ -201,7 +225,25 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
 
           <div className="my-2 border-t border-line" />
 
-          {stocks.map((s) => {
+          <button
+            onClick={() => select(WATCH.ticker)}
+            className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
+              active === WATCH.ticker
+                ? 'bg-navy text-white'
+                : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
+            }`}
+          >
+            <span className="block text-[14px] font-bold">{WATCH.name}</span>
+            <span
+              className={`block text-[11px] ${
+                active === WATCH.ticker ? 'text-white/70' : 'text-muted'
+              }`}
+            >
+              {WATCH.desc}
+            </span>
+          </button>
+
+          {WATCHLIST.map((s) => {
             const on = s.ticker === active;
             return (
               <button
@@ -219,7 +261,7 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
                     on ? 'text-white/70' : 'text-muted'
                   }`}
                 >
-                  {s.ticker}
+                  {s.ticker} · 등급 {s.grade}
                 </span>
               </button>
             );

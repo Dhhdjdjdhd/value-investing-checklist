@@ -33,7 +33,7 @@ export interface StockMeta {
   verdict: Verdict;
   price: number; // 분석 시점 주가
   intrinsicValue: number; // 기본 시나리오 내재가치
-  targetPrice: number; // 목표 매수가 (기본 −20%)
+  targetPrice: number; // 목표 매수가 (등급별 기본 ×0.9/×0.85/×0.8)
   summary: string; // 한 줄 근거 요약
 }
 

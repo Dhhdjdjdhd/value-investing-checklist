@@ -765,9 +765,20 @@ def read_analysis(cfg, symbol):
             'iv_high': sc.get('iv_high'), 'target': target, 'splits': splits}
 
 
+GRADE_BY_MOS = {10: 'S', 15: 'A', 20: '일반'}   # 02 §1 품질 등급별 안전마진
+
+
+def _target_label(a):
+    """목표매수가 문구 — md의 목표가 ÷ 기본 내재가치에서 안전마진(→등급)을 읽는다."""
+    mos = round((1 - a['target'] / a['iv_base']) * 100)
+    grade = GRADE_BY_MOS.get(mos)
+    head = f'등급 {grade} · 안전마진 {mos}%' if grade else f'안전마진 {mos}%'
+    return f'목표매수가({head}) — 1회차 매수 (목표 비중의 1/3~1/2)'
+
+
 def _price_lines(a):
     lines = [(a['iv_base'], '기본 내재가치 이하 — 매수 준비, 하락 원인 확인 시작'),
-             (a['target'], '목표매수가(안전마진 20%) — 1회차 매수 (목표 비중의 1/3~1/2)'),
+             (a['target'], _target_label(a)),
              (a['splits'][0], '2회차 분할매수 (논제 재점검 후)'),
              (a['splits'][1], '3회차 분할매수 (논제 재점검 후)')]
     if a['iv_low']:
@@ -967,6 +978,13 @@ def _run(cfg):
                 log.error('메일 발송 실패 (%s): %s', subject, e)
                 errors.append(f'메일 실패: {e}')
                 st.update(undo)
+
+    # 원화 환산용 환율 — 화면의 '현재가(원)' 열에 쓴다. 실패해도 점검 결과에는 영향 없음
+    try:
+        fx = fetch_quote(cfg, 'KRW=X')
+        state['fx'] = {'USDKRW': fx['price'], 'checked': dt.datetime.now().strftime('%Y-%m-%d %H:%M')}
+    except Exception as e:  # noqa: BLE001
+        log.warning('환율(KRW=X) 조회 실패: %s', e)
 
     _fail_watch(cfg, state, [e for e in errors if not e.startswith('메일')])
     _weekly_summary(cfg, state, reports)
