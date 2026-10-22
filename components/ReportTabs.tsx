@@ -21,9 +21,6 @@ const DIVNDQ = { ticker: 'DIVNDQ', name: 'LTP-2', desc: '🔒 배당+나스닥 5
 // 매매 계좌 실시간 대시보드 — 분석 보고서가 아닌 고정 탭
 const PORTFOLIO = { ticker: 'PORTFOLIO', name: '포트폴리오', desc: '보유·손익 실시간' };
 
-// 기술주 ETF 20년 보유 비교 (360750·133690·381170) — 시뮬레이터 포함 고정 탭
-const TECH20 = { ticker: 'TECH20', name: '기술주 20년', desc: '360750·133690·381170' };
-
 // 진입대기 감시판 — 품질 등급별 목표가 목록 (2026-10-21 품질 우주 1회차)
 const WATCH = { ticker: 'WATCH', name: '진입대기 16', desc: '등급별 목표가 감시판' };
 
@@ -52,7 +49,7 @@ const WATCHLIST = [
 const SIDEBAR_KEY = 'vic-sidebar-hidden';
 
 export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
-  const [active, setActive] = useState(MONITOR.ticker);
+  const [active, setActive] = useState(PORTFOLIO.ticker);
   // 모바일 햄버거 메뉴 열림 여부 — 데스크톱에서는 버튼이 숨겨져 항상 false
   const [menuOpen, setMenuOpen] = useState(false);
   // 데스크톱 사이드바 숨김 여부 — 모바일에서는 CSS가 별도 제어하므로 영향 없음
@@ -202,24 +199,6 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
               }`}
             >
               {PORTFOLIO.desc}
-            </span>
-          </button>
-
-          <button
-            onClick={() => select(TECH20.ticker)}
-            className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
-              active === TECH20.ticker
-                ? 'bg-navy text-white'
-                : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
-            }`}
-          >
-            <span className="block text-[14px] font-bold">{TECH20.name}</span>
-            <span
-              className={`block text-[11px] ${
-                active === TECH20.ticker ? 'text-white/70' : 'text-muted'
-              }`}
-            >
-              {TECH20.desc}
             </span>
           </button>
 
