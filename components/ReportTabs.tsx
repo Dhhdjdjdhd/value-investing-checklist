@@ -22,25 +22,26 @@ const DIVNDQ = { ticker: 'DIVNDQ', name: 'LTP-2', desc: '🔒 배당+나스닥 5
 const PORTFOLIO = { ticker: 'PORTFOLIO', name: '포트폴리오', desc: '보유·손익 실시간' };
 
 // 진입대기 감시판 — 품질 등급별 목표가 목록 (2026-10-21 품질 우주 1회차)
-const WATCH = { ticker: 'WATCH', name: '진입대기 16', desc: '등급별 목표가 감시판' };
+const WATCH = { ticker: 'WATCH', name: '진입대기 18', desc: '등급별 목표가 감시판' };
 
 // 종목 탭 = 진입대기 14종목 + 완주 분석 2종목(MSFT·GOOGL) 보고서(public/reports/<티커>.html). 등급 순(S → A → 일반)
 // 종전에는 02.종목분석 md 목록으로 만들었으나, 시뮬레이터 재시작(2026-10-21)으로 보고서를 이 14개로 교체했다
+// 등급 = 2026-10-22 완주 분석 확정(02.종목분석/<종목>_분석_20261022.md). MSFT·GOOGL은 기존 완주 분석
 const WATCHLIST = [
-  { ticker: 'MA', name: '마스터카드', grade: 'S' },
-  { ticker: 'COST', name: '코스트코', grade: 'S' },
-  { ticker: 'ADP', name: 'ADP', grade: 'S' },
-  { ticker: 'V', name: '비자', grade: 'A' },
+  { ticker: 'COST', name: '코스트코', grade: 'A' },
   { ticker: 'AAPL', name: '애플', grade: 'A' },
-  { ticker: 'RACE', name: '페라리', grade: 'A' },
-  { ticker: 'PG', name: 'P&G', grade: 'A' },
-  { ticker: 'KO', name: '코카콜라', grade: 'A' },
-  { ticker: 'ISRG', name: '인튜이티브 서지컬', grade: 'A' },
-  { ticker: 'MSFT', name: '마이크로소프트', grade: 'A' },
-  { ticker: 'META', name: '메타', grade: '일반' },
+  { ticker: 'CTAS', name: '신타스', grade: 'A' },
+  { ticker: 'MA', name: '마스터카드', grade: '일반' },
+  { ticker: 'V', name: '비자', grade: '일반' },
+  { ticker: 'ADP', name: 'ADP', grade: '일반' },
+  { ticker: 'PG', name: 'P&G', grade: '일반' },
+  { ticker: 'MSFT', name: '마이크로소프트', grade: '일반' },
   { ticker: 'GOOGL', name: '알파벳', grade: '일반' },
+  { ticker: 'META', name: '메타', grade: '일반' },
+  { ticker: 'KO', name: '코카콜라', grade: '일반' },
+  { ticker: 'ISRG', name: '인튜이티브 서지컬', grade: '일반' },
+  { ticker: 'RACE', name: '페라리', grade: '일반' },
   { ticker: 'ASML', name: 'ASML', grade: '일반' },
-  { ticker: 'CTAS', name: '신타스', grade: '일반' },
   { ticker: 'MCO', name: '무디스', grade: '일반' },
   { ticker: 'CDNS', name: '케이던스', grade: '일반' },
 ];

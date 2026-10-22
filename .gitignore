@@ -27,6 +27,9 @@ content/private/
 종목 모니터링/drawdown-monitor/logs/
 __pycache__/
 
+# S급 기계적 스크린 — SEC companyfacts 캐시(약 2GB, 재다운로드 가능)
+종목 모니터링/s-screen/cache/
+
 # OS/에디터
 .DS_Store
 Thumbs.db
