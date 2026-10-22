@@ -108,6 +108,71 @@
   .kv .full { grid-column: 1 / 3; }
   .reason { font-size: 14px; line-height: 1.75; }
 
+  /* 정찰 현황 — 탑뷰 맵. 가운데 성 = 시장(목표가선), 성과의 거리 = 목표가까지 거리 (02 §1 정찰 진입) */
+  .sc-map { --sc-g1: #d3ebb9; --sc-g2: #b2d793; position: relative; margin-top: 14px; height: 380px; border-radius: 10px; overflow: hidden;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,.22) 0 2px, transparent 3px) 0 0 / 46px 46px,
+      radial-gradient(circle at 70% 70%, rgba(0,70,0,.10) 0 2px, transparent 3px) 0 0 / 34px 34px,
+      linear-gradient(160deg, var(--sc-g1), var(--sc-g2)); }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .sc-map { --sc-g1: #36532c; --sc-g2: #233a1d; } }
+  :root[data-theme="dark"] .sc-map { --sc-g1: #36532c; --sc-g2: #233a1d; }
+  .sc-tree { position: absolute; font-size: 22px; transform: translate(-50%, -50%); pointer-events: none; }
+  .sc-veil { position: absolute; inset: 0; z-index: 1; opacity: 0; transition: opacity 1s; pointer-events: none;
+    background:
+      radial-gradient(1.5px 1.5px at 12% 16%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 27% 8%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 44% 21%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 63% 11%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 81% 24%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 92% 7%, #fff 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 7% 41%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 96% 47%, #fff 50%, transparent 51%),
+      rgba(12, 20, 52, .55); }
+  .sc-map.sc-night .sc-veil { opacity: 1; }
+  .sc-sky { position: absolute; top: 8px; right: 12px; z-index: 2; font-size: 22px; }
+  .sc-ring { position: absolute; left: 50%; top: 50%; z-index: 2; border: 2px dashed rgba(255,255,255,.8); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+  .sc-map.sc-any-reached .sc-ring { border-color: var(--status-good); animation: sc-ringflash 1.4s ease-in-out infinite; }
+  .sc-castle { position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%); text-align: center; }
+  .sc-castle .sc-ce { display: block; font-size: 46px; line-height: 50px; filter: drop-shadow(0 3px 2px rgba(0,0,0,.25)); }
+  .sc-castle .sc-clbl { font-size: 11px; font-weight: 700; color: #1f3a14; background: rgba(255,255,255,.75); border-radius: 8px; padding: 0 6px; white-space: nowrap; }
+  .sc-fire { position: absolute; left: calc(100% - 2px); bottom: 16px; font-size: 16px; display: none; }
+  .sc-map.sc-night .sc-fire { display: block; animation: sc-flicker .45s ease-in-out infinite alternate; }
+
+  .sc-unit { position: absolute; z-index: 3; width: 0; height: 0; transition: left 1.4s cubic-bezier(.3, .7, .3, 1), top 1.4s cubic-bezier(.3, .7, .3, 1); }
+  .sc-patrol { position: absolute; left: 0; top: 0; }
+  .sc-char { position: absolute; left: -18px; top: -20px; width: 36px; text-align: center; font-size: 32px; line-height: 40px; }
+  .sc-spearwrap { position: absolute; left: calc(var(--ux) * 26px - 10px); top: calc(var(--uy) * 26px - 10px); width: 20px; height: 20px; }
+  .sc-spear { display: block; font-size: 18px; line-height: 20px; text-align: center; transform: rotate(var(--rot)); }
+  .sc-hit { position: absolute; left: calc(var(--ux) * 50px - 8px); top: calc(var(--uy) * 50px - 9px); font-size: 14px; opacity: 0; pointer-events: none; }
+  .sc-zz { position: absolute; left: 12px; top: -26px; font-size: 13px; opacity: 0; pointer-events: none; }
+  .sc-plate { position: absolute; left: 0; transform: translateX(-50%); white-space: nowrap; text-align: center; font-size: 11.5px; line-height: 1.3; padding: 2px 7px; border-radius: 8px;
+    background: color-mix(in srgb, var(--surface-1) 88%, transparent); box-shadow: 0 1px 3px rgba(0,0,0,.18); font-variant-numeric: tabular-nums; }
+  .sc-top { bottom: 22px; }
+  .sc-top .sc-pnl { margin-left: 5px; font-weight: 800; }
+  .sc-plate .sc-short { display: none; }
+  .sc-bot { top: 22px; color: var(--text-secondary); }
+  .sc-gauge { height: 4px; border-radius: 2px; background: var(--gridline); margin-top: 2px; overflow: hidden; }
+  .sc-gauge i { display: block; height: 100%; background: var(--status-warn); transition: width 1.4s; }
+  .sc-unit.sc-near .sc-gauge i, .sc-unit.sc-reached .sc-gauge i { background: var(--status-good); }
+  .sc-unit.sc-reached .sc-char { filter: drop-shadow(0 0 7px var(--status-good)); }
+  .sc-unit.sc-reached .sc-goal { color: var(--status-good); font-weight: 800; }
+
+  /* 낮(정규장): 성 둘레를 좌우로 순찰하며 창으로 살짝살짝 찌른다 / 밤(장마감): 모닥불 옆에서 잔다 */
+  .sc-map.sc-day .sc-patrol { animation: sc-patrol 7s ease-in-out infinite alternate; animation-delay: var(--d, 0s); }
+  .sc-map.sc-day .sc-spearwrap { animation: sc-poke 3.4s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  .sc-map.sc-day .sc-char { animation: sc-lean 3.4s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  .sc-map.sc-day .sc-hit { animation: sc-hitfx 3.4s ease-out infinite; animation-delay: var(--d, 0s); }
+  .sc-map.sc-night .sc-char { animation: sc-breathe 2.6s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  .sc-map.sc-night .sc-zz { animation: sc-zz 2.4s ease-in-out infinite; animation-delay: var(--d, 0s); }
+  @keyframes sc-patrol { from { transform: translate(calc(var(--tx) * -12px), calc(var(--ty) * -12px)); } to { transform: translate(calc(var(--tx) * 12px), calc(var(--ty) * 12px)); } }
+  @keyframes sc-poke { 0%, 60%, 100% { transform: translate(0, 0); } 68% { transform: translate(calc(var(--ux) * 14px), calc(var(--uy) * 14px)); } 74% { transform: translate(calc(var(--ux) * 3px), calc(var(--uy) * 3px)); } 81% { transform: translate(calc(var(--ux) * 12px), calc(var(--uy) * 12px)); } 90% { transform: translate(0, 0); } }
+  @keyframes sc-lean { 0%, 60%, 100% { transform: translate(0, 0); } 68%, 81% { transform: translate(calc(var(--ux) * 4px), calc(var(--uy) * 4px)); } }
+  @keyframes sc-hitfx { 0%, 66%, 100% { opacity: 0; transform: scale(.4); } 68% { opacity: 1; transform: scale(1); } 72% { opacity: 0; } 81% { opacity: .9; transform: scale(.8); } 85% { opacity: 0; } }
+  @keyframes sc-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+  @keyframes sc-zz { 0% { opacity: 0; transform: translate(0, 4px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(8px, -12px); } }
+  @keyframes sc-flicker { from { transform: scale(1); } to { transform: scale(1.15) translateY(-1px); } }
+  @keyframes sc-ringflash { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+  @media (prefers-reduced-motion: reduce) {
+    .sc-unit, .sc-gauge i { transition: none; }
+    .sc-map *, .sc-map .sc-ring { animation: none !important; }
+  }
+
   #err { display: none; background: rgba(208,59,59,.12); border: 1px solid var(--status-critical); color: var(--status-critical); padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; font-size: 13px; }
 
   @media (max-width: 640px) {
@@ -118,6 +183,10 @@
     .stat .v { font-size: 20px; }
     #holdTable { min-width: 820px; }
     .edit-grid { grid-template-columns: 1fr 60px 88px 88px; }
+    .sc-map { height: 360px; }
+    .sc-plate { font-size: 10.5px; padding: 1px 5px; }
+    .sc-plate .sc-long { display: none; }
+    .sc-plate .sc-short { display: inline; }
   }
 </style>
 </head>
@@ -125,12 +194,34 @@
 <div class="wrap">
 
 <header>
-  <div class="kicker">포트폴리오 · 시뮬레이터 2기 (2026-10-21 시작, 원금 1,000만 원)</div>
+  <div class="kicker">포트폴리오 · 시뮬레이터 2기 (2026-10-21 시작)</div>
   <h1>보유 현황</h1>
   <div class="sub" id="asof">시세 불러오는 중…</div>
 </header>
 
 <div id="err"></div>
+
+<!-- 정찰 현황 — 정찰 진입 종목(02 §1)을 탑뷰 맵 캐릭터로. 가운데 성 = 시장(목표가선) -->
+<div class="card">
+  <div class="card-head">
+    <h2>🏰 정찰 현황</h2>
+    <span class="badge" id="scState">대기</span>
+  </div>
+  <div class="sc-map" id="scMap">
+    <span class="sc-tree" style="left:5%;top:11%">🌲</span>
+    <span class="sc-tree" style="left:50%;top:8%">🌳</span>
+    <span class="sc-tree" style="left:7%;top:88%">🌳</span>
+    <span class="sc-tree" style="left:19%;top:76%">🌲</span>
+    <span class="sc-tree" style="left:33%;top:91%">🌲</span>
+    <span class="sc-tree" style="left:64%;top:92%">🌳</span>
+    <span class="sc-tree" style="left:79%;top:79%">🌲</span>
+    <span class="sc-tree" style="left:94%;top:89%">🌳</span>
+    <div class="sc-veil"></div>
+    <div class="sc-sky" id="scSky">🌙</div>
+    <div class="sc-ring" id="scRing"></div>
+    <div class="sc-castle"><span class="sc-ce">🏰</span><span class="sc-fire">🔥</span><div class="sc-clbl">시장</div></div>
+  </div>
+</div>
 
 <!-- KPI -->
 <div class="card">
@@ -154,8 +245,9 @@
     </table>
   </div>
   <div class="foot">
-    ※ 목표 매수가는 분석 보고서 4단계에서 산출한 값(내재가치 −20% 안팎)이며, <b>달러 기준</b>입니다.
-    현재가가 목표가 아래면 추가 매수 구간입니다.<br>
+    ※ 목표 매수가 = 기본 내재가치 × 등급 배수(S 0.9 · A 0.85 · 일반 0.8), <b>달러 기준</b>입니다.
+    현재 보유분은 목표가 전 <b>정찰 진입</b>이며, 현재가가 목표가 아래로 오면 완주 분석 후 본 진입을 검토합니다 (02 §1).<br>
+    ※ 수익률 = 평가손익 ÷ 매입금액 (총 매수원가 대비).<br>
     ※ 평단은 진입 시점 환율로 환산한 <b>원화</b>이고 현재가는 <b>실시간 환율</b>로 환산하므로, 환율 변동도 손익에 반영됩니다.
   </div>
 </div>
@@ -193,8 +285,7 @@
     <h3 id="eTitle">보유 내역 편집</h3>
     <div class="chart-sub">평단은 <b>원화</b>, 목표 매수가는 <b>달러</b> 기준입니다. 이 브라우저에만 저장되며 원본 파일은 바뀌지 않습니다.</div>
     <div class="edit-grid" id="editGrid"></div>
-    <div class="edit-grid" style="grid-template-columns:1fr 1fr">
-      <div><div class="hd">투자원금 (원)</div><input type="number" id="edBase"></div>
+    <div class="edit-grid" style="grid-template-columns:1fr">
       <div><div class="hd">보유 현금 (원)</div><input type="number" id="edCash"></div>
     </div>
     <div class="err" id="editErr"></div>
@@ -208,14 +299,14 @@
 
 <script>
 // ── 기본 데이터 ─────────────────────────────────────────
-// 2026-10-21 시뮬레이터 재시작 — 원금 1,000만 원, 그날 미국 시가로 1회차 진입(평단 = 시가 × 당시 환율, 원화).
+// 2026-10-21 시뮬레이터 재시작 — 그날 미국 시가로 정찰 진입(02 §1, 평단 = 시가 × 당시 환율, 원화).
+// 원금 기준은 두지 않는다(2026-10-22) — 수익률은 매입금액(총 매수원가) 대비로만 계산한다.
 // 목표 매수가·내재가치는 02.종목분석/품질우주_20261021.md [3](품질 등급별 목표가)이 원본이다.
 // 종전 장부(CPRT·UHS·NXPI 보유, INTU·PTC 청산)는 01.가치투자 체크리스트/03.포트폴리오_현황_구장부_20261021.md에 보관.
 // 화면에서 편집한 값은 이 브라우저의 localStorage에만 저장된다. 저장 키를 v2로 바꿔 종전 편집값과 섞이지 않게 했다.
 var LS_KEY = 'vic.portfolio.v2';
 
 var DEFAULT_DATA = {
-  "baseCapital": 10000000,
   "cash": 4290061,
   "holdings": [
     {
@@ -227,8 +318,8 @@ var DEFAULT_DATA = {
       "avgPrice": 821105,
       "targetPrice": 602,
       "intrinsicValue": 669,
-      "verdict": "등급 S · 예외 진입",
-      "entryReason": "체결가 = 2026-10-21 시가 $619.16(2026-10-21 09:30 ET) × 환율 1,326.16(2026-10-21 22:30 KST) → 주당 821,105원. 세계 2위 카드 결제 네트워크 — 거래액 비례 수수료, 신용 위험은 카드사가 진다. 품질 등급 S(해자 3개·ROIC 10년 최저 36%). 🔴 예외 진입 E1: 시가가 S등급 목표가 $602(기본 $669 × 0.9) 위 — 02 §1 \"목표가 이하에서만 진입\"의 예외. 🔴 사이징 예외: 1회차 3주가 원금의 약 25%로 02 §2 한 종목 상한(15~20%)을 1회차만으로 넘는다. 비자와 같은 리스크 묶음(결제 규제·스테이블코인)."
+      "verdict": "등급 S · 정찰 진입",
+      "entryReason": "체결가 = 2026-10-21 시가 $619.16(2026-10-21 09:30 ET) × 환율 1,326.16(2026-10-21 22:30 KST) → 주당 821,105원. 세계 2위 카드 결제 네트워크 — 거래액 비례 수수료, 신용 위험은 카드사가 진다. 품질 등급 S(해자 3개·ROIC 10년 최저 36%). 🟡 정찰 진입 P1: 시가가 S등급 목표가 $602(기본 $669 × 0.9) 위 — 02 §1 \"정찰 진입\"(목표가 전 소량 보유, 종목당 500만 원 이하). 목표가 도달 → 완주 분석 → 본 진입. 비자와 같은 리스크 묶음(결제 규제·스테이블코인)."
     },
     {
       "name": "메타",
@@ -239,8 +330,8 @@ var DEFAULT_DATA = {
       "avgPrice": 922344,
       "targetPrice": 622,
       "intrinsicValue": 778,
-      "verdict": "등급 일반 · 예외 진입",
-      "entryReason": "체결가 = 2026-10-21 시가 $695.50(2026-10-21 09:30 ET) × 환율 1,326.16(2026-10-21 22:30 KST) → 주당 922,344원. 페이스북·인스타그램·왓츠앱 광고. 품질 등급 일반 — 2·3단계 조건부(Reality Labs 연 $19B 적자·차등의결권, AI capex로 FCF 괴리). 🔴 예외 진입 E2: 시가가 일반 등급 목표가 $622(기본 $778 × 0.8) 위. MSFT와 같은 AI capex 리스크 묶음 — 02 §2 테마 합산 상한 대상."
+      "verdict": "등급 일반 · 정찰 진입",
+      "entryReason": "체결가 = 2026-10-21 시가 $695.50(2026-10-21 09:30 ET) × 환율 1,326.16(2026-10-21 22:30 KST) → 주당 922,344원. 페이스북·인스타그램·왓츠앱 광고. 품질 등급 일반 — 2·3단계 조건부(Reality Labs 연 $19B 적자·차등의결권, AI capex로 FCF 괴리). 🟡 정찰 진입 P2: 시가가 일반 등급 목표가 $622(기본 $778 × 0.8) 위 — 02 §1 \"정찰 진입\". 목표가 도달 → 완주 분석 → 본 진입. MSFT와 같은 AI capex 리스크 묶음 — 02 §2 테마 합산 상한 대상."
     },
     {
       "name": "마이크로소프트",
@@ -251,13 +342,13 @@ var DEFAULT_DATA = {
       "avgPrice": 700968,
       "targetPrice": 462,
       "intrinsicValue": 543,
-      "verdict": "등급 A · 예외 진입",
-      "entryReason": "체결가 = 2026-10-21 시가 $528.57(2026-10-21 09:30 ET) × 환율 1,326.16(2026-10-21 22:30 KST) → 주당 700,968원. 윈도·M365·애저. 완주 분석 종목(02.종목분석/마이크로소프트_MSFT_분석_20260726.md). 품질 등급 A — 3단계 조건부 1개(FCF가 순이익의 53%, capex 사상 최대). 🔴 예외 진입 E3: 시가가 A등급 목표가 $462(기본 $543 × 0.85) 위. META와 같은 AI capex 리스크 묶음."
+      "verdict": "등급 A · 정찰 진입",
+      "entryReason": "체결가 = 2026-10-21 시가 $528.57(2026-10-21 09:30 ET) × 환율 1,326.16(2026-10-21 22:30 KST) → 주당 700,968원. 윈도·M365·애저. 완주 분석 종목(02.종목분석/마이크로소프트_MSFT_분석_20260726.md). 품질 등급 A — 3단계 조건부 1개(FCF가 순이익의 53%, capex 사상 최대). 🟡 정찰 진입 P3: 시가가 A등급 목표가 $462(기본 $543 × 0.85) 위 — 02 §1 \"정찰 진입\". 목표가 도달 → 최신 실적 반영 확인 → 본 진입. META와 같은 AI capex 리스크 묶음."
     }
   ]
 };
 
-// 편집 대상은 수량·평단·목표 매수가와 원금·현금뿐 — 나머지는 파일 값을 그대로 쓴다
+// 편집 대상은 수량·평단·목표 매수가와 현금뿐 — 나머지는 파일 값을 그대로 쓴다
 function loadData() {
   var d = JSON.parse(JSON.stringify(DEFAULT_DATA));
   try {
@@ -270,7 +361,6 @@ function loadData() {
         if (s.avgPrice > 0) h.avgPrice = Number(s.avgPrice);
         if (s.targetPrice > 0) h.targetPrice = Number(s.targetPrice);
       });
-      if (v.baseCapital > 0) d.baseCapital = Number(v.baseCapital);
       if (v.cash >= 0) d.cash = Number(v.cash);
     }
   } catch (e) { /* 손상된 저장값은 무시하고 기본값 사용 */ }
@@ -354,7 +444,6 @@ function render() {
   el('asof').innerHTML =
     '<span class="badge' + (marketOpen ? ' open' : '') + '">' + (marketOpen ? '정규장' : '장마감') + '</span> ' +
     (anyQ ? esc(anyQ.asOf) + ' 기준' : '시세 대기 중') +
-    ' · 투자원금 ' + won(DATA.baseCapital) +
     (fxRate ? ' · 환율 ' + fxRate.toFixed(2) + '원' : '');
 
   var rows = DATA.holdings.map(function (h) {
@@ -382,9 +471,88 @@ function render() {
     tile('매입금액', won(cost), '보유 ' + rows.length + '종목') +
     tile('현금 비중', cashPct.toFixed(1) + '%', '대기 실탄 ' + won(DATA.cash));
 
+  renderScouts(rows);
   renderHoldings(rows);
   renderDonut(rows, totalAsset);
 }
+
+// ── 정찰 현황 (탑뷰 맵) ─────────────────────────────────
+// 캐릭터는 처음 한 번만 만들고 이후엔 위치·숫자만 바꾼다 (다시 그리면 애니메이션이 끊긴다)
+var SC_FAR = 0.30;                                   // 목표가 대비 +30% 이상 위면 맵 가장자리
+var SC_ANG = [200, 340, 100, 280, 140, 40, 240, 300];  // 성 둘레 배치 각도 (좌상·우상·아래·위 순 — 이름표가 겹치지 않게 벌린다)
+var scRows = null;
+function renderScouts(rows) {
+  scRows = rows;
+  var map = el('scMap');
+  var units = map.querySelectorAll('.sc-unit');
+  if (units.length !== rows.length) {
+    Array.prototype.forEach.call(units, function (u) { u.remove(); });
+    rows.forEach(function (r, i) {
+      var u = document.createElement('div');
+      u.className = 'sc-unit';
+      u.style.setProperty('--d', (i * 1.1).toFixed(1) + 's');
+      u.innerHTML =
+        '<div class="sc-patrol">' +
+          '<div class="sc-plate sc-top"></div>' +
+          '<span class="sc-char">🥷</span>' +
+          '<span class="sc-spearwrap"><span class="sc-spear">🗡️</span></span>' +
+          '<span class="sc-hit">💥</span><span class="sc-zz">💤</span>' +
+          '<div class="sc-plate sc-bot"></div>' +
+        '</div>';
+      map.appendChild(u);
+    });
+    units = map.querySelectorAll('.sc-unit');
+  }
+
+  // 반지름: 점선 고리(목표가선) ~ 맵 가장자리. 화면 폭에 맞춰 px로 계산
+  var W = map.clientWidth, H = map.clientHeight, cx = W / 2, cy = H / 2;
+  var rx0 = Math.min(110, W * 0.24), ry0 = 85;
+  var rxM = Math.max(rx0 + 10, cx - 70), ryM = Math.max(ry0 + 10, cy - 60);
+  el('scRing').style.width = (rx0 * 2) + 'px';
+  el('scRing').style.height = (ry0 * 2) + 'px';
+
+  var anyReached = false;
+  rows.forEach(function (r, i) {
+    var h = r.h, u = units[i];
+    // 목표가 위로 얼마나 떨어져 있나 (0 이하 = 도달). 시세가 없으면 가장자리에서 대기
+    var dist = r.curUSD == null || !h.targetPrice ? null : (r.curUSD - h.targetPrice) / h.targetPrice;
+    var reached = dist != null && dist <= 0;
+    var t = dist == null ? 1 : (reached ? 0 : Math.min(dist, SC_FAR) / SC_FAR);
+    anyReached = anyReached || reached;
+
+    var a = SC_ANG[i % SC_ANG.length] * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+    u.style.left = (cx + c * (rx0 + (rxM - rx0) * t)).toFixed(1) + 'px';
+    u.style.top = (cy + s * (ry0 + (ryM - ry0) * t)).toFixed(1) + 'px';
+    // 찌르기는 좌우로만 — 성이 있는 쪽을 향한다 (위아래로 찌르면 창이 이름표를 가린다). 순찰은 성 둘레(접선) 방향
+    var face = c > 0 ? -1 : 1;
+    u.style.setProperty('--ux', face);
+    u.style.setProperty('--uy', 0);
+    u.style.setProperty('--tx', s.toFixed(3));
+    u.style.setProperty('--ty', (-c).toFixed(3));
+    u.style.setProperty('--rot', face > 0 ? '45deg' : '225deg'); // 🗡️는 45° 돌리면 오른쪽, 225°면 왼쪽을 향한다
+    u.classList.toggle('sc-reached', reached);
+    u.classList.toggle('sc-near', !reached && t <= 0.2);
+
+    // 좁은 화면에서는 이름표를 짧게(티커·정수 목표가) — .sc-long / .sc-short를 CSS가 바꿔 보여준다
+    u.querySelector('.sc-top').innerHTML = '<b><span class="sc-long">' + esc(h.name) + '</span><span class="sc-short">' + esc(h.code) + '</span></b>' +
+      '<span class="sc-pnl ' + (r.pnl == null ? 'flat' : cls(r.pnl)) + '">' +
+      (r.pnl == null ? '—' : arrow(r.pnl) + ' ' + pct(r.pnl / r.buy * 100)) + '</span>';
+    // "목표가까지"는 현재가에서 몇 % 빠지면 목표가인가 — 감시판과 같은 값
+    u.querySelector('.sc-bot').innerHTML = '<span class="sc-goal">' + (reached
+        ? '🎯 <span class="sc-long">목표가 도달 · </span>본 진입 검토!'
+        : '<span class="sc-long">목표 ' + usd(h.targetPrice) + '</span><span class="sc-short">$' + Math.round(h.targetPrice) + '</span>' + (dist == null ? ' · 시세 대기' : ' · −' + ((1 - h.targetPrice / r.curUSD) * 100).toFixed(1) + '%')) +
+      '</span><div class="sc-gauge"><i style="width:' + ((1 - t) * 100).toFixed(0) + '%"></i></div>';
+  });
+
+  map.classList.toggle('sc-day', marketOpen);
+  map.classList.toggle('sc-night', !marketOpen);
+  map.classList.toggle('sc-any-reached', anyReached);
+  el('scSky').textContent = marketOpen ? '☀️' : '🌙';
+  var st = el('scState');
+  st.className = 'badge' + (marketOpen ? ' open' : '');
+  st.textContent = marketOpen ? '정찰 중' : '장마감 · 야영';
+}
+window.addEventListener('resize', function () { if (scRows) renderScouts(scRows); });
 
 function tile(k, v, d, vCls, dCls) {
   return '<div class="stat"><div class="k">' + k + '</div>' +
@@ -503,7 +671,6 @@ function fillEditGrid(holdings) {
 
 el('btnEdit').addEventListener('click', function () {
   fillEditGrid(DATA.holdings);
-  el('edBase').value = DATA.baseCapital;
   el('edCash').value = DATA.cash;
   editErr.textContent = '';
   editModal.hidden = false;
@@ -523,13 +690,13 @@ el('btnSave').addEventListener('click', function () {
     if (!isFinite(v) || v < 0 || (inp.dataset.f !== 'shares' && v <= 0)) { bad = true; return; }
     next[Number(inp.dataset.i)][inp.dataset.f] = v;
   });
-  var base = Number(el('edBase').value), cash = Number(el('edCash').value);
-  if (bad || !(base > 0) || !(cash >= 0)) {
+  var cash = Number(el('edCash').value);
+  if (bad || !(cash >= 0)) {
     editErr.textContent = '숫자를 확인해 주세요 (수량 0 이상, 나머지는 0보다 커야 합니다).';
     return;
   }
   try {
-    localStorage.setItem(LS_KEY, JSON.stringify({ holdings: next, baseCapital: base, cash: cash }));
+    localStorage.setItem(LS_KEY, JSON.stringify({ holdings: next, cash: cash }));
   } catch (e) { /* 저장 실패해도 화면 값은 반영한다 */ }
   DATA = loadData();
   closeEdit();

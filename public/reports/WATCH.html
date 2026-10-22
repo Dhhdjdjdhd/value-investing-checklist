@@ -140,7 +140,7 @@
     <thead><tr></tr></thead>
     <tbody></tbody>
   </table></div>
-  <p class="muted" style="margin-top:10px">초록 행 = 현재가 ≤ 목표가. 위치 막대: 회색 = 보수~낙관 범위, 하늘색 = 목표가 이하 구간, 검은 눈금 = 현재가. <button id="wt-reset" class="wt-reset">정렬·컬럼 순서 초기화</button></p>
+  <p class="muted" style="margin-top:10px">초록 행 = 현재가 ≤ 목표가. 목표가 아래 여유 = (목표가 − 현재가) ÷ 기본 내재가치 — 등급이 달라도 비교할 수 있는 척도(갈아타기·기회비용 비교용, 02 §3 ③). 위치 막대: 회색 = 보수~낙관 범위, 하늘색 = 목표가 이하 구간, 검은 눈금 = 현재가. <button id="wt-reset" class="wt-reset">정렬·컬럼 순서 초기화</button></p>
 </section>
 <div class="disclaimer">원본: 02.종목분석/품질우주_20261021.md [3] · 진입대기_15종목_간이밸류에이션_20261018.md. 투자 권유가 아니다.</div>
 </div>
@@ -160,6 +160,8 @@ var COLS = [
   { k: 'target', h: '목표가', v: function (r) { return r.target; }, td: function (r) { return '<td><b>' + m(r.target) + '</b></td>'; } },
   { k: 'mos', h: '안전마진', v: function (r) { return r.mos; }, td: function (r) { return '<td class="' + (r.mos > 0 ? 'up' : 'warn-txt') + '">' + pct(r.mos) + '</td>'; } },
   { k: 'gap', h: '목표가까지', v: function (r) { return r.gap; }, td: function (r) { return '<td><b>' + pct(r.gap) + '</b></td>'; } },
+  // 목표가 아래 여유 = (목표가 − 현재가) ÷ 기본 내재가치 — 갈아타기·기회비용 비교 척도 (02 §3 ③)
+  { k: 'room', h: '목표가 아래 여유', v: function (r) { return r.room; }, td: function (r) { return '<td class="' + (r.room > 0 ? 'up' : 'warn-txt') + '">' + pct(r.room) + '</td>'; } },
   { k: 'bar', h: '위치 (보수 ~ 낙관)', align: 'left', td: function (r) {
     var lo = Math.min(r.ivc, r.price) * 0.95, hi = Math.max(r.ivo, r.price) * 1.02, w = function (v) { return ((v - lo) / (hi - lo) * 100).toFixed(1) + '%'; };
     return '<td><div class="bar"><b style="left:' + w(lo) + ';width:' + w(r.target) + '"></b><i style="left:' + w(r.price) + '"></i></div></td>';
@@ -179,7 +181,7 @@ try {
 function save() { try { localStorage.setItem(STATE_KEY, JSON.stringify(st)); } catch (e) {} }
 
 function render() {
-  ROWS.forEach(function (r) { r.mos = (r.ivb - r.price) / r.ivb; r.gap = r.target / r.price - 1; });
+  ROWS.forEach(function (r) { r.mos = (r.ivb - r.price) / r.ivb; r.gap = r.target / r.price - 1; r.room = (r.target - r.price) / r.ivb; });
   var col = BY[st.k];
   if (col && col.v) {
     ROWS.sort(function (a, b) {
