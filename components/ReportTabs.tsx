@@ -22,12 +22,16 @@ const DIVNDQ = { ticker: 'DIVNDQ', name: 'LTP-2', desc: '🔒 배당+나스닥 5
 const PORTFOLIO = { ticker: 'PORTFOLIO', name: '포트폴리오', desc: '보유·손익 실시간' };
 
 // 진입대기 감시판 — 품질 등급별 목표가 목록 (2026-10-21 품질 우주 1회차)
-const WATCH = { ticker: 'WATCH', name: '진입대기 18', desc: '등급별 목표가 감시판' };
+const WATCH = { ticker: 'WATCH', name: '진입대기 32', desc: '등급별 목표가 감시판' };
 
 // 종목 탭 = 진입대기 14종목 + 완주 분석 2종목(MSFT·GOOGL) 보고서(public/reports/<티커>.html). 등급 순(S → A → 일반)
 // 종전에는 02.종목분석 md 목록으로 만들었으나, 시뮬레이터 재시작(2026-10-21)으로 보고서를 이 14개로 교체했다
 // 등급 = 2026-10-22 완주 분석 확정(02.종목분석/<종목>_분석_20261022.md). MSFT·GOOGL은 기존 완주 분석
+// 2026-10-22 3기 후보서치 완주 4개 추가 — BKNG(3기 보유)·NFLX·CPRT를 맨 위에, PYPL(패스)은 맨 아래
 const WATCHLIST = [
+  { ticker: 'BKNG', name: '부킹홀딩스', grade: '일반 · 보유' },
+  { ticker: 'NFLX', name: '넷플릭스', grade: '일반' },
+  { ticker: 'CPRT', name: '코파트', grade: '일반' },
   { ticker: 'COST', name: '코스트코', grade: 'A' },
   { ticker: 'AAPL', name: '애플', grade: 'A' },
   { ticker: 'CTAS', name: '신타스', grade: 'A' },
@@ -44,6 +48,7 @@ const WATCHLIST = [
   { ticker: 'ASML', name: 'ASML', grade: '일반' },
   { ticker: 'MCO', name: '무디스', grade: '일반' },
   { ticker: 'CDNS', name: '케이던스', grade: '일반' },
+  { ticker: 'PYPL', name: '페이팔', grade: '패스' },
 ];
 
 // 데스크톱 사이드바 숨김 상태 저장 키 — 새로고침 후에도 유지
@@ -241,7 +246,7 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
                     on ? 'text-white/70' : 'text-muted'
                   }`}
                 >
-                  {s.ticker} · 등급 {s.grade}
+                  {s.ticker} · {s.grade === '패스' ? '패스' : `등급 ${s.grade}`}
                 </span>
               </button>
             );

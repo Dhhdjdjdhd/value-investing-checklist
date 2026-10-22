@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코파트(CPRT) 완주 분석 보고서 — 품질 등급 일반 · 목표가 $24.2</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --seq-250: #86b6ef; --seq-450: #2a78d6;
+    --status-good: #0ca30c; --status-warning: #fab219; --status-serious: #ec835a; --status-critical: #d03b3b;
+    --delta-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  h2 .w { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 6px; }
+  p.body { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 10px; }
+  p.body strong { color: var(--text-primary); }
+  .notice { border: 1px solid var(--status-serious); border-radius: 10px; padding: 12px 16px; font-size: 13.5px; color: var(--text-secondary); margin-bottom: 20px; background: var(--surface-1); }
+  .notice b { color: var(--text-primary); }
+  .muted { color: var(--text-muted); font-size: 12.5px; }
+  .hero { display: flex; flex-wrap: wrap; gap: 24px; }
+  .hero-score { flex: 0 0 auto; text-align: center; padding: 8px 28px 8px 8px; border-right: 1px solid var(--gridline); }
+  .hero-score .num { font-size: 64px; font-weight: 800; line-height: 1.05; }
+  .hero-score .den { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+  .hero-score .label { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; max-width: 150px; }
+  .hero-main { flex: 1 1 320px; min-width: 280px; }
+  .verdict { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--status-serious); border-radius: 999px; padding: 4px 14px; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--status-serious); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .fact { border-top: 2px solid var(--gridline); padding-top: 8px; }
+  .fact .k { font-size: 12px; color: var(--text-muted); }
+  .fact .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fact .d { font-size: 12px; color: var(--text-secondary); }
+  .meter-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .meter-row .name { font-size: 14px; font-weight: 600; }
+  .meter-row .name small { display: block; font-weight: 400; font-size: 11.5px; color: var(--text-muted); }
+  .track { height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--seq-450); border-radius: 5px; }
+  .meter-row .val { font-size: 14px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .meter-row .val small { font-weight: 400; color: var(--text-muted); }
+  ul.check { list-style: none; }
+  ul.check li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--gridline); font-size: 14px; color: var(--text-secondary); align-items: baseline; }
+  ul.check li:last-child { border-bottom: none; }
+  .tag { flex: 0 0 auto; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+  .tag.pass { color: var(--status-good); border: 1px solid var(--status-good); }
+  .tag.warn { color: var(--status-serious); border: 1px solid var(--status-serious); }
+  .tag.fail { color: var(--status-critical); border: 1px solid var(--status-critical); }
+  ul.check b { color: var(--text-primary); font-weight: 600; }
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .chart-box { position: relative; }
+  svg text { font-family: inherit; }
+  .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
+  .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  details { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  details summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  .table-scroll { overflow-x: auto; }
+  .up { color: var(--delta-good); font-weight: 600; }
+  .warn-txt { color: var(--status-serious); font-weight: 600; }
+  .range-wrap { padding: 46px 10px 52px; }
+  .range-track { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--seq-250), var(--seq-450)); }
+  .marker { position: absolute; top: -40px; transform: translateX(-50%); text-align: center; }
+  .marker .lbl { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; }
+  .marker .prc { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .marker .tick { width: 2px; height: 14px; background: var(--baseline); margin: 2px auto 0; }
+  .marker.below { top: auto; bottom: -48px; }
+  .marker.below .tick { margin: 0 auto 2px; }
+  .marker.now .tick { background: var(--text-primary); width: 3px; height: 20px; }
+  .marker.now .prc, .marker.now .lbl { color: var(--text-primary); font-weight: 800; }
+  .range-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } .meter-row { grid-template-columns: 120px 1fr 70px; } }
+  .src { font-size: 12.5px; color: var(--text-muted); }
+  .src a { color: var(--series-1); text-decoration: none; }
+  .src li { margin-bottom: 4px; }
+  .disclaimer { border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">가치투자 체크리스트 · 완주 분석 보고서 · 최초 2026-07-26 · 2026-10-22 재점검(10-22 확정 규칙) · 등급·내재가치 확정 · FY26(2026-07 결산) 반영, 새 분기 실적 없음</div>
+  <h1>코파트 <span style="color:var(--text-muted);font-weight:600">Copart · NASDAQ: CPRT</span></h1>
+  <div class="sub">보험사가 전손 처리한 사고차를 받아 자사 야드에 보관하고, 온라인 경매로 전 세계 딜러·해체업자에게 판다. 수수료를 양쪽에서 받고 재고 리스크가 없는 플랫폼이다. 미국 전역 200+ 야드, IAA(RB Global)와 사실상 복점. 시가총액 약 $25.6B, 차입 0.</div>
+</header>
+
+<div class="notice">📌 <b>판단: 관망 (가격 대기).</b> 안전마진 +8.9%로 일반 문턱 20%에 못 미치고, 목표가 아래 여유 −11.1%로 목표가 위다. 시뮬레이터 3기에서 신규 매수하지 않으며, 3기 규칙상 목표가 위 정찰 진입도 쓰지 않는다. 등급 A → <b>일반</b>, 기본 내재가치 $34 → <b>$30.3 (정정)</b>. 1기 보유(종료)는 판단 기준이 아니다 — 기준은 기본 내재가치 $30.3.</div>
+
+<section class="card">
+  <div class="hero">
+    <div class="hero-score">
+      <div class="num" style="color:var(--text-muted)">일반</div>
+      <div class="label">품질 등급 확정 (02 §1) — A에서 변경<br>안전마진 문턱 20% · 목표가 = 기본 × 0.8</div>
+    </div>
+    <div class="hero-main">
+      <p class="body"><strong>등급 근거.</strong> 1·2·3단계 모두 조건부 — 1단계(보험 사이클 / 최대 고객 프로그레시브 이탈), 2단계(CEO 교체 / ACV·CCC 대형 M&amp;A / CEO 2,000만 주 옵션), 3단계(현금 미차감 ROIC FY26 14.7% / FCF−SBC 3년 76% / FY26 EPS 감소). 종전 "A"(구장부 10-21, 후보서치 10-22)는 2단계만 조건부로 센 값이었다. 1단계 ⚠️를 하나 덜 세도 2·3단계만으로 일반이다 — 판정이 해석 하나에 달려 있지 않다.</p>
+      <div class="facts">
+        <div class="fact"><div class="k">현재 주가 (10/21 종가)</div><div class="v">$27.59</div><div class="d">아래 바에서 실시간 갱신</div></div>
+        <div class="fact"><div class="k">내재가치 (기본, 정정)</div><div class="v">$30.3</div><div class="d">보수 $22.5 · 낙관 $52.4 · 정정 전 $34</div></div>
+        <div class="fact"><div class="k">목표 매수가 (일반)</div><div class="v">$24.2</div><div class="d">기본 × 0.8</div></div>
+        <div class="fact"><div class="k">안전마진 (10/21)</div><div class="v warn-txt">+8.9%</div><div class="d">문턱 20% · 목표가 아래 여유 −11.1%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>1~3단계 품질 판정 <span class="w">2026-10-22 재점검 · 가격을 보기 전에 판정</span></h2>
+  <ul class="check">
+    <li><span class="tag warn">1단계 사업 조건부</span><span>⚠️ 예측 가능성 — 물량이 보험 가입률 사이클에 노출 / ⚠️ 가격 결정력 — 미국 1위 보험사 프로그레시브가 수수료 인하를 요구, 코파트가 거절하자 물량 <b>75~90%가 IAA로</b>. 가격을 지킨 대가로 최대 고객을 잃었다. 해자 3개는 유지(FY26 ASP +5.5%)</span></li>
+    <li><span class="tag warn">2단계 경영진 조건부</span><span>⚠️ CEO 교체 서프라이즈(2026-06-29, 어데어 복귀) / ⚠️ 대형 M&amp;A — ACV $1.9B 전액 현금 인수 <b>10/16 종결</b>(45% 프리미엄), CCC 인수 추진 보도(기업가치 약 $6.1B, 인수 실패 — 보도 수준) / ⚠️ CEO 장기 옵션 <b>2,000만 주(유통의 약 2.2%)</b>, 행사가 $26.27~$52.54, 주총 승인 조건. 승계는 ✅(제인 포콕 사장 2026-08-01 취임)</span></li>
+    <li><span class="tag warn">3단계 재무 조건부</span><span>⚠️ ROIC(현금 미차감) <b>FY26 14.7%</b>로 15% 미달, 3년 연속 하락 — 종전 30.0%는 현금 차감값 / ⚠️ FCF−SBC ÷ 순이익 3년 합산 <b>76.1%</b>(&lt; 80%) / ⚠️ FY26 EPS <b>$1.55(−2.5%)</b> — 10년 만의 첫 감소</span></li>
+  </ul>
+  <div class="table-scroll" style="margin-top:14px"><table>
+    <tr><th>항목</th><th style="text-align:left">값</th></tr>
+    <tr><td>해자</td><td style="text-align:left"><b>3개</b> — 네트워크 효과(보험사 ↔ 전 세계 입찰자) · 야드 부지(환경 인허가로 신규 확보 사실상 불가) · 복점 규모. 단 IAA 대비 부지 우위가 약 70% → 약 25%로 좁혀졌다는 주장(원문 미대조)은 R1 보조 지표</td></tr>
+    <tr><td>ROIC (현금 미차감)</td><td style="text-align:left">FY16 19.7% → 23.9 → 21.9 → 27.6 → 24.7 → 24.1 → 24.2 → FY23 19.7 → FY24 16.6 → FY25 15.1 → <b>FY26 14.7%</b>. 하락 원인은 배당 없이 쌓인 현금($4.5B)이 자본에 남은 것이나 규칙은 인정하지 않는다. (참고) 현금 차감 FY26 28.9%</td></tr>
+    <tr><td>희석 EPS (분할 조정)</td><td style="text-align:left">FY16 $0.28 → 0.42 → 0.43 → 0.62 → 0.73 → 0.97 → 1.13 → 1.28 → 1.40 → 1.59 → <b>FY26 $1.55(−2.5%)</b></td></tr>
+    <tr><td>장기부채 ÷ 순이익</td><td style="text-align:left">FY26 말 차입 <b>0 → 0배</b>. 리볼버 $1.25B 미인출. ACV 연결 차입은 미확인</td></tr>
+    <tr><td>FCF − SBC ÷ 순이익</td><td style="text-align:left">FY24 68.0% / FY25 76.8% / FY26 82.8% → 3년 합산 <b>76.1%</b>. 야드 토지 매입 CapEx와 같은 원인이라 한 번만 셈</td></tr>
+    <tr><td>영업이익률 · ROE</td><td style="text-align:left">영업이익률 FY26 약 35%, FY25 36% · ROE FY24 18.1 → FY25 16.9 → FY26 16.3%</td></tr>
+    <tr><td>경기순환</td><td style="text-align:left"><b>비순환</b> — FY2007~10 영업이익 203.1 → 237.9 → 225.3 → 239.1($M), 고점 대비 저점 −5.3%. 10년 내 감익은 FY26 −2.6% 한 번</td></tr>
+  </table></div>
+</section>
+
+<section class="card">
+  <h2>4단계 밸류에이션 <span class="w">2단계 DCF · 할인율 보수 9.5% / 기본 9% / 낙관 8.5%</span></h2>
+  <p class="body"><strong>기본 내재가치 $34 → $30.3 정정.</strong> 템플릿 가정 규칙은 기본 성장률을 "검증된 10년 EPS CAGR과 컨센서스 중 <b>낮은 쪽에서 더 깎는다</b>"이다. 10년 CAGR 18.8% vs 컨센서스 5년 +7.13% — 낮은 쪽 7.13%에서 더 깎아야 하는데 10-12 값 +8%는 오히려 위였다. 기본을 <b>+6% / +5%</b>로 정정했다. 계산 정정이라 <b>궤적 하향 횟수에 세지 않는다 — 하향 연속 1회 유지</b>. 보수·낙관의 종료 PER도 규칙(기본 ∓3배)에 맞췄다(14.1 → 12.3배 / 17.0 → 18.3배).</p>
+  <p class="body"><b>기준 EPS $1.55</b> — FY26 확정 GAAP 희석(TTM과 같음, 10-12 이후 새 분기 없음). FY26에 큰 일회성 없음. ACV 인수로 소멸하는 이자수익은 FY27 사안이라 기준 EPS에서 미리 빼지 않고 성장률에 반영.</p>
+  <div class="table-scroll"><table>
+    <tr><th>시나리오</th><th>성장률 (1~5년/6~10년)</th><th>종료 PER</th><th>내재가치 (10-22 정정)</th><th>10-12 값</th><th style="text-align:left">용도</th></tr>
+    <tr><td>보수</td><td>4% / 3%</td><td>12.3배 (기본 −3)</td><td>$22.5</td><td>$24</td><td style="text-align:left">확신도 승격선</td></tr>
+    <tr><td><b>기본</b></td><td><b>6% / 5%</b></td><td><b>15.3배</b> (규칙 이탈·보수)</td><td><b>$30.3</b></td><td>$34</td><td style="text-align:left">안전마진·목표가 기준</td></tr>
+    <tr><td>낙관</td><td>14% / 7%</td><td>18.3배 (기본 +3)</td><td>$52.4</td><td>$50</td><td style="text-align:left">보유 중 축소 검토선</td></tr>
+  </table></div>
+  <p class="muted" style="margin-top:8px">종료 PER 규칙값 = 10년 회계연도말(7월) PER 중앙값 31.5배 × 0.6 = 18.9배. 기본 15.3배는 규칙보다 보수적인 이탈 — 2026-08-26 역산값을 유지하고, 프로그레시브 이탈·ACV 통합 불확실성을 감안해 올리지 않는다(연중에 내재가치를 올리는 것은 02 §1 안전장치 6에 걸린다). 종료 PER까지 규칙값으로 두면 기본 약 $34.3 — 10-12의 $34는 "성장률 과대 + PER 과소"가 우연히 상쇄된 값이었다. 터미널 비중 보수 48% / 기본 57% / 낙관 65%.</p>
+  <div class="range-wrap" id="vicRangeWrap" title="클릭하면 차트가 새 창으로 열립니다" style="cursor:pointer">
+    <div class="range-track" id="vicTrack">
+      <div class="marker" style="left:16.7%"><div class="lbl">보수</div><div class="prc">$22.5</div><div class="tick"></div></div>
+      <div class="marker" style="left:34.0%"><div class="lbl">기본</div><div class="prc">$30.3</div><div class="tick"></div></div>
+      <div class="marker" style="left:83.1%"><div class="lbl">낙관</div><div class="prc">$52.4</div><div class="tick"></div></div>
+      <div class="marker below" style="left:20.4%"><div class="tick"></div><div class="prc">$24.2</div><div class="lbl">목표 매수가 (일반)</div></div>
+    </div>
+    <div class="range-foot"><span>$15</span><span>내재가치 추정 범위 (양끝은 표시 눈금일 뿐)</span><span>$60</span></div>
+  </div>
+  <script src="/reports/_dcfbox.js"></script>
+  <script>vicDcfBox({ eps0: 1.55, g1: 0.06, g2: 0.05, r: 0.09, per: 15.3, perSrc: '규칙값 18.9배보다 보수적인 이탈 — 2026-08-26 역산값 유지' });</script>
+  <script src="/reports/_quotebar.js"></script>
+  <script>vicQuoteBar({ ticker:'CPRT', lo:15, hi:60, target:24.2, chart:'https://stockanalysis.com/stocks/cprt/' });</script>
+
+  <div class="table-scroll" style="margin-top:18px"><table>
+    <tr><th>가격선</th><th>가격</th><th>의미</th></tr>
+    <tr><td>기본 내재가치</td><td>$30.3</td><td>현재가 $27.59는 아래. 단 3기 규칙상 목표가 위 정찰 진입은 쓰지 않는다</td></tr>
+    <tr><td><b>1회차 (목표 매수가)</b></td><td><b>$24.2</b></td><td>본 진입선 — 도달 + 완주 재확인 후에만. 참고 비중: 목표 5%, 1회차 7주</td></tr>
+    <tr><td>보수 내재가치</td><td>$22.5</td><td>주가 ≤ 이 값이면 "높은 확신" 조건 ② 충족 — 단 ⑤(1~3단계 무조건 통과) 때문에 "높음" 승격은 불가</td></tr>
+    <tr><td>2회차</td><td>$21.2</td><td>직전 매수가 −12.5% (3년 주간 변동성 27.0%) · 임시 — 실제 1회차 체결가로 재설정</td></tr>
+    <tr><td>3회차</td><td>$18.5</td><td>직전 매수가 −12.5% · 임시</td></tr>
+  </table></div>
+  <p class="muted" style="margin-top:8px">역DCF: 현재가 $27.59를 정당화하는 10년 균일 성장률은 +4.3%(할인율 9%·PER 15.3배) — 기본 +6%·컨센서스 7.1%보다 낮다. 다만 안전마진 8.9%의 다른 표현일 뿐 독립 증거가 아니다.</p>
+
+  <p class="body" style="margin-top:18px"><strong>내재가치 궤적 로그</strong> — "내 내재가치 추정이 어느 방향으로 움직이는가". 정지 규칙: 기본 내재가치 $38.5를 2회 연속 하향하면 다음 분할 매수 금지 + 논제 전면 재작성. 정정은 횟수에 세지 않는다.</p>
+  <div class="table-scroll"><table>
+    <tr><th>회차</th><th>날짜</th><th style="text-align:left">매수가</th><th>기본 내재가치</th><th>안전마진</th><th style="text-align:left">갱신 사유</th><th>하향 연속</th></tr>
+    <tr><td>—</td><td>2026-07-26</td><td style="text-align:left">(최초 분석)</td><td>$37</td><td>+24.5%</td><td style="text-align:left">최초 분석 (기준 EPS $1.55)</td><td>—</td></tr>
+    <tr><td>—</td><td>2026-07-27</td><td style="text-align:left">(매수 없음)</td><td>$38.5</td><td>+27.4%</td><td style="text-align:left">계산 정정 — 기준 EPS $1.55 → $1.61 오기 수정. 하향에 세지 않음</td><td>0</td></tr>
+    <tr><td>1 (1기)</td><td>2026-07-27</td><td style="text-align:left">$28.20 (10주)</td><td>$38.5</td><td>+26.8%</td><td style="text-align:left">갱신 없음</td><td>0</td></tr>
+    <tr><td>—</td><td>2026-10-12</td><td style="text-align:left">(매수 없음)</td><td>$34</td><td>+19.6% ($27.32)</td><td style="text-align:left">연간 갱신(FY26 확정) — 하향. 기준 EPS $1.61 → $1.55, 기본 성장 1~5년 +10% → +8%. 가정 변경이므로 하향에 센다</td><td>1</td></tr>
+    <tr><td>2 (1기)</td><td></td><td style="text-align:left"></td><td></td><td></td><td style="text-align:left">자격 없음 (10/12) — 안전마진 19.6% &lt; 20% + 비중 상한 초과</td><td></td></tr>
+    <tr><td>—</td><td><b>2026-10-22</b></td><td style="text-align:left">(회차 없이 재점검 — 1기 종료, 3기 보유 없음)</td><td><b>$30.3</b></td><td><b>+8.9%</b> ($27.59)</td><td style="text-align:left"><b>정정</b> — 기본 성장률 +8%/+6% → +6%/+5%(컨센서스 5년 7.13% 초과 규칙 위반 정정), 보수·낙관 종료 PER 기본 ∓3배로. 하향 횟수에 세지 않음. 등급 A → 일반(목표가 $24.2)</td><td><b>1</b> (변동 없음)</td></tr>
+  </table></div>
+  <p class="muted" style="margin-top:8px">1회차 매수는 시뮬레이터 1기(종료) 기록이다(md 6단계에는 장부 기록과의 불일치 메모가 있다). 3기(2026-10-22 시작)에서는 보유·매매 없음. 하향 연속은 여전히 1회 — FY27 확정(2027-09) 갱신에서 성장·마진 가정을 한 번 더 내리면 정지 규칙 발동.</p>
+</section>
+
+<section class="card">
+  <h2>5단계 최종 점검 <span class="w">약세론 · 사전 부검 · 기회비용</span></h2>
+  <p class="body"><strong>약세론 — 실제 출처 3개.</strong> ① Intrinsic Value Podcast(2026-09-13, BigGo 요약): 야드 부지 우위가 IAA 대비 약 70% → 약 25%로 축소, IAA가 얇은 마진을 받아들이면 수수료가 "바닥 경쟁"으로 갈 수 있다(프로그레시브가 첫 사례), 차량당 비용 +12.7%, CCC는 전손 판정 소프트웨어라 이해상충. ② Transportation Today(2025-12-15): IAA 물량 +4.7% vs 코파트 −2.8%, BofA "보험사는 한 플랫폼이 시장 전체를 지배하길 원하지 않는다". ③ Barclays Underweight/Sell 목표가 $32(리포트 원문 미확인), stockanalysis 12명 중 Sell 1·목표가 하단 $25, 공매도 유통 3.43%. 핵심: 해자는 "보험사가 떠날 수 없다"였는데 1위 보험사가 실제로 떠났다. ASP 상승은 차량 단가 효과일 수 있고, "자사주를 싸게 사던 오너 경영"이 "성장을 사는 경영"으로 바뀌었다.</p>
+  <div class="table-scroll"><table>
+    <tr><th>리스크</th><th style="text-align:left">관찰 지표 · 임계값 (10-22)</th></tr>
+    <tr><td><b>R1</b> 보험 물량 — 사이클 + 고객 이탈 + 점유율 잠식</td><td style="text-align:left">미국 보험 물량 YoY(기준 FY26 −8%, 4Q −7.5%) FY27 연간도 감소 = 2년 연속 → 논제 재평가 · 두 번째 대형 보험사 이탈 → 즉시 재평가 · IAA 물량 증가율 − 코파트 미국 보험 물량 증가율 격차가 FY27 하반기에도 +5%p 이상 → 점유율 잠식 판정 · (보조) 미국 보험 ASP가 Manheim 지수보다 덜 오르면 약세론 쪽</td></tr>
+    <tr><td><b>R2</b> 비보험 채널</td><td style="text-align:left">미국 비보험 합계 YoY(기준 4Q +0.2%) 2개 분기 연속 −5% 이하 → 경보</td></tr>
+    <tr><td><b>R3</b> 어데어 체제의 자본배분</td><td style="text-align:left">연결 차입 발생(ACV Capital 포함) → 장기부채÷순이익 2배 초과 시 3단계 재판정 · ACV FY28 증익 미달 → 2단계 재판정 · 추가 인수(시총 5%+) 계약 → 즉시 2단계 재판정 · CEO 옵션 주총 결과와 자사주 매입 지속 여부</td></tr>
+    <tr><td><b>R4</b> 단위 비용</td><td style="text-align:left">차량당 영업비용 YoY(기준 FY26 4Q +12.7%) 2개 분기 연속 +10% 이상 → 마진 구조 재점검</td></tr>
+  </table></div>
+  <p class="body" style="margin-top:14px"><strong>기회비용 — 불통과.</strong> CPRT 목표가 아래 여유 −11.1%(정정 전 IV로도 −1.1%)는 후보서치(10-22)의 NFLX +25.1% · PYPL +22.7% · DECK +20.7% · ZTS +16.5% · BKNG +15.3%에 26~36%p 뒤진다. 그 5개는 대부분 잠정이라 완주에서 내려갈 수 있지만, CPRT 후순위라는 결론은 바뀌지 않는다. 5단계 판정: <b>거부 — 기회비용</b>(그 전에 4단계에서 이미 가격 미달). 나머지 거부권 질문은 통과.</p>
+</section>
+
+<section class="card">
+  <h2>결론</h2>
+  <ul class="check">
+    <li><span class="tag pass">사는 논리</span><span>해자 3개·무차입·전손 빈도 23.3% 사상 최고(차량 복잡화로 수리비 &gt; 차량가)라는 10년 구조 순풍은 그대로다. ASP는 FY26 +5.5%(글로벌)로 가격을 지켰다.</span></li>
+    <li><span class="tag warn">사지 않을 논리</span><span>10-22 확정 규칙으로 1·2·3단계가 모두 조건부라 일반 등급. 기본 성장률 정정으로 기본 내재가치 $30.3, 안전마진 8.9%. 판별 질문 구조 신호 약 2개 — 프로그레시브 이탈 물량은 영구적이다.</span></li>
+    <li><span class="tag warn">보유</span><span><b>3기 보유 없음.</b> 1기 보유는 2026-10-21 장부 종료와 함께 끝났다(1기(종료) 기록). 1기 원가가 앵커로 작동하지 않도록 판단 기준은 기본 내재가치 $30.3으로 둔다. 매수는 목표가 $24.2 도달 + 완주 재확인 후에만.</span></li>
+    <li><span class="tag warn">재검토</span><span><b>FY27 1Q 실적(2026-11 중하순 예상, 날짜 미공시)</b> R1~R4 대조 · RB Global 3Q26(11월 초) IAA 물량 · CEO 옵션 주총 결과 → 내재가치 갱신은 FY27 확정(2027-09). R1 두 번째 대형 고객 이탈 확인 시 수시 갱신.</span></li>
+  </ul>
+</section>
+
+<div class="disclaimer">원본: <b>02.종목분석/코파트_CPRT_분석_20260726.md</b> (최초 2026-07-26 · 2026-10-22 재점검 — 등급·내재가치·목표가·출처). 판정의 원본은 md 문서다 — 이 HTML은 그 요약이며, 모든 수치와 출처는 md에 있다. 투자 권유가 아니다.</div>
+
+</div>
+</body>
+</html>

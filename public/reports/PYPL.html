@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>페이팔(PYPL) 완주 분석 보고서 — 1단계 탈락 · 패스</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --seq-250: #86b6ef; --seq-450: #2a78d6;
+    --status-good: #0ca30c; --status-warning: #fab219; --status-serious: #ec835a; --status-critical: #d03b3b;
+    --delta-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  h2 .w { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 6px; }
+  p.body { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 10px; }
+  p.body strong { color: var(--text-primary); }
+  .notice { border: 1px solid var(--status-serious); border-radius: 10px; padding: 12px 16px; font-size: 13.5px; color: var(--text-secondary); margin-bottom: 20px; background: var(--surface-1); }
+  .notice b { color: var(--text-primary); }
+  .muted { color: var(--text-muted); font-size: 12.5px; }
+  .hero { display: flex; flex-wrap: wrap; gap: 24px; }
+  .hero-score { flex: 0 0 auto; text-align: center; padding: 8px 28px 8px 8px; border-right: 1px solid var(--gridline); }
+  .hero-score .num { font-size: 64px; font-weight: 800; line-height: 1.05; }
+  .hero-score .den { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+  .hero-score .label { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; max-width: 150px; }
+  .hero-main { flex: 1 1 320px; min-width: 280px; }
+  .verdict { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--status-serious); border-radius: 999px; padding: 4px 14px; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--status-serious); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .fact { border-top: 2px solid var(--gridline); padding-top: 8px; }
+  .fact .k { font-size: 12px; color: var(--text-muted); }
+  .fact .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fact .d { font-size: 12px; color: var(--text-secondary); }
+  .meter-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .meter-row .name { font-size: 14px; font-weight: 600; }
+  .meter-row .name small { display: block; font-weight: 400; font-size: 11.5px; color: var(--text-muted); }
+  .track { height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--seq-450); border-radius: 5px; }
+  .meter-row .val { font-size: 14px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .meter-row .val small { font-weight: 400; color: var(--text-muted); }
+  ul.check { list-style: none; }
+  ul.check li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--gridline); font-size: 14px; color: var(--text-secondary); align-items: baseline; }
+  ul.check li:last-child { border-bottom: none; }
+  .tag { flex: 0 0 auto; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+  .tag.pass { color: var(--status-good); border: 1px solid var(--status-good); }
+  .tag.warn { color: var(--status-serious); border: 1px solid var(--status-serious); }
+  .tag.fail { color: var(--status-critical); border: 1px solid var(--status-critical); }
+  ul.check b { color: var(--text-primary); font-weight: 600; }
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .chart-box { position: relative; }
+  svg text { font-family: inherit; }
+  .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
+  .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  details { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  details summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  .table-scroll { overflow-x: auto; }
+  .up { color: var(--delta-good); font-weight: 600; }
+  .warn-txt { color: var(--status-serious); font-weight: 600; }
+  .range-wrap { padding: 46px 10px 52px; }
+  .range-track { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--seq-250), var(--seq-450)); }
+  .marker { position: absolute; top: -40px; transform: translateX(-50%); text-align: center; }
+  .marker .lbl { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; }
+  .marker .prc { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .marker .tick { width: 2px; height: 14px; background: var(--baseline); margin: 2px auto 0; }
+  .marker.below { top: auto; bottom: -48px; }
+  .marker.below .tick { margin: 0 auto 2px; }
+  .marker.now .tick { background: var(--text-primary); width: 3px; height: 20px; }
+  .marker.now .prc, .marker.now .lbl { color: var(--text-primary); font-weight: 800; }
+  .range-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } .meter-row { grid-template-columns: 120px 1fr 70px; } }
+  .src { font-size: 12.5px; color: var(--text-muted); }
+  .src a { color: var(--series-1); text-decoration: none; }
+  .src li { margin-bottom: 4px; }
+  .disclaimer { border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">가치투자 체크리스트 · 완주 분석 보고서 · 2026-10-22 · 1단계 탈락으로 분석 중단 · 3Q26 실적(10/27 예정) 발표 전 기준</div>
+  <h1>페이팔 <span style="color:var(--text-muted);font-weight:600">PayPal · NASDAQ: PYPL</span></h1>
+  <div class="sub">소비자 계정(PayPal·Venmo)과 가맹점 사이에서 온라인 결제를 처리하고 결제액(TPV)에 비례한 수수료를 받는다. 매출은 ① 브랜드 체크아웃(마진이 가장 큰 사업) ② Braintree 등 PSP(물량은 크지만 마진이 얇다) ③ Venmo P2P·직불카드 ④ BNPL·대출 ⑤ 고객 잔액 이자로 나뉜다. 2025 매출 $33.17B(+4%), 거래마진(TM$) $15.47B(+6%), TPV $1.79T(+7%).</div>
+</header>
+
+<div class="notice">📌 <b>판단: 패스 (1단계 ❌ 구조적).</b> 02 §1 "일시적 vs 구조적" 판별 질문 4개가 모두 구조적 쪽(예)으로 나왔다. 템플릿 규칙에 따라 1단계에서 분석을 중단했고 가격(4단계)은 보지 않았다 — 간이 판정(후보서치 10-22: 일반 잠정, 기본 IV $99.9, 목표가 $79.9)은 이 완주로 <b>폐기</b>한다. 현재가는 Stripe·Advent 인수 제안($60.50 보도)에 일부 묶여 있다.</div>
+
+<section class="card">
+  <div class="hero">
+    <div class="hero-score">
+      <div class="num" style="color:var(--status-critical)">패스</div>
+      <div class="label">1단계 탈락 (❌ 구조적)<br>2~5단계 판정 안 함 · 점수 매기지 않음</div>
+    </div>
+    <div class="hero-main">
+      <p class="body"><strong>탈락 근거.</strong> 판별 질문 4개 모두 구조적, 가격 결정력 ❌(단가 하락), 해자 원천(체크아웃 전환율)이 Apple Pay·Shop Pay에 직접 대체, 경쟁사 대비 "왜 이기는지" 서술 불가. 싸 보이는 것(간이 안전마진 42.7%)은 02 §1이 말하는 "함정" 쪽이다.</p>
+      <div class="facts">
+        <div class="fact"><div class="k">현재 주가 (10/21 종가)</div><div class="v">$57.20</div><div class="d">52주 $38.46~$79.22</div></div>
+        <div class="fact"><div class="k">내재가치 (기본)</div><div class="v">—</div><div class="d">산정 안 함 · 간이 $99.9 무효</div></div>
+        <div class="fact"><div class="k">목표 매수가</div><div class="v">—</div><div class="d">없음 · 간이 $79.9 무효</div></div>
+        <div class="fact"><div class="k">안전마진</div><div class="v">—</div><div class="d">1단계 탈락으로 판정 대상 아님</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>1단계 사업의 질 <span class="w">탈락 (❌) · 여기서 분석 중단</span></h2>
+  <ul class="check">
+    <li><span class="tag fail">10년 뒤 필요성</span><span>온라인 결제 수요는 남는다. 문제는 <b>"결제창에서 PayPal 버튼을 누를 이유"</b>가 10년 뒤에도 있느냐이며, 데이터는 그 이유가 이미 약해지고 있음을 보여준다. PSP(Braintree)는 Stripe·Adyen과 경쟁하는 저마진 처리 사업이다.</span></li>
+    <li><span class="tag fail">해자</span><span>확실히 셀 수 있는 것이 없다 — 양면 네트워크(소비자 4.39억 계정 × 가맹점)는 존재하나 잠금 효과가 약해졌다. 같은 전환율 효과를 Apple Pay(OS 기본)·Shop Pay(Shopify 기본)가 제공한다. 소비자 전환 비용은 버튼 하나.</span></li>
+    <li><span class="tag fail">가격 결정력</span><span>단가가 떨어지고 있다 — 매출÷TPV 2016 3.06% → 2025 1.85% → 2Q26 1.78% (아래 분해)</span></li>
+    <li><span class="tag fail">예측 가능성</span><span>5개 사업의 마진 구조가 달라 총량 지표로 예측이 안 된다. 2027 중기 목표(2025-02 투자자의 날)는 2026-02 철회, 2026 GAAP EPS 가이던스는 중반 한 자릿수 감소</span></li>
+    <li><span class="tag fail">하락 원인</span><span>5년 고점 대비 약 −80%. 2026-02-03 하루 약 −20%(CEO 경질 + 4Q25 실적 미스 + 2026 가이던스 하향). 그 전부터 브랜드 체크아웃 성장 1Q25 약 6% → 3Q25 5% → <b>4Q25 1%</b> → 1Q26 2% → 2Q26 2% → 2026 연간 가이던스 1~2%로 하향</span></li>
+  </ul>
+
+  <p class="chart-title" style="margin-top:20px">일시적 vs 구조적 판별 질문 (02 §1) — 4개 모두 "예"</p>
+  <div class="table-scroll" style="margin-top:8px"><table>
+    <tr><th>#</th><th style="text-align:left">질문</th><th style="text-align:left">판정</th><th style="text-align:left">근거 데이터</th></tr>
+    <tr><td>①</td><td style="text-align:left">고객이 실제로 이탈하는가 (점유율·사용량)</td><td style="text-align:left"><span class="tag fail">예</span></td><td style="text-align:left">계정 이탈은 아니나 <b>점유율 이탈</b>. 활성 계정 2024 434M → 2025 439M → 2Q26 439M(+0.3%) — 5년 정체. 핵심 지표인 브랜드 체크아웃은 +1~2%로 전자상거래 시장 성장에 못 미치며, UBS 기준 Apple Pay가 체크아웃 점유율 1위를 가져갔다(2019 PayPal 약 9%, Apple Pay 3%)</td></tr>
+    <tr><td>②</td><td style="text-align:left">해자의 원천 자체가 공격받는가</td><td style="text-align:left"><span class="tag fail">예</span></td><td style="text-align:left">PayPal 버튼의 가치 = "로그인 없이 결제 → 가맹점 전환율↑". Apple Pay·Shop Pay·Stripe Link가 같은 기능을 결제창 기본값으로 제공. 소음이 아니라 가치 제안 자체의 대체다</td></tr>
+    <tr><td>③</td><td style="text-align:left">3년 뒤에도 문제인가</td><td style="text-align:left"><span class="tag fail">예</span></td><td style="text-align:left">기술·플랫폼 대체는 02가 "대개 예"로 명시한 유형. 신규 체크아웃 전환 가맹점 15개월에 25%(Morgan Stanley), 브랜드 체크아웃 가이던스 2026에도 1~2%로 하향, 중기 목표 철회</td></tr>
+    <tr><td>④</td><td style="text-align:left">이 회사만의 문제이고 사업 모델에 내재적인가</td><td style="text-align:left"><span class="tag fail">예</span></td><td style="text-align:left">같은 기간 카드 네트워크는 거래 +9%대(MA 2Q26 구매 거래 +9.2%), Apple Pay·Shop Pay·Stripe는 성장 — 업계 공통이 아니다. CEO 교체는 원인이 아니라 결과. 원인은 "데스크톱 시대 결제 버튼"이라는 제품 위치(KBW)</td></tr>
+  </table></div>
+  <p class="muted" style="margin-top:8px">일시적 쪽 증거(스틸맨): Venmo 매출 2025 약 $1.7B(+20%), Venmo TPV 2Q26 +14%, Pay with Venmo +44%, BNPL +26%, Braintree 9분기 연속 수익성 성장, 비용 절감 $1.5B(2~3년) — 사실이다. 그러나 Venmo 매출은 전체의 약 5%로 브랜드 체크아웃의 정체를 메울 규모가 아니며, "새 사업이 크면 회사가 산다"는 주장은 턴어라운드 베팅이다.</p>
+</section>
+
+<section class="card">
+  <h2>물량 × 단가 분해 <span class="w">INTU 선례에 따라 매출을 물량과 단가로</span></h2>
+  <div class="table-scroll"><table>
+    <tr><th>연도</th><th>TPV</th><th>매출</th><th>매출÷TPV</th><th>결제 건수</th></tr>
+    <tr><td>2016</td><td>$354B</td><td>$10.84B</td><td>3.06%</td><td>6.1B</td></tr>
+    <tr><td>2019</td><td>$712B</td><td>$17.77B</td><td>2.50%</td><td>12.4B</td></tr>
+    <tr><td>2021</td><td>$1.25T</td><td>$25.37B</td><td>2.03%</td><td>19.3B</td></tr>
+    <tr><td>2023</td><td>$1.53T</td><td>$29.77B</td><td>1.95%</td><td>25.0B</td></tr>
+    <tr><td>2024</td><td>$1.68T</td><td>$31.80B</td><td>1.89%</td><td>26.3B</td></tr>
+    <tr><td>2025</td><td>$1.79T</td><td>$33.17B</td><td><b>1.85%</b></td><td>25.4B (−4%, PSP 제외 16.1B +6%)</td></tr>
+    <tr><td>2Q26</td><td>$486.4B (+10%)</td><td>$8.68B (+5%)</td><td>1.78%</td><td>6.8B (+8%)</td></tr>
+  </table></div>
+  <p class="body" style="margin-top:12px"><strong>2Q26 분해:</strong> 매출 +5% = TPV +10% × 단가 약 −4.5%. 거래마진 TM$는 <b>+1%</b>(고객 잔액 이자 제외 +3%), TM$÷TPV는 약 0.87% → 0.80%(−7bp). INTU는 "물량 −2%를 가격 인상으로 덮은" 구조였고, PYPL은 <b>"고마진 브랜드 체크아웃 물량이 정체한 것을 저마진 PSP·Venmo 물량으로 덮은"</b> 구조다 — 방향은 반대지만 같은 경고다.</p>
+  <p class="muted">2016 TPV·매출은 기억값(2016 10-K 원문 미대조).</p>
+</section>
+
+<section class="card">
+  <h2>2·3단계 참고 지표 <span class="w">판정 안 함 (1단계 탈락) · 재평가용 기록</span></h2>
+  <p class="chart-title">ROIC 10년 (현금 미차감, 02 §1 산식)</p>
+  <div class="table-scroll" style="margin-top:8px"><table>
+    <tr><th>연도</th><th>영업이익($M)</th><th>NOPAT</th><th>투하자본</th><th>ROIC</th><th>(참고) 현금 차감</th></tr>
+    <tr><td>2016</td><td>1,586</td><td>1,362</td><td>14,712</td><td><b>9.3%</b></td><td>10.4%</td></tr>
+    <tr><td>2017</td><td>2,127</td><td>1,735</td><td>16,994</td><td><b>10.2%</b></td><td>12.3%</td></tr>
+    <tr><td>2018</td><td>2,194</td><td>1,899</td><td>17,384</td><td><b>10.9%</b></td><td>19.4%</td></tr>
+    <tr><td>2019</td><td>2,719</td><td>2,230</td><td>21,850</td><td><b>10.2%</b></td><td>15.4%</td></tr>
+    <tr><td>2020</td><td>3,289</td><td>2,729</td><td>28,958</td><td><b>9.4%</b></td><td>11.3%</td></tr>
+    <tr><td>2021</td><td>4,262</td><td>4,335</td><td>30,776</td><td><b>14.1%</b> (정상세율 18%면 11.4%)</td><td>16.9%</td></tr>
+    <tr><td>2022</td><td>3,837</td><td>2,757</td><td>31,109</td><td><b>8.9%</b></td><td>11.8%</td></tr>
+    <tr><td>2023</td><td>5,028</td><td>3,945</td><td>31,977</td><td><b>12.3%</b></td><td>17.2%</td></tr>
+    <tr><td>2024</td><td>5,325</td><td>4,144</td><td>31,487</td><td><b>13.2%</b></td><td>16.7%</td></tr>
+    <tr><td>2025</td><td>6,065</td><td>5,044</td><td>31,856</td><td><b>15.8%</b></td><td>21.2%</td></tr>
+  </table></div>
+  <p class="muted" style="margin-top:8px"><b>10년 중 9년 15% 미만.</b> 고객 자금 부채(약 $40B대)는 고객이 맡긴 잔액이라 투하자본에 넣지 않았다. 재평가 시 3단계 ❌ 후보.</p>
+
+  <div class="table-scroll" style="margin-top:16px"><table>
+    <tr><th>지표</th><th style="text-align:left">값 (참고)</th></tr>
+    <tr><td>장기부채 ÷ 순이익</td><td style="text-align:left">2025 $11.6B ÷ $5.23B = <b>2.2배</b> (2022 4.5배). 2Q26 총부채 $13.4B ÷ 정상 순이익 약 $4.9B ≈ 2.7배(추정)</td></tr>
+    <tr><td>FCF − SBC ÷ 순이익</td><td style="text-align:left">2023 65% / 2024 134% / 2025 87% — 3년 평균 <b>95%</b>. 대출채권 매각 시기에 따라 OCF가 출렁인다</td></tr>
+    <tr><td>희석 EPS 10년</td><td style="text-align:left">1.15 → 1.47 → 1.71 → 2.07 → 3.54 → 3.52(−0.6%) → <b>2.09(−40.6%)</b> → 3.84 → 3.99 → 5.41 — 일관 우상향 아님(2020·2025 평가이익·세금 혜택 포함, 2022 평가손실 포함)</td></tr>
+    <tr><td>1달러 테스트</td><td style="text-align:left">유보 약 $32.0B vs 시가총액 2015말 약 $44B → 현재 약 $50.5B = +약 $6B → <b>1달러당 약 $0.2 (실패)</b></td></tr>
+    <tr><td>자본배분 메모</td><td style="text-align:left">자사주 2016~2025 누적 $33.2B — 대부분 지금보다 높은 가격(2021~2022에 $7.6B). 구조조정 비용 2024 $438M · 2025 $331M · 2026 상반기 $187M — 매년 반복</td></tr>
+  </table></div>
+</section>
+
+<section class="card">
+  <h2>실제 매도 의견 <span class="w">약세론 — 1단계 판정에 이미 반영</span></h2>
+  <ul class="check">
+    <li><span class="tag fail">Rothschild Redburn</span><span>2026-01-28 <b>Sell</b> 강등, 목표가 $70 → $50 — Apple Pay·Shop Pay가 사용자를 가져가고, 에이전트 결제에서 카드 네트워크가 우위</span></li>
+    <li><span class="tag fail">Truist</span><span><b>Sell</b> 유지, 목표가 $58 → $39 (2026-02-10) — 물량 성장 둔화 + take rate 압축</span></li>
+    <li><span class="tag fail">Morgan Stanley</span><span><b>Underweight</b>, 목표가 $50 (2026-01-28) — 2026 브랜드 체크아웃 성장 추정 3.9% → 3.3%, 신규 체크아웃 전환 가맹점 15개월에 25%</span></li>
+    <li><span class="tag fail">Goldman Sachs</span><span><b>Sell</b> 강등 — TM 역풍, 브랜드 체크아웃 재가속 가시성 부족 (날짜 미확인)</span></li>
+    <li><span class="tag warn">AP (2026-05-26)</span><span>"PayPal의 온라인 체크아웃 제국이 포위됐다" — UBS 점유율 데이터, Apple Pay 추월. KBW: "데스크톱 결제 수단에서 벗어나는 데 큰 어려움"</span></li>
+  </ul>
+  <p class="muted" style="margin-top:8px">반대 증거(공정하게): Mizuho 추적 데이터는 "주요 가맹점에서 PayPal 버튼이 지수만큼 성장, 점유율 상실 증거 없음"이라 했으나(날짜 불명확), 같은 Mizuho가 2026-04-15 Neutral로 강등했다. 리스크 테마: PYPL은 MA·V와 같은 "결제" 묶음이며, 결제 단계의 대체라는 원인이 이미 현실화된 쪽이다.</p>
+</section>
+
+<section class="card">
+  <h2>결론</h2>
+  <ul class="check">
+    <li><span class="tag fail">판단</span><span><b>패스</b> (1단계 탈락 — 구조적 훼손). 참고 점수 매기지 않음. ① 활성 계정 4.39억 5년 정체 + 브랜드 체크아웃 +1~2%로 점유율 상실 ② Apple Pay·Shop Pay가 해자 원천을 기본값으로 대체 ③ 플랫폼 대체라 3년 뒤에도 문제 ④ 카드 네트워크·경쟁사는 성장 — 이 회사만의 문제. 매출 +5%는 TPV +10%에 단가 하락이 겹친 결과이고 TM$는 +1%.</span></li>
+    <li><span class="tag warn">현재가 메모</span><span>2026-07 Stripe·Advent가 주당 <b>$60.50</b>(약 $53B) 인수를 제안했다는 보도(WSJ·Reuters·Semafor). 확정 계약·수정가는 미확인. 현재가는 사업가치가 아니라 인수 확률 × 제안가에 일부 묶여 있다. <b>인수 계약이 체결되면 감시 대상에서 제외</b>한다.</span></li>
+    <li><span class="tag warn">재평가 조건</span><span>하나라도 충족되면 완주 재작성 — ① 브랜드 체크아웃(환율중립) 성장률이 <b>4개 분기 연속 미국 전자상거래 성장률 이상</b> ② TM$(고객 잔액 이자 제외) 성장률 4개 분기 연속 +6% 이상 + TM$÷TPV 하락 중단 ③ 활성 계정 순증 연 +3% 이상 복귀. ROIC가 10년 중 9년 15% 미만이라 1단계가 회복돼도 3단계부터 엄격히 판정한다.</span></li>
+    <li><span class="tag warn">재검토</span><span><b>2026-10-27 3Q26 실적</b>(브랜드 체크아웃 성장률·인수 협상만 기록) → 재평가 조건 충족 시 완주 재작성 → <b>패스 복기 2029-10-22</b>.</span></li>
+  </ul>
+</section>
+
+<div class="disclaimer">원본: <b>02.종목분석/페이팔_PYPL_분석_20261022.md</b> (완주 분석 — 1단계 탈락·판별 질문·참고 지표·출처). 판정의 원본은 md 문서다 — 이 HTML은 그 요약이며, 모든 수치와 출처는 md에 있다. 투자 권유가 아니다.</div>
+
+</div>
+</body>
+</html>

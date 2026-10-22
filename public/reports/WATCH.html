@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>진입대기 16 — 품질 등급별 목표가 감시판</title>
+<title>진입대기 32 — 품질 등급별 목표가 감시판</title>
 <style>
   :root {
     color-scheme: light;
@@ -130,9 +130,9 @@
 <body>
 <div class="wrap" style="max-width:1080px">
 <header>
-  <div class="kicker">가치투자 체크리스트 · 2026-10-22 16종목 전부 완주 분석 · 등급·내재가치 확정</div>
-  <h1>진입대기 18 <span style="color:var(--text-muted);font-weight:600">품질 등급별 목표가 감시판</span></h1>
-  <div class="sub">목표가 = 기본 내재가치 × 등급 배수 (S ×0.9 · A ×0.85 · 일반 ×0.8). 진입대기 14종목(2026-10-22 완주) + 완주 분석 2종목(MSFT·GOOGL) + S스크린 2단계 편입 2종목(ORLY·ROL, 간이 판정 — 잠정). 등급 A 3(COST·AAPL·CTAS) · A 잠정 2(ORLY·ROL) · 일반 13, S 없음. 기본 정렬: 목표가까지 가까운 순. 헤더를 누르면 정렬, 끌어서 놓으면 컬럼 이동. 종목명을 누르면 보고서가 열린다.</div>
+  <div class="kicker">가치투자 체크리스트 · 2026-10-22 3기 후보서치 반영 · 완주 20 + 간이 12(잠정)</div>
+  <h1>진입대기 32 <span style="color:var(--text-muted);font-weight:600">품질 등급별 목표가 감시판</span></h1>
+  <div class="sub">목표가 = 기본 내재가치 × 등급 배수 (S ×0.9 · A ×0.85 · 일반 ×0.8). 종전 18종목 + 3기 후보서치(2026-10-22) 14종목 — 완주 4(BKNG 보유·NFLX·CPRT·DECK) + 간이 10(잠정, 보고서 없음). PYPL은 완주에서 패스(1단계 구조적)라 제외. S 없음. 기본 정렬: 목표가까지 가까운 순. 헤더를 누르면 정렬, 끌어서 놓으면 컬럼 이동. 종목명을 누르면 보고서가 열린다.</div>
 </header>
 <div class="notice">📌 <b>감시선이지 매수 규칙이 아니다.</b> 목표가 도달 → 그 종목만 템플릿 전체로 완주 분석 → 통과 시 매수. <span id="asof" class="muted">현재가 불러오는 중… (표의 값은 10/20 종가)</span></div>
 <section class="card">
@@ -142,28 +142,30 @@
   </table></div>
   <p class="muted" style="margin-top:10px">초록 행 = 현재가 ≤ 목표가. 목표가 아래 여유 = (목표가 − 현재가) ÷ 기본 내재가치 — 등급이 달라도 비교할 수 있는 척도(갈아타기·기회비용 비교용, 02 §3 ③). 위치 막대: 회색 = 보수~낙관 범위, 하늘색 = 목표가 이하 구간, 검은 눈금 = 현재가. <button id="wt-reset" class="wt-reset">정렬·컬럼 순서 초기화</button></p>
 </section>
-<div class="disclaimer">원본: 02.종목분석/&lt;종목&gt;_분석_20261022.md (14종목 완주 — 등급·내재가치·목표가) · 마이크로소프트_MSFT·알파벳_GOOGL 분석 md · 전수감사_20261022.md · S스크린_20261022.md §5(ORLY·ROL — 보고서 없음). 현재가 초기값은 10/21 종가. 투자 권유가 아니다.</div>
+<div class="disclaimer">원본: 02.종목분석/&lt;종목&gt;_분석_20261022.md (완주 — 등급·내재가치·목표가) · 마이크로소프트_MSFT·알파벳_GOOGL·코파트_CPRT(10-22 재점검)·데커스_DECK(10-12, FY27 2Q 실적 반영 전) 분석 md · 전수감사_20261022.md · S스크린_20261022.md §5(ORLY·ROL) · <b>후보서치_20261022.md</b>(간이 10종목 — 보고서 없음, 낙관 미산정은 "—"). 현재가 초기값은 10/21 종가. 투자 권유가 아니다.</div>
 </div>
 <script>
-var ROWS = [{"t": "MA", "ko": "마스터카드", "g": "일반", "price": 622.62, "ivc": 469, "ivb": 654, "ivo": 873, "target": 523}, {"t": "COST", "ko": "코스트코", "g": "A", "price": 998.31, "ivc": 429, "ivb": 597, "ivo": 796, "target": 508}, {"t": "ADP", "ko": "ADP", "g": "일반", "price": 294.5, "ivc": 177, "ivb": 249, "ivo": 335, "target": 199.2}, {"t": "V", "ko": "비자", "g": "일반", "price": 407.85, "ivc": 285, "ivb": 399, "ivo": 534, "target": 318.8}, {"t": "AAPL", "ko": "애플", "g": "A", "price": 343.99, "ivc": 134, "ivb": 188, "ivo": 254, "target": 160.2}, {"t": "RACE", "ko": "페라리", "g": "일반", "price": 397.24, "ivc": 169, "ivb": 234, "ivo": 310, "target": 187}, {"t": "PG", "ko": "P&G", "g": "일반", "price": 156.84, "ivc": 71.4, "ivb": 99.2, "ivo": 133, "target": 79.3}, {"t": "KO", "ko": "코카콜라", "g": "일반", "price": 92.68, "ivc": 41.4, "ivb": 57.8, "ivo": 77.5, "target": 46.2}, {"t": "ISRG", "ko": "인튜이티브 서지컬", "g": "일반", "price": 428.12, "ivc": 190, "ivb": 264, "ivo": 352, "target": 211}, {"t": "META", "ko": "메타", "g": "일반", "price": 697.52, "ivc": 466, "ivb": 659, "ivo": 892, "target": 527}, {"t": "ASML", "ko": "ASML", "g": "일반", "price": 1676.69, "ivc": 825, "ivb": 1150, "ivo": 1535, "target": 920.4}, {"t": "CTAS", "ko": "신타스", "g": "A", "price": 220.15, "ivc": 105, "ivb": 147, "ivo": 196, "target": 124.7}, {"t": "MCO", "ko": "무디스", "g": "일반", "price": 481.05, "ivc": 304, "ivb": 424, "ivo": 565, "target": 339}, {"t": "CDNS", "ko": "케이던스", "g": "일반", "price": 326.07, "ivc": 123, "ivb": 172, "ivo": 229, "target": 137.4}, {"t": "MSFT", "ko": "마이크로소프트", "g": "일반", "price": 531.87, "ivc": 373, "ivb": 543, "ivo": 729, "target": 434}, {"t": "GOOGL", "ko": "알파벳", "g": "일반", "price": 340.28, "ivc": 220, "ivb": 312, "ivo": 408, "target": 250}, {"t": "ORLY", "ko": "오라일리", "g": "A", "p": 1, "nr": 1, "price": 89.20, "ivc": 46.9, "ivb": 67.5, "ivo": 91.2, "target": 57.3}, {"t": "ROL", "ko": "롤린스", "g": "A", "p": 1, "nr": 1, "price": 33.45, "ivc": 20.1, "ivb": 27.4, "ivo": 36.6, "target": 23.3}];
+var ROWS = [{"t": "MA", "ko": "마스터카드", "g": "일반", "price": 622.62, "ivc": 469, "ivb": 654, "ivo": 873, "target": 523}, {"t": "COST", "ko": "코스트코", "g": "A", "price": 998.31, "ivc": 429, "ivb": 597, "ivo": 796, "target": 508}, {"t": "ADP", "ko": "ADP", "g": "일반", "price": 294.5, "ivc": 177, "ivb": 249, "ivo": 335, "target": 199.2}, {"t": "V", "ko": "비자", "g": "일반", "price": 407.85, "ivc": 285, "ivb": 399, "ivo": 534, "target": 318.8}, {"t": "AAPL", "ko": "애플", "g": "A", "price": 343.99, "ivc": 134, "ivb": 188, "ivo": 254, "target": 160.2}, {"t": "RACE", "ko": "페라리", "g": "일반", "price": 397.24, "ivc": 169, "ivb": 234, "ivo": 310, "target": 187}, {"t": "PG", "ko": "P&G", "g": "일반", "price": 156.84, "ivc": 71.4, "ivb": 99.2, "ivo": 133, "target": 79.3}, {"t": "KO", "ko": "코카콜라", "g": "일반", "price": 92.68, "ivc": 41.4, "ivb": 57.8, "ivo": 77.5, "target": 46.2}, {"t": "ISRG", "ko": "인튜이티브 서지컬", "g": "일반", "price": 428.12, "ivc": 190, "ivb": 264, "ivo": 352, "target": 211}, {"t": "META", "ko": "메타", "g": "일반", "price": 697.52, "ivc": 466, "ivb": 659, "ivo": 892, "target": 527}, {"t": "ASML", "ko": "ASML", "g": "일반", "price": 1676.69, "ivc": 825, "ivb": 1150, "ivo": 1535, "target": 920.4}, {"t": "CTAS", "ko": "신타스", "g": "A", "price": 220.15, "ivc": 105, "ivb": 147, "ivo": 196, "target": 124.7}, {"t": "MCO", "ko": "무디스", "g": "일반", "price": 481.05, "ivc": 304, "ivb": 424, "ivo": 565, "target": 339}, {"t": "CDNS", "ko": "케이던스", "g": "일반", "price": 326.07, "ivc": 123, "ivb": 172, "ivo": 229, "target": 137.4}, {"t": "MSFT", "ko": "마이크로소프트", "g": "일반", "price": 531.87, "ivc": 373, "ivb": 543, "ivo": 729, "target": 434}, {"t": "GOOGL", "ko": "알파벳", "g": "일반", "price": 340.28, "ivc": 220, "ivb": 312, "ivo": 408, "target": 250}, {"t": "ORLY", "ko": "오라일리", "g": "A", "p": 1, "nr": 1, "price": 89.20, "ivc": 46.9, "ivb": 67.5, "ivo": 91.2, "target": 57.3}, {"t": "ROL", "ko": "롤린스", "g": "A", "p": 1, "nr": 1, "price": 33.45, "ivc": 20.1, "ivb": 27.4, "ivo": 36.6, "target": 23.3},
+  // 2026-10-22 3기 후보서치(02.종목분석/후보서치_20261022.md) — 완주 4(BKNG·NFLX·CPRT·DECK) + 간이 10(잠정, 보고서 없음). ivo null = 간이 단계에서 낙관 미산정
+  {"t": "BKNG", "ko": "부킹홀딩스", "g": "일반", "h": 1, "price": 158.38, "ivc": 156.2, "ivb": 219.4, "ivo": 295.3, "target": 175.5}, {"t": "NFLX", "ko": "넷플릭스", "g": "일반", "price": 65.04, "ivc": 57.2, "ivb": 79.7, "ivo": 123.5, "target": 63.76}, {"t": "CPRT", "ko": "코파트", "g": "일반", "price": 27.59, "ivc": 22.5, "ivb": 30.3, "ivo": 52.4, "target": 24.2}, {"t": "DECK", "ko": "데커스", "g": "A", "nr": 1, "price": 85.49, "ivc": 81, "ivb": 133, "ivo": 194, "target": 113.05}, {"t": "ZTS", "ko": "조에티스", "g": "A", "p": 1, "nr": 1, "price": 79.62, "ivc": 85.56, "ivb": 116.15, "ivo": null, "target": 98.73}, {"t": "BSX", "ko": "보스턴 사이언티픽", "g": "일반", "p": 1, "nr": 1, "price": 44.51, "ivc": 42.4, "ivb": 55.4, "ivo": 74.0, "target": 44.3}, {"t": "BR", "ko": "브로드리지", "g": "A", "p": 1, "nr": 1, "price": 178.30, "ivc": 143.48, "ivb": 200.5, "ivo": null, "target": 170.42}, {"t": "FDS", "ko": "팩트셋", "g": "A", "p": 1, "nr": 1, "price": 319.91, "ivc": 257.53, "ivb": 359.39, "ivo": null, "target": 305.48}, {"t": "LDOS", "ko": "레이도스", "g": "일반", "p": 1, "nr": 1, "price": 129.23, "ivc": 118.2, "ivb": 153.8, "ivo": 201.2, "target": 123.1}, {"t": "ERIE", "ko": "이리 인뎀니티", "g": "일반", "p": 1, "nr": 1, "price": 244.12, "ivc": 221.6, "ivb": 290.4, "ivo": 373.4, "target": 232.3}, {"t": "RMD", "ko": "레즈메드", "g": "A", "p": 1, "nr": 1, "price": 246.20, "ivc": 190.10, "ivb": 264.66, "ivo": null, "target": 224.96}, {"t": "BURL", "ko": "벌링턴", "g": "일반", "p": 1, "nr": 1, "price": 248.13, "ivc": 201.0, "ivb": 281.6, "ivo": 379.9, "target": 225.3}, {"t": "JKHY", "ko": "잭 헨리", "g": "A", "p": 1, "nr": 1, "price": 153.41, "ivc": 118.77, "ivb": 161.6, "ivo": null, "target": 137.36}, {"t": "OTIS", "ko": "오티스", "g": "A", "p": 1, "nr": 1, "price": 72.35, "ivc": 52.30, "ivb": 73.18, "ivo": null, "target": 62.20}];
 function m(v) { return v >= 100 ? '$' + Math.round(v).toLocaleString() : '$' + v.toFixed(1); }
 function pct(v) { return (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%'; }
 // 컬럼 정의 — v: 정렬 값(없으면 정렬 불가), asc: 첫 클릭을 오름차순으로, align: 헤더 정렬
 var GRADE = { S: 0, A: 1, '일반': 2 };
 var COLS = [
-  { k: 'name', h: '종목', asc: true, v: function (r) { return r.ko; }, td: function (r) { return '<td>' + (r.nr ? r.ko : '<a href="/reports/' + r.t + '.html">' + r.ko + '</a>') + ' <span class="muted">' + r.t + '</span></td>'; } }, // nr = 보고서 HTML 없음(S스크린 2단계 편입)
+  { k: 'name', h: '종목', asc: true, v: function (r) { return r.ko; }, td: function (r) { return '<td>' + (r.nr ? r.ko : '<a href="/reports/' + r.t + '.html">' + r.ko + '</a>') + ' <span class="muted">' + r.t + '</span>' + (r.h ? ' <span class="tag pass" style="font-size:11px">보유</span>' : '') + '</td>'; } }, // nr = 보고서 HTML 없음(간이 판정 편입) · h = 3기 보유 중
   { k: 'g', h: '등급', asc: true, align: 'center', v: function (r) { return GRADE[r.g]; }, td: function (r) { return '<td class="g g' + r.g + '">' + r.g + (r.p ? ' <small class="muted" style="font-weight:600">잠정</small>' : '') + '</td>'; } }, // p = 간이 판정 등급(완주 분석에서 확정, 02 §1)
   { k: 'price', h: '현재가', v: function (r) { return r.price; }, td: function (r) { return '<td><b>$' + r.price.toFixed(2) + '</b></td>'; } },
   { k: 'ivc', h: '보수', v: function (r) { return r.ivc; }, td: function (r) { return '<td>' + m(r.ivc) + '</td>'; } },
   { k: 'ivb', h: '기본', v: function (r) { return r.ivb; }, td: function (r) { return '<td>' + m(r.ivb) + '</td>'; } },
-  { k: 'ivo', h: '낙관', v: function (r) { return r.ivo; }, td: function (r) { return '<td>' + m(r.ivo) + '</td>'; } },
+  { k: 'ivo', h: '낙관', v: function (r) { return r.ivo || 0; }, td: function (r) { return '<td>' + (r.ivo ? m(r.ivo) : '<span class="muted">—</span>') + '</td>'; } },
   { k: 'target', h: '목표가', v: function (r) { return r.target; }, td: function (r) { return '<td><b>' + m(r.target) + '</b></td>'; } },
   { k: 'mos', h: '안전마진', v: function (r) { return r.mos; }, td: function (r) { return '<td class="' + (r.mos > 0 ? 'up' : 'warn-txt') + '">' + pct(r.mos) + '</td>'; } },
   { k: 'gap', h: '목표가까지', v: function (r) { return r.gap; }, td: function (r) { return '<td><b>' + pct(r.gap) + '</b></td>'; } },
   // 목표가 아래 여유 = (목표가 − 현재가) ÷ 기본 내재가치 — 갈아타기·기회비용 비교 척도 (02 §3 ③)
   { k: 'room', h: '목표가 아래 여유', v: function (r) { return r.room; }, td: function (r) { return '<td class="' + (r.room > 0 ? 'up' : 'warn-txt') + '">' + pct(r.room) + '</td>'; } },
   { k: 'bar', h: '위치 (보수 ~ 낙관)', align: 'left', td: function (r) {
-    var lo = Math.min(r.ivc, r.price) * 0.95, hi = Math.max(r.ivo, r.price) * 1.02, w = function (v) { return ((v - lo) / (hi - lo) * 100).toFixed(1) + '%'; };
+    var lo = Math.min(r.ivc, r.price) * 0.95, hi = Math.max(r.ivo || r.ivb, r.price) * 1.02, w = function (v) { return ((v - lo) / (hi - lo) * 100).toFixed(1) + '%'; };
     return '<td><div class="bar"><b style="left:' + w(lo) + ';width:' + w(r.target) + '"></b><i style="left:' + w(r.price) + '"></i></div></td>';
   } }
 ];

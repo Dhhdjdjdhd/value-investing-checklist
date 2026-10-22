@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>넷플릭스(NFLX) 완주 분석 보고서 — 품질 등급 일반 · 목표가 $63.76</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --baseline: #c3c2b7; --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --seq-250: #86b6ef; --seq-450: #2a78d6;
+    --status-good: #0ca30c; --status-warning: #fab219; --status-serious: #ec835a; --status-critical: #d03b3b;
+    --delta-good: #006300;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5; --series-2: #d95926; --delta-good: #0ca30c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  h2 .w { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-left: 6px; }
+  p.body { color: var(--text-secondary); font-size: 14.5px; margin-bottom: 10px; }
+  p.body strong { color: var(--text-primary); }
+  .notice { border: 1px solid var(--status-serious); border-radius: 10px; padding: 12px 16px; font-size: 13.5px; color: var(--text-secondary); margin-bottom: 20px; background: var(--surface-1); }
+  .notice b { color: var(--text-primary); }
+  .muted { color: var(--text-muted); font-size: 12.5px; }
+  .hero { display: flex; flex-wrap: wrap; gap: 24px; }
+  .hero-score { flex: 0 0 auto; text-align: center; padding: 8px 28px 8px 8px; border-right: 1px solid var(--gridline); }
+  .hero-score .num { font-size: 64px; font-weight: 800; line-height: 1.05; }
+  .hero-score .den { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+  .hero-score .label { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; max-width: 150px; }
+  .hero-main { flex: 1 1 320px; min-width: 280px; }
+  .verdict { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--status-serious); border-radius: 999px; padding: 4px 14px; font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+  .verdict .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--status-serious); }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 16px; }
+  .fact { border-top: 2px solid var(--gridline); padding-top: 8px; }
+  .fact .k { font-size: 12px; color: var(--text-muted); }
+  .fact .v { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .fact .d { font-size: 12px; color: var(--text-secondary); }
+  .meter-row { display: grid; grid-template-columns: 150px 1fr 90px; gap: 12px; align-items: center; margin-bottom: 12px; }
+  .meter-row .name { font-size: 14px; font-weight: 600; }
+  .meter-row .name small { display: block; font-weight: 400; font-size: 11.5px; color: var(--text-muted); }
+  .track { height: 10px; background: var(--gridline); border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; background: var(--seq-450); border-radius: 5px; }
+  .meter-row .val { font-size: 14px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+  .meter-row .val small { font-weight: 400; color: var(--text-muted); }
+  ul.check { list-style: none; }
+  ul.check li { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--gridline); font-size: 14px; color: var(--text-secondary); align-items: baseline; }
+  ul.check li:last-child { border-bottom: none; }
+  .tag { flex: 0 0 auto; font-size: 12px; font-weight: 700; border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+  .tag.pass { color: var(--status-good); border: 1px solid var(--status-good); }
+  .tag.warn { color: var(--status-serious); border: 1px solid var(--status-serious); }
+  .tag.fail { color: var(--status-critical); border: 1px solid var(--status-critical); }
+  ul.check b { color: var(--text-primary); font-weight: 600; }
+  .chart-title { font-size: 15px; font-weight: 700; }
+  .chart-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .chart-box { position: relative; }
+  svg text { font-family: inherit; }
+  .tooltip { position: absolute; pointer-events: none; z-index: 10; background: var(--surface-1); border: 1px solid var(--border); box-shadow: 0 4px 14px rgba(0,0,0,.18); border-radius: 8px; padding: 8px 12px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; opacity: 0; transition: opacity .1s; }
+  .tooltip b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+  details { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  details summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 12.5px; }
+  th:first-child, td:first-child { text-align: left; }
+  td:first-child { color: var(--text-secondary); }
+  .table-scroll { overflow-x: auto; }
+  .up { color: var(--delta-good); font-weight: 600; }
+  .warn-txt { color: var(--status-serious); font-weight: 600; }
+  .range-wrap { padding: 46px 10px 52px; }
+  .range-track { position: relative; height: 8px; border-radius: 4px; background: linear-gradient(to right, var(--seq-250), var(--seq-450)); }
+  .marker { position: absolute; top: -40px; transform: translateX(-50%); text-align: center; }
+  .marker .lbl { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; }
+  .marker .prc { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .marker .tick { width: 2px; height: 14px; background: var(--baseline); margin: 2px auto 0; }
+  .marker.below { top: auto; bottom: -48px; }
+  .marker.below .tick { margin: 0 auto 2px; }
+  .marker.now .tick { background: var(--text-primary); width: 3px; height: 20px; }
+  .marker.now .prc, .marker.now .lbl { color: var(--text-primary); font-weight: 800; }
+  .range-foot { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--text-muted); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } .meter-row { grid-template-columns: 120px 1fr 70px; } }
+  .src { font-size: 12.5px; color: var(--text-muted); }
+  .src a { color: var(--series-1); text-decoration: none; }
+  .src li { margin-bottom: 4px; }
+  .disclaimer { border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">가치투자 체크리스트 · 완주 분석 보고서 · 2026-10-22 템플릿 1~5단계 완주 · 등급·내재가치 확정 · 3Q26 실적(10/20) 반영</div>
+  <h1>넷플릭스 <span style="color:var(--text-muted);font-weight:600">Netflix · NASDAQ: NFLX</span></h1>
+  <div class="sub">전 세계 190여 개국 유료 회원(2025년 말 3.25억 명 돌파)에게 시리즈·영화·라이브 이벤트·게임을 월 구독료로 판다. 2023년부터 광고 요금제를 붙였고(2026 광고 매출 전망 약 $2.7B), 매출 $45.2B(2025)의 대부분은 구독료다. 비용의 중심은 콘텐츠 — 자산으로 올린 뒤 4년 안에 90% 이상 가속 상각한다. 영업이익률 2016년 4.3% → 2025년 29.5%. 주당 수치는 2025-11 10:1 분할 조정 후 값.</div>
+</header>
+
+<div class="notice">📌 <b>판단: 관망 (가격 대기).</b> 안전마진 +18.4%로 일반 문턱 20%에 1.6%p 모자란다. 목표가 $63.76에 도달해도 자동 매수가 아니다 — 도달 원인이 R1~R3 임계값을 건드렸는지, 다른 후보(PYPL·DECK·ZTS·BKNG)와 기회비용을 다시 대조한 뒤 판단한다. 정찰 조건(주가 ≤ 기본 내재가치 $79.7)은 충족하지만 5단계 기회비용에서 가장 뒤라 md는 권하지 않는다 — 결정은 사용자 몫이다.</div>
+
+<section class="card">
+  <div class="hero">
+    <div class="hero-score">
+      <div class="num" style="color:var(--text-muted)">일반</div>
+      <div class="label">품질 등급 확정 (02 §1)<br>안전마진 문턱 20% · 목표가 = 기본 × 0.8</div>
+    </div>
+    <div class="hero-main">
+      <p class="body"><strong>등급 근거.</strong> 1·2·3단계 모두 조건부 — 1단계(시청 점유 정체 / 히트 의존·예측 가능성), 2단계(공시 축소 / 내부자 직접 보유 미미), 3단계(ROIC 10년 중 6년 15% 미만 / FCF 전환 지속 미달 / 2022 EPS 감소). 간이 판정(품질우주 10-21) <b>A 잠정에서 변경</b> — 간이는 ROIC를 최근 연도 중심으로 보고 FCF를 흠 1개로만 셌다. 만약 A였다면 목표가 $67.75로 현재가보다 위였다. 등급이 진입 여부를 가르므로 등급을 올리는 해석을 하지 않았다.</p>
+      <div class="facts">
+        <div class="fact"><div class="k">현재 주가 (10/21 종가)</div><div class="v">$65.04</div><div class="d">아래 바에서 실시간 갱신</div></div>
+        <div class="fact"><div class="k">내재가치 (기본)</div><div class="v">$79.7</div><div class="d">보수 $57.2 · 낙관 $123.5</div></div>
+        <div class="fact"><div class="k">목표 매수가 (일반)</div><div class="v">$63.76</div><div class="d">기본 × 0.8</div></div>
+        <div class="fact"><div class="k">안전마진 (10/21)</div><div class="v warn-txt">+18.4%</div><div class="d">문턱 20% · 목표가 아래 여유 −1.6%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>1~3단계 품질 판정 <span class="w">2026-10-22 완주 · 가격을 보기 전에 판정</span></h2>
+  <ul class="check">
+    <li><span class="tag warn">1단계 사업 조건부</span><span>⚠️ 시청 점유 정체 + YouTube 잠식 — 시청 시간 증가율 2025 상반기 +1%, 하반기 +2%, 2026 상반기 +2%(매출은 +12~16%). 미국 TV 시간 점유 2025-12 9.0% → <b>2026-07 7.8%</b>, YouTube 14.2%(HSBC 보고서 보도, Nielsen 원자료 미대조) / ⚠️ 히트 의존·목표 하향 — 광고 매출 2026 목표 약 $3B → 약 $2.7B, 라이브 스포츠는 콘텐츠 지출 5%+인데 시청 시간 약 1%</span></li>
+    <li><span class="tag warn">2단계 경영진 조건부</span><span>⚠️ 공시 축소 — 2025년부터 분기 유료 회원 수 공시 중단, 시청 시간 보고서를 2027년부터 반기 → 연 1회 / ⚠️ 내부자 직접 보유 미미 — 이사·임원 16명 합계 1.24%, 그중 27.3M주가 옵션. 공동 CEO Sarandos 직접 약 34만 주, Peters 약 18만 주. 메모(세지 않음): WBD 인수 시도에서 증액을 거부하고 해지금 $2.8B 수령 — 가격 규율은 지켰다</span></li>
+    <li><span class="tag warn">3단계 재무 조건부</span><span>⚠️ ROIC(현금 미차감) <b>10년 중 6년 15% 미만</b>(2016~2020, 2022) / ⚠️ FCF−SBC ÷ 순이익 10년 누적 33.3%, TTM 정상화 <b>74.4%</b> — 원인은 콘텐츠 선지급 구조(아래 4단계) / ⚠️ EPS <b>2022 $0.995(−11.5%)</b> — 코로나 외 감소 연도</span></li>
+  </ul>
+  <div class="table-scroll" style="margin-top:14px"><table>
+    <tr><th>항목</th><th style="text-align:left">값</th></tr>
+    <tr><td>해자</td><td style="text-align:left"><b>2개</b> — 원가 우위·규모의 경제(콘텐츠 상각 $16.4B를 3.25억+ 회원에게 나눔, 영업이익률 2025 29.5%·3Q26 34.6%) · 브랜드(2025-01·2026-03 요금 인상 뒤에도 3Q26 해지율 전년 대비 개선 — 회사 서술, 숫자 비공개)</td></tr>
+    <tr><td>ROIC (현금 미차감)</td><td style="text-align:left">2016 4.5% → 2017 9.6% → 2018 10.2% → 2019 10.6% → 2020 14.5% → 2021 17.4% → 2022 13.7% → 2023 17.3% → 2024 22.6% → 2025 <b>28.0%</b>. 중앙값 16.0%. S ①(20%↑ 10년)은 2016~2023 미달</td></tr>
+    <tr><td>희석 EPS (분할 조정)</td><td style="text-align:left">2016 $0.043 → 2021 $1.124 → 2022 $0.995(−11.5%) → 2023 $1.20 → 2024 $1.98 → 2025 <b>$2.53</b></td></tr>
+    <tr><td>장기부채 ÷ 순이익</td><td style="text-align:left">총차입금 $15.13B ÷ 정상화 TTM 순이익 $12.51B = <b>1.21배</b> (3Q26)</td></tr>
+    <tr><td>FCF − SBC ÷ 순이익</td><td style="text-align:left">10년 누적 33.3% · 2023~25 89.0% · 2024~25 79.9% · <b>TTM 정상화 74.4%</b></td></tr>
+    <tr><td>영업이익률</td><td style="text-align:left">4.3%(2016) → 18.3(2020) → 20.9(2021) → 17.8(2022) → 20.6 → 26.7 → <b>29.5%(2025)</b>, 3Q26 34.6%</td></tr>
+    <tr><td>경기순환</td><td style="text-align:left"><b>비순환</b> — FY2007~10 영업이익 91.8 → 121.5 → 191.9 → 283.6($M) 매년 증가. 10년 내 최대 감익 2022 −9.1%</td></tr>
+  </table></div>
+</section>
+
+<section class="card">
+  <h2>4단계 밸류에이션 <span class="w">2단계 DCF · 할인율 보수 9.5% / 기본 9% / 낙관 8.5%</span></h2>
+  <p class="body"><strong>기준 EPS를 GAAP $2.93이 아니라 주당 FCF−SBC $2.18로 썼다 — 이 완주의 핵심.</strong> 넷플릭스는 콘텐츠를 <b>선지급하고 나중에 상각</b>한다. 콘텐츠 지출이 늘어나는 한 현금 지출이 상각을 앞서고, 회사도 2026에 "연간 콘텐츠 현금 ÷ 상각 약 1.1배"를 기본 가정으로 공시했다. 그래서 이익이 현금으로 바뀌는 비율이 10년 내내 100%를 밑돌았다(최근 정상 연도 76~83%, TTM 정상화 <b>74.4%</b>). 이것은 일회성이 아니라 성장의 대가로 계속 드는 재투자다. 00 §4는 "미래 잉여현금흐름을 할인"이라고 쓰고, 3단계는 "FCF−SBC ≈ 순이익"을 전제로 한다 — NFLX는 그 전제가 성립하지 않으므로 GAAP $2.93으로 할인하면 재투자를 공짜로 가정하는 셈이다. 그래서 낮은 쪽 $2.18을 채택했다(규칙 이탈은 이 정의 하나뿐이고 보수 방향).</p>
+  <p class="body"><b>$2.18 산출</b> — 정상화 TTM(4Q25~3Q26) FCF $11,375M − WBD 해지금 세후 $2,260M(추정) + 브라질 과거 연도 세금 일시 납부 $729M − SBC $540M = FCF−SBC $9,304M ÷ 평균 희석 4,268M주. GAAP $2.93은 TTM $3.46에서 해지금 세후 $0.53을 뺀 값. 인수 관련 비용은 되돌려 더하지 않았다(보수).</p>
+  <div class="table-scroll"><table>
+    <tr><th>시나리오</th><th>기준 EPS</th><th>성장률 (1~5년/6~10년)</th><th>종료 배수</th><th>내재가치</th><th style="text-align:left">용도</th></tr>
+    <tr><td>보수</td><td>$2.18 (FCF−SBC)</td><td>10% / 6%</td><td>19배</td><td>$57.2</td><td style="text-align:left">스트레스 하한선</td></tr>
+    <tr><td><b>기본</b></td><td><b>$2.18 (FCF−SBC)</b></td><td><b>13% / 8%</b></td><td><b>22배 (상한)</b></td><td><b>$79.7</b></td><td style="text-align:left">안전마진·목표가 기준</td></tr>
+    <tr><td>낙관</td><td><span class="warn-txt">$2.43</span> (GAAP $2.93 × 83%)</td><td>16% / 10%</td><td>25배</td><td>$123.5</td><td style="text-align:left">보유 중 축소 검토선</td></tr>
+  </table></div>
+  <p class="muted" style="margin-top:8px">기준 EPS가 시나리오마다 다르다 — 보수·기본은 정상화 FCF−SBC $2.18, 낙관만 2025 실제 전환율 83%(파업 왜곡 없는 최고치)를 적용한 $2.43. 종료 배수 = 연말 PER 8개 중앙값 49.3배(2배 이상인 2016·2017 제외) × 0.6 = 29.6배 → 상한 22배. FCF−SBC에 곱하므로 이익 기준 환산 약 16배로 더 보수적이다. 성장률 = 컨센서스 FY27 EPS 약 +25%(10년 EPS CAGR 56.8%는 바닥 기저라 무의미)에서 크게 깎음 — 매출 성장 +17.6% → +11.5%로 매 분기 둔화, 시청 시간 +2%, 광고 목표 하향. 회사 중기 계획은 숫자로 제시되지 않았다. 터미널 비중 보수 63% / 기본 69% / 낙관 74%. 민감도: 같은 가정에 GAAP $2.93을 넣으면 $107.1.</p>
+  <p class="muted" style="margin-top:6px"><b>간이에서 바뀐 경위:</b> 간이(품질우주 10-21)는 등급 A 잠정, GAAP EPS 기반 기본 IV $108.58, 목표가 $92.29였다. 완주에서 등급 일반, 기본 IV $79.70, 목표가 $63.76으로 바뀌었다 — IV 차이는 거의 전부 기준 EPS 정의(GAAP → FCF−SBC)에서 나온다. 계산 정정이라 궤적 하향 횟수에 세지 않는다.</p>
+  <div class="range-wrap" id="vicRangeWrap" title="클릭하면 차트가 새 창으로 열립니다" style="cursor:pointer">
+    <div class="range-track" id="vicTrack">
+      <div class="marker" style="left:17.2%"><div class="lbl">보수</div><div class="prc">$57.2</div><div class="tick"></div></div>
+      <div class="marker" style="left:39.7%"><div class="lbl">기본</div><div class="prc">$79.7</div><div class="tick"></div></div>
+      <div class="marker" style="left:83.5%"><div class="lbl">낙관</div><div class="prc">$123.5</div><div class="tick"></div></div>
+      <div class="marker below" style="left:23.8%"><div class="tick"></div><div class="prc">$63.76</div><div class="lbl">목표 매수가 (일반)</div></div>
+    </div>
+    <div class="range-foot"><span>$40</span><span>내재가치 추정 범위 (양끝은 표시 눈금일 뿐)</span><span>$140</span></div>
+  </div>
+  <script src="/reports/_dcfbox.js"></script>
+  <script>vicDcfBox({ eps0: 2.18, g1: 0.13, g2: 0.08, r: 0.09, per: 22, perSrc: '연말 PER 중앙값 49.3 × 0.6 = 29.6 → 상한 22배 (2016·2017 제외)' });</script>
+  <script src="/reports/_quotebar.js"></script>
+  <script>vicQuoteBar({ ticker:'NFLX', lo:40, hi:140, target:63.76, chart:'https://stockanalysis.com/stocks/nflx/' });</script>
+
+  <div class="table-scroll" style="margin-top:18px"><table>
+    <tr><th>가격선</th><th>가격</th><th>의미</th></tr>
+    <tr><td>기본 내재가치</td><td>$79.7</td><td>정찰 조건(주가 ≤ 기본 내재가치) — 현재가 $65.04는 아래. 단 기회비용에서 가장 뒤라 md는 정찰을 권하지 않는다</td></tr>
+    <tr><td><b>1회차 (목표 매수가)</b></td><td><b>$63.76</b></td><td>본 진입선 — 도달 원인 확인 + 기회비용 재대조 통과 시</td></tr>
+    <tr><td>보수 내재가치</td><td>$57.2</td><td>주가 ≤ 이 값이면 "높은 확신" 조건 ② 충족</td></tr>
+    <tr><td>2회차</td><td>$54.20</td><td>직전 매수가 −15% (3년 주간 변동성 33.6%) · 임시 — 실제 1회차 체결가로 재설정</td></tr>
+    <tr><td>3회차</td><td>$46.07</td><td>직전 매수가 −15% · 임시</td></tr>
+  </table></div>
+  <p class="muted" style="margin-top:8px">역DCF: 현재가를 정당화하는 1~5년 성장률은 8.2%(6~10년 8%·할인율 9%·배수 22배 고정), 10년 균일이면 8.1% — 기본 13%보다 낮다. GAAP $2.93 기준이면 필요 성장률은 4.4%다. 매출 컨센서스 +11.2%와 이익률 확대를 보면 기본 13%는 상한 쪽 가정이고, 이것이 문턱 20%를 요구하는 이유다.</p>
+</section>
+
+<section class="card">
+  <h2>5단계 최종 점검 <span class="w">약세론 · 사전 부검 · 기회비용</span></h2>
+  <p class="body"><strong>약세론 — 실제 반대편.</strong> Wells Fargo Underweight(목표 $80 → $57): 2026 하반기 상위 100 오리지널 시청 시간 −21%, 회원당 시청 −4% 가정. HSBC Buy → Hold($96 → $76): YouTube 미국 TV 시간 14.2% vs 넷플릭스 7.8%. Huber Research Underweight($85 → $70): 참여도 의문 + 인력 감축 + 시청 공시 축소. 3Q26 후 Guggenheim은 Buy 유지지만 2027 광고 추정 $4.0B로 컨센서스 $5.2B보다 낮다. 핵심: "성장은 이제 가격 인상에서 나온다. 참여도가 꺾인 상태에서 인상을 계속하면 해지로 돌아오는데, 회사가 해지·시청 데이터를 공시하지 않아 늦게 안다. 게다가 이익의 26%는 현금이 되지 않는다." 반론(해지율 개선, 3Q26 매출 +12%·이익 +37%)의 근거 대부분이 <b>회사 자체 서술</b>이라는 점이 약세론을 강하게 만든다.</p>
+  <div class="table-scroll"><table>
+    <tr><th>리스크</th><th style="text-align:left">관찰 지표 · 임계값</th></tr>
+    <tr><td><b>R1</b> 시청 점유 잠식 → 가격 결정력 상실</td><td style="text-align:left">Nielsen 미국 TV 점유(기준 2026-07 7.8%) 7.0% 미만 3개월 연속 → 논제 재평가 · 연간 시청 시간(2027-1Q 보고서) 전년 대비 감소 → 경보 · 서한의 해지율 서술이 "악화"로 바뀌면 즉시 재평가</td></tr>
+    <tr><td><b>R2</b> 이익의 현금 전환 악화</td><td style="text-align:left">정상화 FCF−SBC ÷ 순이익(기준 TTM 74%) 연간 70% 미만 → 기준 EPS 재산정(하향) · 콘텐츠 현금 ÷ 상각(기준 1.1배, 9M26 1.17배) 연간 1.2배 초과 → 경보</td></tr>
+    <tr><td><b>R3</b> 성장이 가격 인상에만 의존하다 둔화</td><td style="text-align:left">환율 중립 매출 성장률(기준 3Q26 +11%) 2개 분기 연속 +8% 미만 → 성장률 가정 하향 검토 · UCAN 매출(기준 +11%) 가격 인상 분기에도 +7% 미만 → 경보 · 광고 매출 2027 $3.5B 미만 → 낙관 시나리오 철회</td></tr>
+  </table></div>
+  <p class="body" style="margin-top:14px"><strong>기회비용 — 불통과.</strong> NFLX 목표가 아래 여유 −1.6%는 후보서치(10-22)의 PYPL +22.7% · DECK +20.7% · ZTS +16.5% · BKNG +15.3% · CPRT +3.9% 모두보다 낮다. 후보서치 당시 1위(+25.1%)였던 것은 GAAP EPS·A 잠정 등급의 결과였다. 다른 후보도 대부분 잠정이라 공정한 비교는 그들의 완주 뒤에 가능하다.</p>
+</section>
+
+<section class="card">
+  <h2>결론</h2>
+  <ul class="check">
+    <li><span class="tag pass">사는 논리</span><span>업계 최고 수익성(영업이익률 3Q26 34.6%)과 가격 결정력, 부채 1.2배. 이익은 줄지 않았다 — 해지금 제외 TTM EPS $2.93은 52주 고점 당시 $2.40보다 +22%. 52주 −44% 하락의 대부분은 멀티플 재평가(PER 약 49 → 22배)다.</span></li>
+    <li><span class="tag warn">사지 않을 논리</span><span>1·2·3단계 모두 조건부라 일반 등급. 이익의 약 74%만 현금이 되고, 재평가의 원인인 시청 점유 정체는 3년 뒤에도 남을 문제다. 판별 질문 구조 신호 1.5개(② 부분 예, ③ 예).</span></li>
+    <li><span class="tag warn">진입 조건</span><span>주가 ≤ <b>$63.76</b> 도달 시 ① 도달 원인이 R1~R3 임계값을 건드렸는지 확인 ② 다른 후보 완주 결과와 기회비용 재대조. 통과 시 참고 비중: 확신도 보통 → 목표 5%, 1회차 <b>2주</b>, 추가매수 간격 −15%.</span></li>
+    <li><span class="tag warn">재검토</span><span><b>수시</b> — 주가가 $63.76 이하로 오면 진입 조건 점검 → <b>2027-01 말</b>(4Q26·FY2026 연간 실적 후 내재가치 갱신, R2 결과에 따라 기준 EPS $2.18 상·하향).</span></li>
+  </ul>
+</section>
+
+<div class="disclaimer">원본: <b>02.종목분석/넷플릭스_NFLX_분석_20261022.md</b> (완주 분석 — 등급·내재가치·목표가·출처). 판정의 원본은 md 문서다 — 이 HTML은 그 요약이며, 모든 수치와 출처는 md에 있다. 투자 권유가 아니다.</div>
+
+</div>
+</body>
+</html>
