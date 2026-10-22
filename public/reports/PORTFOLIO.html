@@ -106,6 +106,38 @@
   .edit-grid .nm { font-size: 13px; color: var(--text-secondary); }
   .kv { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 13px; background: var(--surface-2); border-radius: 10px; padding: 12px; margin: 12px 0 16px; }
   .kv .full { grid-column: 1 / 3; }
+
+  /* 정찰병 카드 모달 — 정찰 현황 캐릭터 클릭 시 */
+  .sc-card { max-width: 440px; padding: 0; overflow: hidden; }
+  .sc-card-hd { display: flex; align-items: center; gap: 14px; padding: 18px 20px 14px; background: linear-gradient(160deg, #d3ebb9, #b2d793); color: #10240a; position: relative; }
+  .sc-card-hd.sc-reached { background: linear-gradient(160deg, #c7f0c0, #7fd17a); }
+  .sc-card-av { width: 58px; height: 58px; border-radius: 14px; background: rgba(255,255,255,.7); display: flex; align-items: center; justify-content: center; font-size: 36px; flex: none; box-shadow: inset 0 0 0 2px rgba(0,0,0,.08); }
+  .sc-card-nm { font-size: 18px; font-weight: 800; line-height: 1.25; }
+  .sc-card-nm small { font-size: 12px; font-weight: 600; opacity: .7; margin-left: 4px; }
+  .sc-card-sub { font-size: 12px; margin-top: 3px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .sc-card-chip { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 10px; background: rgba(255,255,255,.75); color: #10240a; }
+  .sc-card-chip.sc-ok { background: var(--status-good); color: #fff; }
+  .sc-card-x { position: absolute; top: 10px; right: 12px; border: 0; background: rgba(255,255,255,.6); border-radius: 50%; width: 28px; height: 28px; font-size: 15px; cursor: pointer; color: #10240a; }
+  .sc-card-bd { padding: 16px 20px 20px; }
+  .sc-card-hero { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+  .sc-card-hero b { font-size: 30px; font-weight: 800; }
+  .sc-card-hero span { font-size: 13px; }
+  .sc-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .sc-card-tile { background: var(--surface-2); border-radius: 10px; padding: 8px 10px; font-variant-numeric: tabular-nums; }
+  .sc-card-tile .k { font-size: 11px; color: var(--text-muted); }
+  .sc-card-tile .v { font-size: 14px; font-weight: 800; margin-top: 1px; white-space: nowrap; }
+  .sc-card-tile .v.sc-good { color: var(--status-good); }
+  .sc-card-tile .s { font-size: 10.5px; color: var(--text-muted); white-space: nowrap; }
+  .sc-card-gauge { margin: 14px 0 4px; font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between; }
+  .sc-card-bar { height: 8px; border-radius: 4px; background: var(--gridline); overflow: hidden; }
+  .sc-card-bar i { display: block; height: 100%; background: var(--status-warn); border-radius: 4px; }
+  .sc-card-bar.sc-ok i { background: var(--status-good); }
+  .sc-card-info { margin-top: 14px; font-size: 12.5px; line-height: 1.7; color: var(--text-secondary); border-top: 1px solid var(--gridline); padding-top: 10px; }
+  .sc-card-info b { color: var(--text-primary); }
+  .sc-card details { margin-top: 10px; font-size: 13px; }
+  .sc-card summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
+  .sc-card details p { margin-top: 6px; line-height: 1.7; }
+  @media (max-width: 640px) { .sc-card-grid { grid-template-columns: repeat(2, 1fr); } }
   .reason { font-size: 14px; line-height: 1.75; }
 
   /* 정찰 현황 — 탑뷰 맵. 가운데 성 = 시장(목표가선), 성과의 거리 = 목표가까지 거리 (02 §1 정찰 진입) */
@@ -137,9 +169,12 @@
   .sc-unit { position: absolute; z-index: 3; width: 0; height: 0; transition: left 1.4s cubic-bezier(.3, .7, .3, 1), top 1.4s cubic-bezier(.3, .7, .3, 1); }
   .sc-patrol { position: absolute; left: 0; top: 0; }
   .sc-char { position: absolute; left: -18px; top: -20px; width: 36px; text-align: center; font-size: 32px; line-height: 40px; }
-  .sc-spearwrap { position: absolute; left: calc(var(--ux) * 26px - 10px); top: calc(var(--uy) * 26px - 10px); width: 20px; height: 20px; }
+  /* 칼은 캐릭터 좌/우(--fx)에 두고, 칼날은 성 중심(--ux, --uy 방향)을 겨눈다 */
+  .sc-spearwrap { position: absolute; left: calc(var(--fx) * 26px - 10px); top: -10px; width: 20px; height: 20px; }
   .sc-spear { display: block; font-size: 18px; line-height: 20px; text-align: center; transform: rotate(var(--rot)); }
-  .sc-hit { position: absolute; left: calc(var(--ux) * 50px - 8px); top: calc(var(--uy) * 50px - 9px); font-size: 14px; opacity: 0; pointer-events: none; }
+  .sc-hit { position: absolute; left: calc(var(--fx) * 26px + var(--ux) * 24px - 8px); top: calc(var(--uy) * 24px - 9px); font-size: 14px; opacity: 0; pointer-events: none; }
+  .sc-char, .sc-plate { cursor: pointer; }
+  .sc-unit:hover .sc-char { filter: drop-shadow(0 0 5px rgba(255,255,255,.9)); }
   .sc-zz { position: absolute; left: 12px; top: -26px; font-size: 13px; opacity: 0; pointer-events: none; }
   .sc-plate { position: absolute; left: 0; transform: translateX(-50%); white-space: nowrap; text-align: center; font-size: 11.5px; line-height: 1.3; padding: 2px 7px; border-radius: 8px;
     background: color-mix(in srgb, var(--surface-1) 88%, transparent); box-shadow: 0 1px 3px rgba(0,0,0,.18); font-variant-numeric: tabular-nums; }
@@ -277,6 +312,11 @@
     <div class="chart-sub" style="margin-bottom:4px">진입 사유</div>
     <div class="reason" id="rReason"></div>
   </div>
+</div>
+
+<!-- 정찰병 카드 모달 — 정찰 현황 캐릭터 클릭 시 -->
+<div class="modal-ov" id="scoutModal" hidden>
+  <div class="modal sc-card" role="dialog" aria-modal="true" aria-labelledby="scCardName" id="scCard"></div>
 </div>
 
 <!-- 보유 편집 모달 -->
@@ -490,6 +530,8 @@ function renderScouts(rows) {
     rows.forEach(function (r, i) {
       var u = document.createElement('div');
       u.className = 'sc-unit';
+      u.dataset.i = i;
+      u.title = '클릭하면 정찰 보유 현황';
       u.style.setProperty('--d', (i * 1.1).toFixed(1) + 's');
       u.innerHTML =
         '<div class="sc-patrol">' +
@@ -521,15 +563,21 @@ function renderScouts(rows) {
     anyReached = anyReached || reached;
 
     var a = SC_ANG[i % SC_ANG.length] * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
-    u.style.left = (cx + c * (rx0 + (rxM - rx0) * t)).toFixed(1) + 'px';
-    u.style.top = (cy + s * (ry0 + (ryM - ry0) * t)).toFixed(1) + 'px';
-    // 찌르기는 좌우로만 — 성이 있는 쪽을 향한다 (위아래로 찌르면 창이 이름표를 가린다). 순찰은 성 둘레(접선) 방향
-    var face = c > 0 ? -1 : 1;
-    u.style.setProperty('--ux', face);
-    u.style.setProperty('--uy', 0);
+    var ux0 = cx + c * (rx0 + (rxM - rx0) * t), uy0 = cy + s * (ry0 + (ryM - ry0) * t);
+    u.style.left = ux0.toFixed(1) + 'px';
+    u.style.top = uy0.toFixed(1) + 'px';
+    // 칼은 성이 있는 쪽 옆구리(좌/우)에 들고, 칼날은 성 중심을 겨눈다.
+    // 위아래 성분은 0.6배로 줄여 찌를 때 이름표를 가리지 않게 한다. 순찰은 성 둘레(접선) 방향
+    var face = ux0 < cx ? 1 : -1;
+    var dx = cx - (ux0 + face * 26), dy = cy - uy0, len = Math.sqrt(dx * dx + dy * dy) || 1;
+    var dirX = dx / len, dirY = dy / len;
+    u.style.setProperty('--fx', face);
+    u.style.setProperty('--ux', dirX.toFixed(3));
+    u.style.setProperty('--uy', (dirY * 0.6).toFixed(3));
     u.style.setProperty('--tx', s.toFixed(3));
     u.style.setProperty('--ty', (-c).toFixed(3));
-    u.style.setProperty('--rot', face > 0 ? '45deg' : '225deg'); // 🗡️는 45° 돌리면 오른쪽, 225°면 왼쪽을 향한다
+    // 🗡️ 이모지는 원래 칼날이 왼쪽 아래(135°)를 향한다 → 목표 각도 − 135°만큼 돌린다
+    u.style.setProperty('--rot', (Math.atan2(dirY, dirX) * 180 / Math.PI - 135).toFixed(1) + 'deg');
     u.classList.toggle('sc-reached', reached);
     u.classList.toggle('sc-near', !reached && t <= 0.2);
 
@@ -553,6 +601,68 @@ function renderScouts(rows) {
   st.textContent = marketOpen ? '정찰 중' : '장마감 · 야영';
 }
 window.addEventListener('resize', function () { if (scRows) renderScouts(scRows); });
+
+// ── 정찰병 카드 모달 ────────────────────────────────────
+var scoutModal = el('scoutModal');
+function scTile(k, v, s, vCls) {
+  return '<div class="sc-card-tile"><div class="k">' + k + '</div><div class="v ' + (vCls || '') + '">' + v + '</div>' +
+    (s ? '<div class="s">' + s + '</div>' : '') + '</div>';
+}
+function openScout(i) {
+  var r = scRows && scRows[i];
+  if (!r) return;
+  var h = r.h, cur = r.curUSD;
+  var dist = cur == null || !h.targetPrice ? null : (cur - h.targetPrice) / h.targetPrice;
+  var reached = dist != null && dist <= 0;
+  var t = dist == null ? 1 : (reached ? 0 : Math.min(dist, SC_FAR) / SC_FAR);
+  var mos = cur == null || !h.intrinsicValue ? null : (h.intrinsicValue - cur) / h.intrinsicValue * 100;
+  var room = cur == null || !h.intrinsicValue ? null : (h.targetPrice - cur) / h.intrinsicValue * 100; // 목표가 아래 여유 (02 §3 ③)
+  var toGo = cur == null ? null : (1 - h.targetPrice / cur) * 100;
+  var grade = (String(h.verdict).match(/등급\s*(\S+)/) || [])[1] || '—';
+  var probe = (String(h.entryReason).match(/정찰 진입 (P\d+)/) || [])[1] || '';
+  var ret = r.pnl == null ? null : r.pnl / r.buy * 100;
+
+  el('scCard').innerHTML =
+    '<div class="sc-card-hd' + (reached ? ' sc-reached' : '') + '">' +
+      '<div class="sc-card-av">🥷</div>' +
+      '<div><div class="sc-card-nm" id="scCardName">' + esc(h.name) + '<small>' + esc(h.code) + '</small></div>' +
+        '<div class="sc-card-sub"><span class="sc-card-chip">등급 ' + esc(grade) + '</span>' +
+        '<span class="sc-card-chip' + (reached ? ' sc-ok' : '') + '">' + (reached ? '🎯 목표가 도달' : '정찰 중') + (probe ? ' · ' + probe : '') + '</span>' +
+        '<span class="sc-card-chip">' + esc(h.sector) + '</span></div></div>' +
+      '<button class="sc-card-x" id="scCardX" aria-label="닫기">✕</button>' +
+    '</div>' +
+    '<div class="sc-card-bd">' +
+      '<div class="sc-card-hero"><b class="' + (ret == null ? 'flat' : cls(ret)) + '">' + (ret == null ? '—' : arrow(ret) + ' ' + pct(ret)) + '</b>' +
+        '<span class="' + (r.pnl == null ? 'flat' : cls(r.pnl)) + '">' + (r.pnl == null ? '시세 대기' : '평가손익 ' + arrow(r.pnl) + ' ' + won(Math.abs(r.pnl))) + '</span></div>' +
+      '<div class="sc-card-grid">' +
+        scTile('보유', h.shares + '주', '진입 ' + (h.entryDate || '—')) +
+        scTile('평단', num(h.avgPrice) + '원', '매입 ' + num(r.buy)) +
+        scTile('현재가', r.cur == null ? '—' : num(r.cur) + '원', cur == null ? '' : usd(cur)) +
+        scTile('평가액', r.val == null ? '—' : num(r.val) + '원') +
+        scTile('목표 매수가', usd(h.targetPrice), '기본 내재가치 × 등급 배수') +
+        scTile('내재가치', usd(h.intrinsicValue), '기본 시나리오') +
+        scTile('안전마진', mos == null ? '—' : mos.toFixed(1) + '%') +
+        scTile('목표가까지', toGo == null ? '—' : (reached ? '도달' : '−' + toGo.toFixed(1) + '%'), '현재가 기준 하락폭') +
+        scTile('목표가 아래 여유', room == null ? '—' : sgn(room) + room.toFixed(1) + '%', '갈아타기 비교 척도', room == null ? '' : (room >= 0 ? 'sc-good' : 'flat')) +
+      '</div>' +
+      '<div class="sc-card-gauge"><span>목표가 근접도</span><b>' + Math.round((1 - t) * 100) + '%</b></div>' +
+      '<div class="sc-card-bar' + (reached || t <= 0.2 ? ' sc-ok' : '') + '"><i style="width:' + ((1 - t) * 100).toFixed(0) + '%"></i></div>' +
+      '<div class="sc-card-info">' +
+        (reached
+          ? '<b>🎯 목표가에 도달했습니다.</b> 최신 실적 반영 여부를 확인하고 완주 분석 후 본 진입을 검토합니다 (02 §1 정찰 진입).'
+          : '<b>정찰 진입</b> — 목표가 전 소량 보유. 목표가 도달 → 완주 분석 → 통과 시 본 1회차 / 탈락 시 정찰분 정리 (02 §1).') +
+      '</div>' +
+      '<details><summary>진입 사유 보기</summary><p>' + esc(h.entryReason || '기록 없음') + '</p></details>' +
+    '</div>';
+  el('scCardX').addEventListener('click', closeScout);
+  scoutModal.hidden = false;
+}
+function closeScout() { scoutModal.hidden = true; }
+scoutModal.addEventListener('click', function (e) { if (e.target === scoutModal) closeScout(); });
+el('scMap').addEventListener('click', function (e) {
+  var u = e.target.closest('.sc-unit');
+  if (u) openScout(Number(u.dataset.i));
+});
 
 function tile(k, v, d, vCls, dCls) {
   return '<div class="stat"><div class="k">' + k + '</div>' +
@@ -714,6 +824,7 @@ document.addEventListener('keydown', function (e) {
   if (e.key !== 'Escape') return;
   if (!editModal.hidden) closeEdit();
   else if (!reasonModal.hidden) closeReason();
+  else if (!scoutModal.hidden) closeScout();
 });
 
 // ── 폴링 (정규장 30초 / 그 외 5분, 탭이 숨겨져 있으면 쉬어간다) ──
