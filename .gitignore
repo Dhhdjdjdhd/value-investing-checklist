@@ -30,6 +30,17 @@ __pycache__/
 # S급 기계적 스크린 — SEC companyfacts 캐시(약 2GB, 재다운로드 가능)
 종목 모니터링/s-screen/cache/
 
+# 연구 프로젝트 — 원천 데이터·대용량 중간 산출물(재생성 가능)은 제외, 코드·문서·요약 표만 커밋
+차트 아록리즘 분석/data/
+차트 아록리즘 분석/results/*.parquet
+차트 아록리즘 분석/results/*.log
+차트 아록리즘 분석/results/*.err
+차트 아록리즘 분석/results/walk_forward*.partial*.csv
+체크리스트 검증/data/
+체크리스트 검증/logs/
+체크리스트 검증/results/*.parquet
+.pytest_cache/
+
 # OS/에디터
 .DS_Store
 Thumbs.db

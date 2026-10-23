@@ -1,0 +1,386 @@
+<html><head><meta charset='utf-8'><style>
+body{font-family:'Malgun Gothic',sans-serif;font-size:14px;line-height:1.6;color:#222;max-width:900px}
+h1{font-size:20px;border-bottom:2px solid #333;padding-bottom:4px}
+h2{font-size:17px;margin-top:24px;border-bottom:1px solid #ccc}
+h3{font-size:15px}
+table{border-collapse:collapse;font-size:12px;margin:8px 0 16px}
+th,td{border:1px solid #ccc;padding:4px 8px}
+th{background:#f3f3f3}
+code,pre{background:#f6f6f6;font-size:12px}
+</style></head><body><p style='color:#666'>전체 자료: E:\value-investing-checklist\차트 아록리즘 분석 (00~05 문서, results\ 표·차트, src\ 코드)</p><h1>차트 패턴 매매 알고리즘 연구 — 최종보고서</h1>
+<ul>
+<li>작성: 2026-10-23 / 책임: 매니저 세션(value-investing-checklist-2a), 작업: value-investing-checklist-f9</li>
+<li>데이터: Yahoo 일봉 1993~2026-10-20, 미국 대형주 77·ETF 18·한국 대표주 14 (총 109종목, WBA 상장폐지·069500 결측으로 제외)</li>
+<li>상세: <code>01_데이터품질</code> · <code>02_사건연구_결과</code> · <code>03_전략백테스트</code> · <code>04_엔진검증</code> · <code>05_워크포워드</code></li>
+</ul>
+<h2>한 줄 결론</h2>
+<p><strong>"과매도 후 반등" 패턴은 통계적으로 실재하고 승률도 높지만(60~67%), 2015년 이후엔 그 우위가 비용 0.1%만 늘어도 사라질 만큼 작아져서, 단순히 사서 들고 있는 것(동일비중 보유)을 이기는 차트 매매 규칙은 찾지 못했다.</strong></p>
+<h2>1. 무엇을 했나</h2>
+<ol>
+<li>37개 차트 패턴(RSI, 연속 하락/상승, 신고가·신저가, 볼린저, 이평 교차, MACD, 갭, 캔들 등) × 추세필터 3종 × 보유기간 4종을 <strong>사건연구</strong>로 측정</li>
+<li>1993~2014년(학습)에서만 후보를 고르고, 2015~2026년(검증)·한국 시장·ETF로 <strong>사후 확인</strong></li>
+<li>상위 패턴으로 진입·청산 규칙 144개를 만들어 <strong>포트폴리오 백테스트</strong>(다음날 시가 체결, 비용 차감, 슬롯 10개)</li>
+<li>무작위 진입 몬테카를로, 비용·슬롯 민감도, 생존편향 점검(ETF), 대안 전략(추세 타이밍·모멘텀), 진입 타이밍 실험, 워크포워드(2년마다 규칙 재선정)</li>
+<li>작업자 세션이 엔진을 독립 검증 → 미래정보 사용 버그(B1) 등 8건 발견·수정 후 전체 재실행 (테스트 24/24 통과)</li>
+</ol>
+<h2>2. 패턴별 결과 — 5거래일 보유 기준</h2>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>패턴</th>
+<th>학습(1993~2014) 초과수익</th>
+<th>검증(2015~) 초과수익</th>
+<th>한국 검증</th>
+<th>판정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>매수 신호</td>
+<td>RSI(2)&lt;10, 10일 신저가, 20일 저점 이탈, 볼린저 하단 이탈, 3일 연속 하락</td>
+<td>+0.3~0.5% (t 7~8)</td>
+<td>+0.1~0.2% (t 4~5)</td>
+<td>+0.1~0.6%</td>
+<td><strong>실재하지만 약해짐</strong></td>
+</tr>
+<tr>
+<td>매수 신호</td>
+<td>위 신호 + 200일선 <strong>위</strong></td>
+<td>+0.4%</td>
+<td>+0.15~0.4%</td>
+<td>—</td>
+<td>상승추세 속 눌림목이 상대적으로 견고</td>
+</tr>
+<tr>
+<td>매수 신호</td>
+<td>위 신호 + 200일선 <strong>아래</strong></td>
+<td>+0.5%</td>
+<td>필터 효과 빼면 ≈0</td>
+<td>—</td>
+<td>하락추세 속 반등은 신뢰 낮음</td>
+</tr>
+<tr>
+<td>회피 신호</td>
+<td>RSI(2)&gt;90, 52주 신고가, 55일 돌파, 5일 연속 상승</td>
+<td>−0.2~−0.3%</td>
+<td>−0.1~−0.2%</td>
+<td>대체로 음(−)</td>
+<td><strong>단기 과열 직후는 매수 타이밍으로 불리</strong></td>
+</tr>
+<tr>
+<td>회피 신호</td>
+<td>200일선 아래에서 RSI(2)&gt;90</td>
+<td>−0.4%</td>
+<td>−0.3~−0.4%</td>
+<td>—</td>
+<td>하락장 반등은 매도 기회</td>
+</tr>
+<tr>
+<td>효과 없음</td>
+<td>골든/데드크로스, 망치형, 장악형, NR7, 인사이드데이, 거래량 급증</td>
+<td>≈0</td>
+<td>≈0</td>
+<td>≈0</td>
+<td><strong>잘 알려진 패턴 대부분 무의미</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>기준선은 "같은 종목을 아무 날이나 샀을 때"의 평균. 5일 기준선 승률이 약 52~53%여서, 패턴 승률 55~56%는 절대 수치보다 차이가 작다.</li>
+<li>생존편향이 없는 ETF만으로 재측정해도 과매도 반등은 유지됨(검증 구간 t 3~5). 단 <strong>52주 신저가 매수</strong>는 ETF 검증 구간에서 약해져 개별주 결과는 생존편향 의심.</li>
+<li>효과는 시간이 갈수록 줄어듦: RSI(2)&lt;10의 5일 초과수익은 1995~2000년 +0.8~0.9% → 2016년 이후 −0.1~+0.5%로 들쭉날쭉.</li>
+</ul>
+<h2>3. 매매 규칙 백테스트</h2>
+<table>
+<thead>
+<tr>
+<th>구분</th>
+<th>학습 구간 Sharpe / CAGR</th>
+<th>검증 구간 Sharpe / CAGR</th>
+<th>검증 MDD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>학습 1위: 3일 연속 하락 매수 → 종가&gt;5일선이면 매도</td>
+<td>1.56 / 34.5%</td>
+<td>0.68 / 11.1%</td>
+<td>−41.7%</td>
+</tr>
+<tr>
+<td>대표: RSI(2)&lt;10 &amp; 200일선 위 → 종가&gt;5일선 매도</td>
+<td>—</td>
+<td>0.47 / 5.9%</td>
+<td>−31.3%</td>
+</tr>
+<tr>
+<td>학습 상위 10개 규칙 범위</td>
+<td>1.42~1.56</td>
+<td><strong>0.48~0.81</strong></td>
+<td>−16~−42%</td>
+</tr>
+<tr>
+<td>비교: 같은 종목 동일비중 보유</td>
+<td>0.98 / 18.5%</td>
+<td><strong>0.95 / 15.5%</strong></td>
+<td>−33.6%</td>
+</tr>
+<tr>
+<td>비교: SPY 보유</td>
+<td>0.56 / 9.3%</td>
+<td>0.82 / 13.7%</td>
+<td>−33.7%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>학습 구간에선 압도적이었던 규칙이 검증 구간에선 모두 단순 보유보다 못했다.</strong> 이것이 이번 연구의 가장 중요한 결과다.</p>
+<h3>승률의 함정</h3>
+<table>
+<thead>
+<tr>
+<th>규칙(검증 구간)</th>
+<th>실제 승률</th>
+<th>무작위 진입 승률</th>
+<th>실제 거래당 평균</th>
+<th>무작위 평균</th>
+<th>p값(평균)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3일 연속 하락</td>
+<td>64.1%</td>
+<td>51.7%</td>
+<td>+0.23%</td>
+<td>+0.13%</td>
+<td>0.03</td>
+</tr>
+<tr>
+<td>RSI(2)&lt;10 &amp; 200일선 위</td>
+<td>63.0%</td>
+<td>52.4%</td>
+<td>+0.17%</td>
+<td>+0.16%</td>
+<td><strong>0.46</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>승률은 무작위보다 확실히 높지만(p≈0), 손익비가 0.69라 <strong>작게 자주 벌고 가끔 크게 잃는다</strong>. RSI(2) 규칙은 거래당 평균수익이 무작위 진입과 통계적으로 같다.</li>
+<li>"승률 높은 패턴 = 돈 버는 패턴"이 아님을 보여주는 사례.</li>
+</ul>
+<h3>비용 민감도 (검증 구간, 편도)</h3>
+<table>
+<thead>
+<tr>
+<th>규칙</th>
+<th>0.05%</th>
+<th>0.10%</th>
+<th>0.20%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3일 연속 하락</td>
+<td>CAGR 11.1%</td>
+<td>5.6%</td>
+<td><strong>−4.6%</strong></td>
+</tr>
+<tr>
+<td>RSI(2)&lt;10 &amp; 200일선 위</td>
+<td>5.9%</td>
+<td>2.1%</td>
+<td><strong>−5.2%</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>거래당 평균 기대수익이 0.2% 안팎이라 비용에 극도로 민감. <strong>한국 주식(매도 시 거래세 약 0.15~0.2%)에서는 사실상 쓸 수 없는 수준.</strong></li>
+</ul>
+<h2>4. 대안 전략</h2>
+<table>
+<thead>
+<tr>
+<th>전략</th>
+<th>학습 Sharpe</th>
+<th>검증 Sharpe / CAGR / MDD</th>
+<th>해석</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SPY 200일선 타이밍(위면 보유, 아래면 현금)</td>
+<td>0.65 (보유 0.56)</td>
+<td>0.79 / 9.1% / −19.5% (보유 0.82 / 13.7% / −33.7%)</td>
+<td>수익은 줄지만 <strong>최대낙폭을 크게 줄임</strong> — 방어 수단으로 의미</td>
+</tr>
+<tr>
+<td>개별주 동일비중 + 종목별 200일선 타이밍</td>
+<td>1.05</td>
+<td>1.00 / 8.7% / −14.3%</td>
+<td>같은 결론: 위험 감소, 수익 감소</td>
+</tr>
+<tr>
+<td>12-1개월 모멘텀 상위 10종목</td>
+<td>1.09</td>
+<td>0.99 / 23.9% / −33.6%</td>
+<td>수치는 좋지만 ETF로 재현 안 됨(아래) → <strong>생존편향 의심</strong></td>
+</tr>
+<tr>
+<td>ETF 모멘텀(상위 3~5개)</td>
+<td>0.47~0.54</td>
+<td>0.56~0.80</td>
+<td>동일비중 ETF 보유(0.78)와 차이 없음</td>
+</tr>
+<tr>
+<td>3일 연속 하락 규칙 → 한국 종목</td>
+<td>1.34</td>
+<td>0.63 / 7.4% (한국 동일비중 보유 0.80 / 16.9%)</td>
+<td>한국에서도 같은 패턴: 학습엔 좋고 검증엔 보유보다 못함</td>
+</tr>
+</tbody>
+</table>
+<h2>5. 진입 타이밍 실험 — "바로 사기" vs "과매도까지 기다리기"</h2>
+<p>매월 첫 거래일을 매수 결정일로 보고, 다음날 시가에 바로 사는 경우와 N일 안에 신호가 나오면 그다음 날 시가, 없으면 N일 뒤 시가에 사는 경우의 진입가를 비교했다(<code>src/entry_timing.py</code>, 결정 약 3.9만 건).</p>
+<table>
+<thead>
+<tr>
+<th>시장·구간</th>
+<th>신호</th>
+<th>대기</th>
+<th>신호 발생률</th>
+<th>평균 진입가 차이</th>
+<th>중앙값</th>
+<th>더 싸게 산 비율</th>
+<th>t</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>미국 학습</td>
+<td>RSI(2)&lt;10</td>
+<td>10일</td>
+<td>53%</td>
+<td><strong>+0.24%</strong></td>
+<td>−0.54%</td>
+<td>55%</td>
+<td>1.6</td>
+</tr>
+<tr>
+<td>미국 검증</td>
+<td>RSI(2)&lt;10</td>
+<td>10일</td>
+<td>49%</td>
+<td><strong>+0.72%</strong></td>
+<td>−0.08%</td>
+<td>51%</td>
+<td>3.0</td>
+</tr>
+<tr>
+<td>미국 검증</td>
+<td>3일 연속 하락</td>
+<td>20일</td>
+<td>76%</td>
+<td><strong>+0.72%</strong></td>
+<td>−0.27%</td>
+<td>53%</td>
+<td>2.9</td>
+</tr>
+<tr>
+<td>한국 검증</td>
+<td>RSI(2)&lt;10</td>
+<td>10일</td>
+<td>54%</td>
+<td><strong>+0.76%</strong></td>
+<td>−0.85%</td>
+<td>56%</td>
+<td>2.4</td>
+</tr>
+</tbody>
+</table>
+<p>(+는 기다린 쪽이 더 비싸게 샀다는 뜻)</p>
+<h2>6. 워크포워드 (8년 학습 → 2년 적용, 매 2년 재선정)</h2>
+<p>"실전에서 2년마다 최근 8년 성적 1위 규칙으로 갈아탔다면?"을 2002~2026년에 걸쳐 시험했다(144개 규칙 × 12개 창, 미국 95종목, 슬롯 10).</p>
+<table>
+<thead>
+<tr>
+<th>전략 (2002-01 ~ 2026-10)</th>
+<th>CAGR</th>
+<th>Sharpe</th>
+<th>MDD</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>매 창 1위 규칙, 편도 0.05%</td>
+<td>14.5%</td>
+<td>0.83</td>
+<td>−43.4%</td>
+</tr>
+<tr>
+<td>매 창 1위 규칙, 편도 0.10%</td>
+<td>8.8%</td>
+<td>0.55</td>
+<td>−47.4%</td>
+</tr>
+<tr>
+<td>매 창 상위 3개 평균, 0.05%</td>
+<td>11.1%</td>
+<td>0.75</td>
+<td>−34.8%</td>
+</tr>
+<tr>
+<td>동일비중 보유</td>
+<td><strong>14.3%</strong></td>
+<td><strong>0.81</strong></td>
+<td>−49.2%</td>
+</tr>
+<tr>
+<td>SPY 보유</td>
+<td>10.0%</td>
+<td>0.60</td>
+<td>−55.2%</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>비용 0.05%에서도 동일비중 보유와 <strong>사실상 같고</strong>, 0.10%면 SPY보다도 못하다. 25년 중 보유를 이긴 해는 10년(0.10%면 4년)이다.</li>
+<li>초과수익은 거의 <strong>하락장</strong>에서 나왔다(2002년 +20.5% vs −16.3%, 2008년 +9.8% vs −31.7%). 2016·17·19·23년 같은 상승장에서는 15~25%p 뒤처졌다.</li>
+<li>창마다 1위 규칙이 7종류로 6번 바뀌었는데, 모두 단기 과매도 반등 계열이었다.</li>
+<li>과거 성적이 다음 성적을 거의 예측하지 못했다. 학습 순위와 테스트 순위의 상관은 중앙값 0.24 수준이다.</li>
+<li>결론: <strong>규칙을 계속 갱신하는 현실적인 방식으로도 단순 보유를 이기지 못했다.</strong> 굳이 장점을 꼽으면 하락장 방어 정도다.</li>
+</ul>
+<h2>7. 결론과 실전 시사점</h2>
+<ol>
+<li><strong>차트 패턴만으로 꾸준히 시장을 이기는 매매 알고리즘은 이번 데이터에서 확인되지 않았다.</strong> 1990~2000년대에 강했던 단기 반등 효과는 2015년 이후 비용과 비슷한 크기로 줄었다.</li>
+<li><strong>"승률"은 좋은 지표가 아니다.</strong> 과매도 매수 규칙은 승률 63~67%지만 손익비가 0.7이라 기대수익이 작다. 평가할 때는 거래당 평균수익과 무작위 진입 대비 차이를 봐야 한다.</li>
+<li><strong>"눌림목을 기다렸다 사기"도 손해였다</strong> (5절 진입 타이밍 실험).</li>
+<li>이미 사기로 정한 종목을 과매도 신호가 나올 때까지 5~20일 기다리면, <strong>평균 진입가가 오히려 0.2~0.8% 비쌌다</strong> (미국 검증 구간 +0.7%, t≈3. 한국도 같은 방향).</li>
+<li>절반 이상은 기다린 쪽이 더 싸게 샀지만(중앙값 기준 유리), 신호 없이 계속 오르는 경우에 놓치는 손해가 더 컸다.</li>
+<li>결론: <strong>살 이유가 있으면 바로 사는 것이 평균적으로 낫다.</strong> 패턴은 "그날 살지 말지"를 고를 수 있을 때만 의미가 있다. 예를 들어 분할매수 일정에서 RSI(2)&gt;90·신고가 직후 같은 과열일만 하루이틀 미루는 정도다.</li>
+<li><strong>200일선 타이밍은 수익을 늘리지 못하지만 하락장 낙폭을 크게 줄인다.</strong> 손실 회피가 우선이면 고려할 만한 거의 유일한 차트 규칙이다.</li>
+<li>200일선 아래에서 나온 단기 급반등(RSI(2)&gt;90)은 추가매수보다 비중 조절 쪽 신호에 가깝다.</li>
+<li><strong>골든크로스·캔들 패턴(망치형·장악형 등)은 근거가 없다.</strong></li>
+</ol>
+<h2>8. 한계</h2>
+<ul>
+<li><strong>생존편향</strong>: 현재 살아있는 대형주 위주라 개별주 결과(특히 신저가 매수·모멘텀)는 낙관적. ETF 점검으로 일부 보정.</li>
+<li>유니버스가 대형주 약 100개로 작음. 소형주·상장폐지 종목을 포함하면 결과가 달라질 수 있음.</li>
+<li>일봉만 사용. 장중 체결·호가 스프레드는 편도 0.05% 비용으로 근사.</li>
+<li>다중검정: 37패턴 × 3필터 × 4기간 = 444개를 시험했으므로 |t|≥3 기준을 썼지만, 우연한 발견이 일부 섞였을 수 있음.</li>
+<li>배당은 수정주가로 반영, 세금은 미반영.</li>
+</ul>
+<h2>9. 재현 방법</h2>
+<pre><code>py src/data_fetch.py           # 데이터 수집 (작업자)
+py src/event_study.py          # 사건연구
+py src/report_events.py        # 02 보고서
+py src/etf_check.py            # 생존편향 점검
+py src/strategy_search.py      # 144개 규칙 탐색 (약 25분)
+py src/strategy2.py            # 대안 전략
+py src/run_robustness.py       # 몬테카를로·비용·K
+py src/report_strategy.py      # 03 보고서
+py src/entry_timing.py         # 바로 사기 vs 기다리기
+py src/walk_forward.py --shard 0/2 &amp; --shard 1/2, 이후 --aggregate   # 워크포워드 (작업자, 약 25분)
+py -m pytest tests -q          # 엔진 테스트
+</code></pre></body></html>
