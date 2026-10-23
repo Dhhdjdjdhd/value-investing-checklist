@@ -1072,7 +1072,7 @@ def _weekly_summary(cfg, state, reports):
 
 LEDGER_PATH = os.path.join(os.path.dirname(os.path.dirname(BASE)), 'public', 'reports', 'PORTFOLIO.html')
 V2_TRIM = 0.10
-V2_REVIEW_MONTHS = (1, 4, 7, 10)   # 분기 재점검: 이 달 2일 03:00
+V2_REVIEW_MONTHS = (1, 4, 7, 10)   # 분기 재점검: 이 달 1일 07:00 (미국 3·6·9·12월 말 종가 확정 뒤)
 V2_PAGE = 'https://value-investing-checklist.onrender.com/reports/PORTFOLIO.html'
 
 
@@ -1090,7 +1090,7 @@ def next_review(today=None):
     today = today or dt.date.today()
     for y in (today.year, today.year + 1):
         for m in V2_REVIEW_MONTHS:
-            d = dt.date(y, m, 2)
+            d = dt.date(y, m, 1)
             if d > today:
                 return d.isoformat()
 
@@ -1212,7 +1212,7 @@ def _v2_monthly(cfg, state, led, rows, total, sent):
     tbl = _table(['종목', '비중', '평단 대비', '전일 대비'], [
         [f'{r["name"]} ({r["code"]})', f'{r["w"] * 100:.1f}%', _pct(r['krw'] / r['avgPrice'] - 1),
          _pct(r['change']) if r['change'] is not None else '-'] for r in top])
-    review = (f'<p><b>이번 달은 분기 재점검 달입니다</b> — {now.year}-{now.month:02d}-02 03:00에 자동 실행되고 결과 메일이 따로 갑니다.</p>'
+    review = (f'<p><b>이번 달은 분기 재점검 달입니다</b> — 오늘({now.year}-{now.month:02d}-01) 07:00에 자동 실행되고 결과 메일이 따로 갑니다. 위 표는 재점검 전 장부입니다.</p>'
               if now.month in V2_REVIEW_MONTHS else f'<p>다음 분기 재점검: {next_review()}</p>')
     body = (f'<p>{start["date"]} 시작 이후 (원화, 환율 포함)</p>'
             + _table(['', '수익률', '평가액'], [

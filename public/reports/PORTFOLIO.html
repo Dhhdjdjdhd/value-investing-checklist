@@ -727,7 +727,7 @@ function renderTrades() {
       ' <span class="sm" style="display:inline">' + esc(x.code) + '</span></td><td>' + x.shares + '주</td><td>' + num(x.price) + '</td>' +
       '<td class="' + (x.pnl == null ? 'flat' : cls(x.pnl)) + '">' + (x.pnl == null ? '—' : arrow(x.pnl) + ' ' + num(Math.abs(x.pnl))) + '</td>' +
       '<td style="text-align:left;white-space:normal">' + esc(x.note) + '</td></tr>';
-  }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text-muted)">아직 없음 — 첫 분기 재점검은 2027-01-02</td></tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;color:var(--text-muted)">아직 없음 — 첫 분기 재점검은 2027-01-01</td></tr>';
 }
 
 function tile(k, v, d, vCls, dCls) {

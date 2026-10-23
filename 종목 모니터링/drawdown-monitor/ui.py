@@ -438,7 +438,7 @@ class App(tk.Tk):
         lr = led.get('lastReview')
         self.v2_sub.set(f'보유 {len(rows)}종목 · 비중 {min(r["w"] for r in rows):.1%}~{max(r["w"] for r in rows):.1%} · '
                         f'마지막 재점검 {lr["date"] + " (매도 " + str(lr["sold"]) + " · 신규 " + str(lr["bought"]) + ")" if lr else "없음"} · '
-                        f'다음 재점검 {core.next_review()} 03:00 (작업 V2QuarterlyReview) · 환율 {fx:,.2f}원')
+                        f'다음 재점검 {core.next_review()} 07:00 (작업 V2QuarterlyReview) · 환율 {fx:,.2f}원')
         for r in rows:
             st = tstate.get(r['code']) or {}
             last = st.get('last') or {}
@@ -456,7 +456,7 @@ class App(tk.Tk):
     def run_quarterly(self):
         if not messagebox.askyesno(
                 '분기 재점검', 'SEC 재무·주가를 새로 받고(약 2시간) 순위를 다시 계산해 장부를 규칙대로 바꾼 뒤 '
-                '커밋·푸시하고 결과 메일을 보냅니다.\n원래는 1·4·7·10월 2일 03:00에 자동으로 돕니다.\n\n지금 실행할까요?', parent=self):
+                '커밋·푸시하고 결과 메일을 보냅니다.\n원래는 1·4·7·10월 1일 07:00에 자동으로 돕니다.\n\n지금 실행할까요?', parent=self):
             return
         import subprocess
         subprocess.Popen([core._pythonw(), self.QUARTERLY], cwd=os.path.dirname(os.path.dirname(self.QUARTERLY)))
