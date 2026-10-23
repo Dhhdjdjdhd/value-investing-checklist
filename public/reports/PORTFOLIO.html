@@ -69,9 +69,11 @@
   tbody tr.clickable:hover { background: var(--surface-2); }
 
   .tag { display: inline-block; font-size: 11px; padding: 1px 8px; border-radius: 10px; color: #fff; font-weight: 700; }
+  .rk { display: inline-block; min-width: 22px; font-size: 11px; color: var(--text-muted); font-weight: 700; }
   .bar { height: 6px; border-radius: 4px; background: var(--gridline); overflow: hidden; margin-top: 5px; }
   .bar > i { display: block; height: 100%; border-radius: 4px; }
   .sm { font-size: 10.5px; margin-top: 2px; color: var(--text-muted); }
+  .warn { color: var(--status-warn); font-weight: 700; }
 
   /* 자산 배분 도넛 */
   .donut-wrap { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; justify-content: center; }
@@ -80,10 +82,11 @@
   .donut .center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2; }
   .donut .center b { font-size: 19px; font-variant-numeric: tabular-nums; }
   .donut .center span { font-size: 11px; color: var(--text-muted); }
-  .legend { display: flex; flex-direction: column; gap: 7px; font-size: 13px; min-width: 180px; }
+  .legend { display: flex; flex-direction: column; gap: 7px; font-size: 13px; min-width: 220px; }
   .legend div { display: flex; align-items: center; gap: 8px; }
   .dot { width: 11px; height: 11px; border-radius: 3px; flex: none; }
   .legend .pct { margin-left: auto; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .legend .cnt { color: var(--text-muted); font-size: 12px; }
 
   /* 편집 모달 — SNP500.html과 동일 패턴 */
   .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -94,119 +97,24 @@
   .modal-ov { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
   .modal-ov[hidden] { display: none; }
   .modal { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 100%; max-width: 460px; box-shadow: 0 12px 40px rgba(0,0,0,.3); max-height: 88vh; overflow: auto; }
-  .modal.wide { max-width: 680px; }
+  .modal.wide { max-width: 560px; }
   .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
   .modal input { width: 100%; border: 1px solid var(--border); background: var(--page); color: var(--text-primary); border-radius: 8px; padding: 7px 10px; font-size: 14px; font-family: inherit; font-variant-numeric: tabular-nums; }
   .modal input:focus { outline: 2px solid var(--series-1); border-color: transparent; }
   .modal .err { color: var(--status-critical); font-size: 12.5px; min-height: 18px; margin: 8px 0; }
   .modal .btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
   .modal .btns .left { margin-right: auto; }
-  .edit-grid { display: grid; grid-template-columns: 1fr 72px 100px 100px; gap: 8px 10px; align-items: center; margin-top: 14px; }
+  .edit-grid { display: grid; grid-template-columns: 1fr 80px 120px; gap: 8px 10px; align-items: center; margin-top: 14px; }
   .edit-grid .hd { font-size: 11.5px; color: var(--text-muted); }
   .edit-grid .nm { font-size: 13px; color: var(--text-secondary); }
   .kv { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 13px; background: var(--surface-2); border-radius: 10px; padding: 12px; margin: 12px 0 16px; }
   .kv .full { grid-column: 1 / 3; }
-
-  /* 정찰병 카드 모달 — 정찰 현황 캐릭터 클릭 시 */
-  .sc-card { max-width: 440px; padding: 0; overflow: hidden; }
-  .sc-card-hd { display: flex; align-items: center; gap: 14px; padding: 18px 20px 14px; background: linear-gradient(160deg, #d3ebb9, #b2d793); color: #10240a; position: relative; }
-  .sc-card-hd.sc-reached { background: linear-gradient(160deg, #c7f0c0, #7fd17a); }
-  .sc-card-av { width: 58px; height: 58px; border-radius: 14px; background: rgba(255,255,255,.7); display: flex; align-items: center; justify-content: center; font-size: 36px; flex: none; box-shadow: inset 0 0 0 2px rgba(0,0,0,.08); }
-  .sc-card-nm { font-size: 18px; font-weight: 800; line-height: 1.25; }
-  .sc-card-nm small { font-size: 12px; font-weight: 600; opacity: .7; margin-left: 4px; }
-  .sc-card-sub { font-size: 12px; margin-top: 3px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .sc-card-chip { font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 10px; background: rgba(255,255,255,.75); color: #10240a; }
-  .sc-card-chip.sc-ok { background: var(--status-good); color: #fff; }
-  .sc-card-x { position: absolute; top: 10px; right: 12px; border: 0; background: rgba(255,255,255,.6); border-radius: 50%; width: 28px; height: 28px; font-size: 15px; cursor: pointer; color: #10240a; }
-  .sc-card-bd { padding: 16px 20px 20px; }
-  .sc-card-hero { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; font-variant-numeric: tabular-nums; }
-  .sc-card-hero b { font-size: 30px; font-weight: 800; }
-  .sc-card-hero span { font-size: 13px; }
-  .sc-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .sc-card-tile { background: var(--surface-2); border-radius: 10px; padding: 8px 10px; font-variant-numeric: tabular-nums; }
-  .sc-card-tile .k { font-size: 11px; color: var(--text-muted); }
-  .sc-card-tile .v { font-size: 14px; font-weight: 800; margin-top: 1px; white-space: nowrap; }
-  .sc-card-tile .v.sc-good { color: var(--status-good); }
-  .sc-card-tile .s { font-size: 10.5px; color: var(--text-muted); white-space: nowrap; }
-  .sc-card-gauge { margin: 14px 0 4px; font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between; }
-  .sc-card-bar { height: 8px; border-radius: 4px; background: var(--gridline); overflow: hidden; }
-  .sc-card-bar i { display: block; height: 100%; background: var(--status-warn); border-radius: 4px; }
-  .sc-card-bar.sc-ok i { background: var(--status-good); }
-  .sc-card-info { margin-top: 14px; font-size: 12.5px; line-height: 1.7; color: var(--text-secondary); border-top: 1px solid var(--gridline); padding-top: 10px; }
-  .sc-card-info b { color: var(--text-primary); }
-  .sc-card details { margin-top: 10px; font-size: 13px; }
-  .sc-card summary { cursor: pointer; color: var(--text-muted); font-size: 12.5px; }
-  .sc-card details p { margin-top: 6px; line-height: 1.7; }
-  @media (max-width: 640px) { .sc-card-grid { grid-template-columns: repeat(2, 1fr); } }
   .reason { font-size: 14px; line-height: 1.75; }
 
-  /* 정찰 현황 — 탑뷰 맵. 가운데 성 = 시장(목표가선), 성과의 거리 = 목표가까지 거리 (02 §1 정찰 진입) */
-  .sc-map { --sc-g1: #d3ebb9; --sc-g2: #b2d793; position: relative; margin-top: 14px; height: 380px; border-radius: 10px; overflow: hidden;
-    background:
-      radial-gradient(circle at 30% 30%, rgba(255,255,255,.22) 0 2px, transparent 3px) 0 0 / 46px 46px,
-      radial-gradient(circle at 70% 70%, rgba(0,70,0,.10) 0 2px, transparent 3px) 0 0 / 34px 34px,
-      linear-gradient(160deg, var(--sc-g1), var(--sc-g2)); }
-  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) .sc-map { --sc-g1: #36532c; --sc-g2: #233a1d; } }
-  :root[data-theme="dark"] .sc-map { --sc-g1: #36532c; --sc-g2: #233a1d; }
-  .sc-tree { position: absolute; font-size: 22px; transform: translate(-50%, -50%); pointer-events: none; }
-  .sc-veil { position: absolute; inset: 0; z-index: 1; opacity: 0; transition: opacity 1s; pointer-events: none;
-    background:
-      radial-gradient(1.5px 1.5px at 12% 16%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 27% 8%, #fff 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 44% 21%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 63% 11%, #fff 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 81% 24%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 92% 7%, #fff 50%, transparent 51%),
-      radial-gradient(1.5px 1.5px at 7% 41%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 96% 47%, #fff 50%, transparent 51%),
-      rgba(12, 20, 52, .55); }
-  .sc-map.sc-night .sc-veil { opacity: 1; }
-  .sc-sky { position: absolute; top: 8px; right: 12px; z-index: 2; font-size: 22px; }
-  .sc-ring { position: absolute; left: 50%; top: 50%; z-index: 2; border: 2px dashed rgba(255,255,255,.8); border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
-  .sc-map.sc-any-reached .sc-ring { border-color: var(--status-good); animation: sc-ringflash 1.4s ease-in-out infinite; }
-  .sc-castle { position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%); text-align: center; }
-  .sc-castle .sc-ce { display: block; font-size: 46px; line-height: 50px; filter: drop-shadow(0 3px 2px rgba(0,0,0,.25)); }
-  .sc-castle .sc-clbl { font-size: 11px; font-weight: 700; color: #1f3a14; background: rgba(255,255,255,.75); border-radius: 8px; padding: 0 6px; white-space: nowrap; }
-  .sc-fire { position: absolute; left: calc(100% - 2px); bottom: 16px; font-size: 16px; display: none; }
-  .sc-map.sc-night .sc-fire { display: block; animation: sc-flicker .45s ease-in-out infinite alternate; }
-
-  .sc-unit { position: absolute; z-index: 3; width: 0; height: 0; transition: left 1.4s cubic-bezier(.3, .7, .3, 1), top 1.4s cubic-bezier(.3, .7, .3, 1); }
-  .sc-patrol { position: absolute; left: 0; top: 0; }
-  .sc-char { position: absolute; left: -18px; top: -20px; width: 36px; text-align: center; font-size: 32px; line-height: 40px; }
-  /* 칼은 캐릭터 좌/우(--fx)에 두고, 칼날은 성 중심(--ux, --uy 방향)을 겨눈다 */
-  .sc-spearwrap { position: absolute; left: calc(var(--fx) * 26px - 10px); top: -10px; width: 20px; height: 20px; }
-  .sc-spear { display: block; font-size: 18px; line-height: 20px; text-align: center; transform: rotate(var(--rot)); }
-  .sc-hit { position: absolute; left: calc(var(--fx) * 26px + var(--ux) * 24px - 8px); top: calc(var(--uy) * 24px - 9px); font-size: 14px; opacity: 0; pointer-events: none; }
-  .sc-char, .sc-plate { cursor: pointer; }
-  .sc-unit:hover .sc-char { filter: drop-shadow(0 0 5px rgba(255,255,255,.9)); }
-  .sc-zz { position: absolute; left: 12px; top: -26px; font-size: 13px; opacity: 0; pointer-events: none; }
-  .sc-plate { position: absolute; left: 0; transform: translateX(-50%); white-space: nowrap; text-align: center; font-size: 11.5px; line-height: 1.3; padding: 2px 7px; border-radius: 8px;
-    background: color-mix(in srgb, var(--surface-1) 88%, transparent); box-shadow: 0 1px 3px rgba(0,0,0,.18); font-variant-numeric: tabular-nums; }
-  .sc-top { bottom: 22px; }
-  .sc-top .sc-pnl { margin-left: 5px; font-weight: 800; }
-  .sc-plate .sc-short { display: none; }
-  .sc-bot { top: 22px; color: var(--text-secondary); }
-  .sc-gauge { height: 4px; border-radius: 2px; background: var(--gridline); margin-top: 2px; overflow: hidden; }
-  .sc-gauge i { display: block; height: 100%; background: var(--status-warn); transition: width 1.4s; }
-  .sc-unit.sc-near .sc-gauge i, .sc-unit.sc-reached .sc-gauge i { background: var(--status-good); }
-  .sc-unit.sc-reached .sc-char { filter: drop-shadow(0 0 7px var(--status-good)); }
-  .sc-unit.sc-reached .sc-goal { color: var(--status-good); font-weight: 800; }
-
-  /* 낮(정규장): 성 둘레를 좌우로 순찰하며 창으로 살짝살짝 찌른다 / 밤(장마감): 모닥불 옆에서 잔다 */
-  .sc-map.sc-day .sc-patrol { animation: sc-patrol 7s ease-in-out infinite alternate; animation-delay: var(--d, 0s); }
-  .sc-map.sc-day .sc-spearwrap { animation: sc-poke 3.4s ease-in-out infinite; animation-delay: var(--d, 0s); }
-  .sc-map.sc-day .sc-char { animation: sc-lean 3.4s ease-in-out infinite; animation-delay: var(--d, 0s); }
-  .sc-map.sc-day .sc-hit { animation: sc-hitfx 3.4s ease-out infinite; animation-delay: var(--d, 0s); }
-  .sc-map.sc-night .sc-char { animation: sc-breathe 2.6s ease-in-out infinite; animation-delay: var(--d, 0s); }
-  .sc-map.sc-night .sc-zz { animation: sc-zz 2.4s ease-in-out infinite; animation-delay: var(--d, 0s); }
-  @keyframes sc-patrol { from { transform: translate(calc(var(--tx) * -12px), calc(var(--ty) * -12px)); } to { transform: translate(calc(var(--tx) * 12px), calc(var(--ty) * 12px)); } }
-  @keyframes sc-poke { 0%, 60%, 100% { transform: translate(0, 0); } 68% { transform: translate(calc(var(--ux) * 14px), calc(var(--uy) * 14px)); } 74% { transform: translate(calc(var(--ux) * 3px), calc(var(--uy) * 3px)); } 81% { transform: translate(calc(var(--ux) * 12px), calc(var(--uy) * 12px)); } 90% { transform: translate(0, 0); } }
-  @keyframes sc-lean { 0%, 60%, 100% { transform: translate(0, 0); } 68%, 81% { transform: translate(calc(var(--ux) * 4px), calc(var(--uy) * 4px)); } }
-  @keyframes sc-hitfx { 0%, 66%, 100% { opacity: 0; transform: scale(.4); } 68% { opacity: 1; transform: scale(1); } 72% { opacity: 0; } 81% { opacity: .9; transform: scale(.8); } 85% { opacity: 0; } }
-  @keyframes sc-breathe { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
-  @keyframes sc-zz { 0% { opacity: 0; transform: translate(0, 4px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(8px, -12px); } }
-  @keyframes sc-flicker { from { transform: scale(1); } to { transform: scale(1.15) translateY(-1px); } }
-  @keyframes sc-ringflash { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
-  @media (prefers-reduced-motion: reduce) {
-    .sc-unit, .sc-gauge i { transition: none; }
-    .sc-map *, .sc-map .sc-ring { animation: none !important; }
-  }
+  /* 운용 규칙 요약 */
+  .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px; }
+  .rule { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; font-size: 13px; line-height: 1.6; }
+  .rule b { display: block; font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
 
   #err { display: none; background: rgba(208,59,59,.12); border: 1px solid var(--status-critical); color: var(--status-critical); padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; font-size: 13px; }
 
@@ -217,11 +125,7 @@
     .stats { grid-template-columns: 1fr 1fr; gap: 12px; }
     .stat .v { font-size: 20px; }
     #holdTable { min-width: 820px; }
-    .edit-grid { grid-template-columns: 1fr 60px 88px 88px; }
-    .sc-map { height: 360px; }
-    .sc-plate { font-size: 10.5px; padding: 1px 5px; }
-    .sc-plate .sc-long { display: none; }
-    .sc-plate .sc-short { display: inline; }
+    .edit-grid { grid-template-columns: 1fr 70px 100px; }
   }
 </style>
 </head>
@@ -229,34 +133,12 @@
 <div class="wrap">
 
 <header>
-  <div class="kicker">포트폴리오 · 시뮬레이터 2기 (2026-10-21 시작)</div>
+  <div class="kicker">포트폴리오 · 시뮬레이터 4기 — 체크리스트 v2 (2026-10-23 시작)</div>
   <h1>보유 현황</h1>
   <div class="sub" id="asof">시세 불러오는 중…</div>
 </header>
 
 <div id="err"></div>
-
-<!-- 정찰 현황 — 정찰 진입 종목(02 §1)을 탑뷰 맵 캐릭터로. 가운데 성 = 시장(목표가선) -->
-<div class="card">
-  <div class="card-head">
-    <h2>🏰 정찰 현황</h2>
-    <span class="badge" id="scState">대기</span>
-  </div>
-  <div class="sc-map" id="scMap">
-    <span class="sc-tree" style="left:5%;top:11%">🌲</span>
-    <span class="sc-tree" style="left:50%;top:8%">🌳</span>
-    <span class="sc-tree" style="left:7%;top:88%">🌳</span>
-    <span class="sc-tree" style="left:19%;top:76%">🌲</span>
-    <span class="sc-tree" style="left:33%;top:91%">🌲</span>
-    <span class="sc-tree" style="left:64%;top:92%">🌳</span>
-    <span class="sc-tree" style="left:79%;top:79%">🌲</span>
-    <span class="sc-tree" style="left:94%;top:89%">🌳</span>
-    <div class="sc-veil"></div>
-    <div class="sc-sky" id="scSky">🌙</div>
-    <div class="sc-ring" id="scRing"></div>
-    <div class="sc-castle"><span class="sc-ce">🏰</span><span class="sc-fire">🔥</span><div class="sc-clbl">시장</div></div>
-  </div>
-</div>
 
 <!-- KPI -->
 <div class="card">
@@ -266,64 +148,72 @@
 <!-- 보유 종목 -->
 <div class="card">
   <div class="card-head">
-    <h2>보유 종목</h2>
+    <h2>보유 종목 <span class="badge" id="holdCnt"></span></h2>
     <button class="btn" id="btnEdit">편집</button>
   </div>
-  <div class="chart-sub">행을 클릭하면 진입 사유와 밸류에이션이 열립니다 · 빨강 ▲ 이익 / 파랑 ▼ 손실 (국내 관행)</div>
+  <div class="chart-sub">v2 선정 순위순 · 행을 클릭하면 진입 근거가 열립니다 · 빨강 ▲ 이익 / 파랑 ▼ 손실 (국내 관행)</div>
   <div class="table-scroll">
     <table id="holdTable">
       <thead><tr>
-        <th>종목</th><th>보유</th><th>진입일</th><th>평단</th><th>현재가</th><th>당일</th>
-        <th>평가액</th><th>평가손익</th><th>수익률</th><th>목표 매수가</th><th>목표가 대비</th>
+        <th>종목</th><th>보유</th><th>평단</th><th>현재가</th><th>당일</th>
+        <th>평가액</th><th>평가손익</th><th>수익률</th><th>비중</th><th>내재가치 (참고)</th>
       </tr></thead>
       <tbody id="holdBody"></tbody>
     </table>
   </div>
   <div class="foot">
-    ※ 목표 매수가 = 기본 내재가치 × 등급 배수(S 0.9 · A 0.85 · 일반 0.8), <b>달러 기준</b>입니다.
-    3기(2026-10-22~)는 <b>목표가 아래 + 완주 분석 통과</b> 종목만 본 진입합니다. 추가매수는 분할 간격과 분기 실적의 관찰 지표(R1~R3) 대조를 통과한 뒤에만 합니다 (02 §1·§2).<br>
-    ※ 수익률 = 평가손익 ÷ 매입금액 (총 매수원가 대비).<br>
-    ※ 평단은 진입 시점 환율로 환산한 <b>원화</b>이고 현재가는 <b>실시간 환율</b>로 환산하므로, 환율 변동도 손익에 반영됩니다.
+    ※ 비중 = 평가액 ÷ 총자산. 기준 비중은 종목당 <b>5%</b>(20종목 동일비중)이며, 한 종목이 <b>10%</b>를 넘으면 <span class="warn">조정</span> 표시가 붙습니다 — 분기 점검 때 5%로 되돌립니다.<br>
+    ※ 내재가치는 DCF 기본값(달러)으로 <b>참고용</b>입니다. v2는 목표가까지 기다리지 않고 품질·가치 순위로 삽니다(백테스트에서 목표가 대기가 성과를 깎았음).<br>
+    ※ 수익률 = 평가손익 ÷ 매입금액. 평단은 진입 시점 환율로 환산한 <b>원화</b>, 현재가는 <b>실시간 환율</b> 환산이라 환율 변동도 손익에 반영됩니다.
   </div>
 </div>
 
 <!-- 자산 배분 -->
 <div class="card">
-  <h2>자산 배분</h2>
-  <div class="chart-sub">현금 포함 총자산 기준</div>
+  <h2>업종 배분</h2>
+  <div class="chart-sub">현금 포함 총자산 기준 · 업종 묶음별 합계</div>
   <div class="donut-wrap">
     <div class="donut" id="donut"><div class="center"><b id="dTotal">—</b><span>총자산</span></div></div>
     <div class="legend" id="legend"></div>
   </div>
 </div>
 
+<!-- 운용 규칙 -->
+<div class="card">
+  <h2>운용 규칙 — 체크리스트 v2</h2>
+  <div class="chart-sub">근거: 01.가치투자 체크리스트/06.체크리스트_v2_정량규칙.md · 15년 백테스트(2011.04~2026.10) Sharpe 1.07, S&amp;P500 0.99</div>
+  <div class="rules">
+    <div class="rule"><b>관문</b>3단계 재무 통과(ROIC 5년 중앙값 ≥ 15% 등), 등급 S·A·일반, 경기순환 제외</div>
+    <div class="rule"><b>순위</b>ROIC 순위 + FCF 수익률 순위를 같은 무게로 합산, 상위 20</div>
+    <div class="rule"><b>비중</b>20종목 동일비중 5%, 현금 대기 없음</div>
+    <div class="rule"><b>점검</b>분기마다(1·4·7·10월) 순위 재계산</div>
+    <div class="rule"><b>교체</b>30위 밖으로 밀리거나 관문 탈락 시 매도 → 새 상위 종목 편입</div>
+    <div class="rule"><b>정성 거부권</b>능력범위 밖·회계 의심은 사람이 뺀다 (이번 회차: 어도비 제외)</div>
+  </div>
+</div>
+
 <div class="foot" style="text-align:center">
   시세: 야후 파이낸스(해외·환율) · 정규장 중 30초마다 갱신<br>
-  공개 시세 기반 기록용 화면이며 투자 권유가 아닙니다.
+  가상 시뮬레이터 기록용 화면이며 투자 권유가 아닙니다.
 </div>
 
 </div>
 
-<!-- 진입 사유 모달 -->
+<!-- 진입 근거 모달 -->
 <div class="modal-ov" id="reasonModal" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rTitle">
     <div class="card-head"><h3 id="rTitle"></h3><button class="btn" id="btnReasonClose">닫기</button></div>
     <div class="kv" id="rKv"></div>
-    <div class="chart-sub" style="margin-bottom:4px">진입 사유</div>
+    <div class="chart-sub" style="margin-bottom:4px">진입 근거</div>
     <div class="reason" id="rReason"></div>
   </div>
-</div>
-
-<!-- 정찰병 카드 모달 — 정찰 현황 캐릭터 클릭 시 -->
-<div class="modal-ov" id="scoutModal" hidden>
-  <div class="modal sc-card" role="dialog" aria-modal="true" aria-labelledby="scCardName" id="scCard"></div>
 </div>
 
 <!-- 보유 편집 모달 -->
 <div class="modal-ov" id="editModal" hidden>
   <div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="eTitle">
     <h3 id="eTitle">보유 내역 편집</h3>
-    <div class="chart-sub">평단은 <b>원화</b>, 목표 매수가는 <b>달러</b> 기준입니다. 이 브라우저에만 저장되며 원본 파일은 바뀌지 않습니다.</div>
+    <div class="chart-sub">평단은 <b>원화</b> 기준입니다. 이 브라우저에만 저장되며 원본 파일은 바뀌지 않습니다.</div>
     <div class="edit-grid" id="editGrid"></div>
     <div class="edit-grid" style="grid-template-columns:1fr">
       <div><div class="hd">보유 현금 (원)</div><input type="number" id="edCash"></div>
@@ -339,32 +229,322 @@
 
 <script>
 // ── 기본 데이터 ─────────────────────────────────────────
-// 2026-10-22 시뮬레이터 3기 시작 — 현금 1,000만 원. 같은 날 BKNG 1회차 1주(시가 $157.55 × 1,326.75원).
-// 2기(2026-10-21 MA·META·MSFT 정찰 진입)는 사용자 결정으로 전부 취소했다 — 기록은 03.포트폴리오_현황.md.
-// 원금 기준은 두지 않는다(2026-10-22) — 수익률은 매입금액(총 매수원가) 대비로만 계산한다.
-// 종전 1기 장부(CPRT·UHS·NXPI 보유, INTU·PTC 청산)는 01.가치투자 체크리스트/03.포트폴리오_현황_구장부_20261021.md에 보관.
-// 화면에서 편집한 값은 이 브라우저의 localStorage에만 저장된다. 저장 키를 v3로 바꿔 2기 편집값과 섞이지 않게 했다.
-var LS_KEY = 'vic.portfolio.v3';
+// 2026-10-23 시뮬레이터 4기 시작 — 체크리스트 v2 선정 20을 동일비중(5%)으로 일괄 진입했다고 가정.
+// 초기 자본 1억 원. 체결가 = 2026-10-22 종가 × 환율(Yahoo KRW=X, 10-23). 3기(BKNG 1회차)는 사용자 결정으로 초기화.
+// 1억 원은 최고가 종목(AZO 주당 약 433만 원)까지 1주 이상 담으면서 비중이 4.3~5.4%에 들게 하는 최소 단위로 정했다.
+// 데이터 블록은 체크리스트 검증/src/build_portfolio.py가 다시 쓴다 — 손으로 고치지 말 것.
+// 화면에서 편집한 값은 이 브라우저의 localStorage에만 저장된다. 저장 키를 v4로 바꿔 3기 편집값과 섞이지 않게 했다.
+var LS_KEY = 'vic.portfolio.v4';
 
+// <DATA>
 var DEFAULT_DATA = {
-  "cash": 9790971,
+  "cash": 387874,
   "holdings": [
     {
+      "rank": 1,
+      "name": "도미노피자",
+      "code": "DPZ",
+      "sector": "소비재",
+      "industry": "외식 프랜차이즈",
+      "grade": "A",
+      "entryDate": "2026-10-23",
+      "shares": 12,
+      "avgPrice": 420851,
+      "roic": 71.8,
+      "fcfYield": 5.8,
+      "intrinsicValue": 580.6,
+      "entryReason": "체크리스트 v2 선정 1위 · 등급 A. ROIC 5년 중앙값 71.8%, FCF 수익률 5.8%, PER 18.1. 체결가 = 2026-10-22 종가 $317.70 × 환율 1324.68원 → 주당 420,851원, 12주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $580.6는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 2,
       "name": "부킹홀딩스",
       "code": "BKNG",
-      "sector": "미국·온라인 여행",
-      "entryDate": "2026-10-22",
+      "sector": "소비재",
+      "industry": "온라인 여행",
+      "grade": "A",
+      "entryDate": "2026-10-23",
+      "shares": 23,
+      "avgPrice": 213406,
+      "roic": 39.9,
+      "fcfYield": 6.9,
+      "intrinsicValue": 208.3,
+      "entryReason": "체크리스트 v2 선정 2위 · 등급 A. ROIC 5년 중앙값 39.9%, FCF 수익률 6.9%, PER 24.3. 체결가 = 2026-10-22 종가 $161.10 × 환율 1324.68원 → 주당 213,406원, 23주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $208.3는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 3,
+      "name": "맥케슨",
+      "code": "MCK",
+      "sector": "헬스케어 유통",
+      "industry": "의약품 도매",
+      "grade": "일반",
+      "entryDate": "2026-10-23",
+      "shares": 4,
+      "avgPrice": 1341027,
+      "roic": 94.3,
+      "fcfYield": 4.6,
+      "intrinsicValue": 643.2,
+      "entryReason": "체크리스트 v2 선정 3위 · 등급 일반. ROIC 5년 중앙값 94.3%, FCF 수익률 4.6%, PER 26.4. 체결가 = 2026-10-22 종가 $1012.34 × 환율 1324.68원 → 주당 1,341,027원, 4주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $643.2는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 4,
+      "name": "데커스",
+      "code": "DECK",
+      "sector": "소비재",
+      "industry": "신발(HOKA·UGG)",
+      "grade": "A",
+      "entryDate": "2026-10-23",
+      "shares": 44,
+      "avgPrice": 112969,
+      "roic": 34.8,
+      "fcfYield": 8.5,
+      "intrinsicValue": 184.6,
+      "entryReason": "체크리스트 v2 선정 4위 · 등급 A. ROIC 5년 중앙값 34.8%, FCF 수익률 8.5%, PER 12.1. 체결가 = 2026-10-22 종가 $85.28 × 환율 1324.68원 → 주당 112,969원, 44주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $184.6는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 5,
+      "name": "오티스",
+      "code": "OTIS",
+      "sector": "산업재",
+      "industry": "엘리베이터 설치·유지보수",
+      "grade": "일반",
+      "entryDate": "2026-10-23",
+      "shares": 50,
+      "avgPrice": 100146,
+      "roic": 62.6,
+      "fcfYield": 4.6,
+      "intrinsicValue": 60.2,
+      "entryReason": "체크리스트 v2 선정 5위 · 등급 일반. ROIC 5년 중앙값 62.6%, FCF 수익률 4.6%, PER 21.6. 체결가 = 2026-10-22 종가 $75.60 × 환율 1324.68원 → 주당 100,146원, 50주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $60.2는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 6,
+      "name": "룰루레몬",
+      "code": "LULU",
+      "sector": "소비재",
+      "industry": "스포츠 의류",
+      "grade": "일반",
+      "entryDate": "2026-10-23",
+      "shares": 36,
+      "avgPrice": 137846,
+      "roic": 35.6,
+      "fcfYield": 6.9,
+      "intrinsicValue": 546.2,
+      "entryReason": "체크리스트 v2 선정 6위 · 등급 일반. ROIC 5년 중앙값 35.6%, FCF 수익률 6.9%, PER 7.8. 체결가 = 2026-10-22 종가 $104.06 × 환율 1324.68원 → 주당 137,846원, 36주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $546.2는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 7,
+      "name": "카디널헬스",
+      "code": "CAH",
+      "sector": "헬스케어 유통",
+      "industry": "의약품 도매",
+      "grade": "일반",
+      "entryDate": "2026-10-23",
+      "shares": 15,
+      "avgPrice": 338641,
+      "roic": 31.1,
+      "fcfYield": 6.9,
+      "intrinsicValue": 133.1,
+      "entryReason": "체크리스트 v2 선정 7위 · 등급 일반. ROIC 5년 중앙값 31.1%, FCF 수익률 6.9%, PER 35.3. 체결가 = 2026-10-22 종가 $255.64 × 환율 1324.68원 → 주당 338,641원, 15주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $133.1는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 8,
+      "name": "딜라즈",
+      "code": "DDS",
+      "sector": "소비재",
+      "industry": "백화점",
+      "grade": "일반",
+      "entryDate": "2026-10-23",
+      "shares": 5,
+      "avgPrice": 953253,
+      "roic": 36.4,
+      "fcfYield": 5.5,
+      "intrinsicValue": 753.2,
+      "entryReason": "체크리스트 v2 선정 8위 · 등급 일반. ROIC 5년 중앙값 36.4%, FCF 수익률 5.5%, PER 19.8. 체결가 = 2026-10-22 종가 $719.61 × 환율 1324.68원 → 주당 953,253원, 5주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $753.2는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 9,
+      "name": "레녹스",
+      "code": "LII",
+      "sector": "산업재",
+      "industry": "냉난방 공조",
+      "grade": "S",
+      "entryDate": "2026-10-23",
+      "shares": 10,
+      "avgPrice": 501683,
+      "roic": 40.1,
+      "fcfYield": 4.5,
+      "intrinsicValue": 626.2,
+      "entryReason": "체크리스트 v2 선정 9위 · 등급 S. ROIC 5년 중앙값 40.1%, FCF 수익률 4.5%, PER 16.6. 체결가 = 2026-10-22 종가 $378.72 × 환율 1324.68원 → 주당 501,683원, 10주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $626.2는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 10,
+      "name": "ADP",
+      "code": "ADP",
+      "sector": "업무 서비스",
+      "industry": "급여·인사 아웃소싱",
+      "grade": "A",
+      "entryDate": "2026-10-23",
+      "shares": 12,
+      "avgPrice": 407922,
+      "roic": 48.5,
+      "fcfYield": 4.2,
+      "intrinsicValue": 276.0,
+      "entryReason": "체크리스트 v2 선정 10위 · 등급 A. ROIC 5년 중앙값 48.5%, FCF 수익률 4.2%, PER 28.1. 체결가 = 2026-10-22 종가 $307.94 × 환율 1324.68원 → 주당 407,922원, 12주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $276.0는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 11,
+      "name": "페이첵스",
+      "code": "PAYX",
+      "sector": "업무 서비스",
+      "industry": "중소기업 급여·인사",
+      "grade": "A",
+      "entryDate": "2026-10-23",
+      "shares": 32,
+      "avgPrice": 157385,
+      "roic": 35.9,
+      "fcfYield": 5.2,
+      "intrinsicValue": 99.3,
+      "entryReason": "체크리스트 v2 선정 11위 · 등급 A. ROIC 5년 중앙값 35.9%, FCF 수익률 5.2%, PER 24.3. 체결가 = 2026-10-22 종가 $118.81 × 환율 1324.68원 → 주당 157,385원, 32주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $99.3는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 12,
+      "name": "가트너",
+      "code": "IT",
+      "sector": "업무 서비스",
+      "industry": "IT 리서치·자문",
+      "grade": "일반",
+      "entryDate": "2026-10-23",
+      "shares": 16,
+      "avgPrice": 310558,
+      "roic": 27.4,
+      "fcfYield": 6.4,
+      "intrinsicValue": 367.6,
+      "entryReason": "체크리스트 v2 선정 12위 · 등급 일반. ROIC 5년 중앙값 27.4%, FCF 수익률 6.4%, PER 24.3. 체결가 = 2026-10-22 종가 $234.44 × 환율 1324.68원 → 주당 310,558원, 16주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $367.6는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 13,
+      "name": "울타뷰티",
+      "code": "ULTA",
+      "sector": "소비재",
+      "industry": "화장품 소매",
+      "grade": "일반",
+      "entryDate": "2026-10-23",
+      "shares": 6,
+      "avgPrice": 841185,
+      "roic": 56.1,
+      "fcfYield": 3.6,
+      "intrinsicValue": 681.8,
+      "entryReason": "체크리스트 v2 선정 13위 · 등급 일반. ROIC 5년 중앙값 56.1%, FCF 수익률 3.6%, PER 24.8. 체결가 = 2026-10-22 종가 $635.01 × 환율 1324.68원 → 주당 841,185원, 6주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $681.8는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 14,
+      "name": "센코라",
+      "code": "COR",
+      "sector": "헬스케어 유통",
+      "industry": "의약품 도매",
+      "grade": "일반",
+      "entryDate": "2026-10-23",
+      "shares": 11,
+      "avgPrice": 448378,
+      "roic": 32.8,
+      "fcfYield": 4.6,
+      "intrinsicValue": 100.2,
+      "entryReason": "체크리스트 v2 선정 14위 · 등급 일반. ROIC 5년 중앙값 32.8%, FCF 수익률 4.6%, PER 42.5. 체결가 = 2026-10-22 종가 $338.48 × 환율 1324.68원 → 주당 448,378원, 11주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $100.2는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 15,
+      "name": "트랙터서플라이",
+      "code": "TSCO",
+      "sector": "소비재",
+      "industry": "농촌 생활용품 소매",
+      "grade": "A",
+      "entryDate": "2026-10-23",
+      "shares": 109,
+      "avgPrice": 46006,
+      "roic": 47.3,
+      "fcfYield": 3.7,
+      "intrinsicValue": 49.1,
+      "entryReason": "체크리스트 v2 선정 15위 · 등급 A. ROIC 5년 중앙값 47.3%, FCF 수익률 3.7%, PER 16.9. 체결가 = 2026-10-22 종가 $34.73 × 환율 1324.68원 → 주당 46,006원, 109주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $49.1는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 16,
+      "name": "태피스트리",
+      "code": "TPR",
+      "sector": "소비재",
+      "industry": "패션 잡화(코치)",
+      "grade": "일반",
+      "entryDate": "2026-10-23",
+      "shares": 33,
+      "avgPrice": 150908,
+      "roic": 24.4,
+      "fcfYield": 7.1,
+      "intrinsicValue": 144.0,
+      "entryReason": "체크리스트 v2 선정 16위 · 등급 일반. ROIC 5년 중앙값 24.4%, FCF 수익률 7.1%, PER 15.7. 체결가 = 2026-10-22 종가 $113.92 × 환율 1324.68원 → 주당 150,908원, 33주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $144.0는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 17,
+      "name": "오토존",
+      "code": "AZO",
+      "sector": "소비재",
+      "industry": "자동차부품 소매",
+      "grade": "A",
+      "entryDate": "2026-10-23",
       "shares": 1,
-      "avgPrice": 209029,
-      "targetPrice": 175.5,
-      "intrinsicValue": 219.4,
-      "verdict": "등급 일반 · 1회차 본 진입",
-      "entryReason": "체결가 = 2026-10-22 시가 $157.55(09:30 ET) × 환율 1,326.75(Yahoo KRW=X, 22:32 KST) → 주당 209,029원. Booking.com·Priceline·Agoda·KAYAK·OpenTable. 완주 분석(02.종목분석/부킹홀딩스_BKNG_분석_20261022.md) 등급 일반 — 1~3단계 조건부(AI 에이전트 중개·규제 / 인수 손상·승계 / ROIC 미달 연도·반복 일회성). 기본 내재가치 $219.4, 목표가 $175.5 아래에서 진입 — 체결 시 안전마진 28.2%. 확신도 보통, 목표 비중 6%, 1회차 1주(2.1%). 2회차 $137.9 · 3회차 $120.6(−12.5% 간격). 11/3 3Q 실적에서 R1~R3 대조 통과 전 2회차 없음. 소비 둔화 테마(DECK·BURL·BKNG) 합산 관리."
+      "avgPrice": 4332631,
+      "roic": 70.7,
+      "fcfYield": 3.2,
+      "intrinsicValue": 3239.4,
+      "entryReason": "체크리스트 v2 선정 17위 · 등급 A. ROIC 5년 중앙값 70.7%, FCF 수익률 3.2%, PER 22.6. 체결가 = 2026-10-22 종가 $3270.70 × 환율 1324.68원 → 주당 4,332,631원, 1주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $3239.4는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 18,
+      "name": "체크포인트",
+      "code": "CHKP",
+      "sector": "기술",
+      "industry": "보안 소프트웨어",
+      "grade": "A",
+      "entryDate": "2026-10-23",
+      "shares": 25,
+      "avgPrice": 201325,
+      "roic": 25.9,
+      "fcfYield": 5.8,
+      "intrinsicValue": 177.0,
+      "entryReason": "체크리스트 v2 선정 18위 · 등급 A. ROIC 5년 중앙값 25.9%, FCF 수익률 5.8%, PER 15.8. 체결가 = 2026-10-22 종가 $151.98 × 환율 1324.68원 → 주당 201,325원, 25주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $177.0는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 19,
+      "name": "홈디포",
+      "code": "HD",
+      "sector": "소비재",
+      "industry": "주택개선 소매",
+      "grade": "A",
+      "entryDate": "2026-10-23",
+      "shares": 12,
+      "avgPrice": 434137,
+      "roic": 38.2,
+      "fcfYield": 3.7,
+      "intrinsicValue": 273.4,
+      "entryReason": "체크리스트 v2 선정 19위 · 등급 A. ROIC 5년 중앙값 38.2%, FCF 수익률 3.7%, PER 23.0. 체결가 = 2026-10-22 종가 $327.73 × 환율 1324.68원 → 주당 434,137원, 12주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $273.4는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
+    },
+    {
+      "rank": 20,
+      "name": "퀄컴",
+      "code": "QCOM",
+      "sector": "기술",
+      "industry": "모바일 반도체·라이선스",
+      "grade": "일반",
+      "entryDate": "2026-10-23",
+      "shares": 22,
+      "avgPrice": 228944,
+      "roic": 27.1,
+      "fcfYield": 5.3,
+      "intrinsicValue": 65.2,
+      "entryReason": "체크리스트 v2 선정 20위 · 등급 일반. ROIC 5년 중앙값 27.1%, FCF 수익률 5.3%, PER 34.5. 체결가 = 2026-10-22 종가 $172.83 × 환율 1324.68원 → 주당 228,944원, 22주 (목표 비중 5% = 5,000,000원에 가장 가까운 정수 주). 내재가치(DCF 기본값) $65.2는 참고용 — v2는 목표가를 기다리지 않는다. 점검: 분기마다 순위 재계산, 30위 밖이거나 관문 탈락이면 교체, 10% 넘으면 5%로 되돌림."
     }
   ]
 };
+// </DATA>
 
-// 편집 대상은 수량·평단·목표 매수가와 현금뿐 — 나머지는 파일 값을 그대로 쓴다
+// 편집 대상은 수량·평단과 현금뿐 — 나머지는 파일 값을 그대로 쓴다
 function loadData() {
   var d = JSON.parse(JSON.stringify(DEFAULT_DATA));
   try {
@@ -375,7 +555,6 @@ function loadData() {
         if (!s) return;
         if (s.shares >= 0) h.shares = Number(s.shares);
         if (s.avgPrice > 0) h.avgPrice = Number(s.avgPrice);
-        if (s.targetPrice > 0) h.targetPrice = Number(s.targetPrice);
       });
       if (v.cash >= 0) d.cash = Number(v.cash);
     }
@@ -384,6 +563,7 @@ function loadData() {
 }
 
 var DATA = loadData();
+var TARGET_W = 5, TRIM_W = 10;   // 기준 비중 / 조정 경계 (%)
 
 // ── 공용 포맷 ───────────────────────────────────────────
 function num(n) { return Math.round(n).toLocaleString('ko-KR'); }
@@ -400,16 +580,9 @@ function esc(s) {
   });
 }
 
-// 섹터 색 — 사이트 톤에 맞춘 절제된 팔레트
-var SECTOR_COLORS = ['#2a78d6', '#0ca30c', '#b07a19', '#7b5ea7', '#c05a3e', '#3d8d8d'];
-var sectorColorMap = {};
-function sectorColor(name) {
-  if (name === '현금') return '#898781';
-  if (!(name in sectorColorMap)) {
-    sectorColorMap[name] = SECTOR_COLORS[Object.keys(sectorColorMap).length % SECTOR_COLORS.length];
-  }
-  return sectorColorMap[name];
-}
+// 업종 묶음 색 — 사이트 톤에 맞춘 절제된 팔레트 (묶음이 5개라 겹치지 않는다)
+var SECTOR_COLORS = { '소비재': '#2a78d6', '헬스케어 유통': '#0ca30c', '산업재': '#b07a19', '업무 서비스': '#7b5ea7', '기술': '#c05a3e', '현금': '#898781' };
+function sectorColor(name) { return SECTOR_COLORS[name] || '#3d8d8d'; }
 
 // ── 시세 ────────────────────────────────────────────────
 // 원화 환산에 환율이 필요하다: 평단(avgPrice)이 진입 시점 환율로 환산된 원화이기 때문.
@@ -480,165 +653,24 @@ function render() {
   var pnl = rows.reduce(function (s, r) { return s + (r.pnl || 0); }, 0);
   var totalAsset = stockValue + DATA.cash;
   var cashPct = totalAsset ? DATA.cash / totalAsset * 100 : 0;
+  rows.forEach(function (r) { r.w = totalAsset ? (r.val == null ? r.buy : r.val) / totalAsset * 100 : 0; });
+  var trims = rows.filter(function (r) { return r.w > TRIM_W; }).length;
+  var day = rows.reduce(function (s, r) {
+    var q = r.q;
+    if (!q || q.changePct == null || r.val == null) return s;
+    return s + r.val - r.val / (1 + q.changePct / 100);
+  }, 0);
 
   el('kpis').innerHTML =
     tile('총 자산', won(totalAsset), '주식 ' + num(stockValue) + ' + 현금 ' + num(DATA.cash)) +
     tile('평가손익', arrow(pnl) + ' ' + won(Math.abs(pnl)), '매입금액 대비 ' + (cost ? pct(pnl / cost * 100) : '—'), cls(pnl), cls(pnl)) +
-    tile('매입금액', won(cost), '보유 ' + rows.length + '종목') +
-    tile('현금 비중', cashPct.toFixed(1) + '%', '대기 실탄 ' + won(DATA.cash));
+    tile('당일 변동', arrow(day) + ' ' + won(Math.abs(day)), '주가 기준(환율 제외)', cls(day)) +
+    tile('현금 비중', cashPct.toFixed(1) + '%', trims ? '<span class="warn">비중 조정 대상 ' + trims + '종목</span>' : '조정 대상 없음 (모두 ' + TRIM_W + '% 이하)');
+  el('holdCnt').textContent = rows.length + '종목';
 
-  renderScouts(rows);
   renderHoldings(rows);
   renderDonut(rows, totalAsset);
 }
-
-// ── 정찰 현황 (탑뷰 맵) ─────────────────────────────────
-// 캐릭터는 처음 한 번만 만들고 이후엔 위치·숫자만 바꾼다 (다시 그리면 애니메이션이 끊긴다)
-var SC_FAR = 0.30;                                   // 목표가 대비 +30% 이상 위면 맵 가장자리
-var SC_ANG = [200, 340, 100, 280, 140, 40, 240, 300];  // 성 둘레 배치 각도 (좌상·우상·아래·위 순 — 이름표가 겹치지 않게 벌린다)
-var scRows = null;
-function renderScouts(rows) {
-  scRows = rows;
-  var map = el('scMap');
-  var units = map.querySelectorAll('.sc-unit');
-  if (units.length !== rows.length) {
-    Array.prototype.forEach.call(units, function (u) { u.remove(); });
-    rows.forEach(function (r, i) {
-      var u = document.createElement('div');
-      u.className = 'sc-unit';
-      u.dataset.i = i;
-      u.title = '클릭하면 정찰 보유 현황';
-      u.style.setProperty('--d', (i * 1.1).toFixed(1) + 's');
-      u.innerHTML =
-        '<div class="sc-patrol">' +
-          '<div class="sc-plate sc-top"></div>' +
-          '<span class="sc-char">🥷</span>' +
-          '<span class="sc-spearwrap"><span class="sc-spear">🗡️</span></span>' +
-          '<span class="sc-hit">💥</span><span class="sc-zz">💤</span>' +
-          '<div class="sc-plate sc-bot"></div>' +
-        '</div>';
-      map.appendChild(u);
-    });
-    units = map.querySelectorAll('.sc-unit');
-  }
-
-  // 반지름: 점선 고리(목표가선) ~ 맵 가장자리. 화면 폭에 맞춰 px로 계산
-  var W = map.clientWidth, H = map.clientHeight, cx = W / 2, cy = H / 2;
-  var rx0 = Math.min(110, W * 0.24), ry0 = 85;
-  var rxM = Math.max(rx0 + 10, cx - 70), ryM = Math.max(ry0 + 10, cy - 60);
-  el('scRing').style.width = (rx0 * 2) + 'px';
-  el('scRing').style.height = (ry0 * 2) + 'px';
-
-  var anyReached = false;
-  rows.forEach(function (r, i) {
-    var h = r.h, u = units[i];
-    // 목표가 위로 얼마나 떨어져 있나 (0 이하 = 도달). 시세가 없으면 가장자리에서 대기
-    var dist = r.curUSD == null || !h.targetPrice ? null : (r.curUSD - h.targetPrice) / h.targetPrice;
-    var reached = dist != null && dist <= 0;
-    var t = dist == null ? 1 : (reached ? 0 : Math.min(dist, SC_FAR) / SC_FAR);
-    anyReached = anyReached || reached;
-
-    var a = SC_ANG[i % SC_ANG.length] * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
-    var ux0 = cx + c * (rx0 + (rxM - rx0) * t), uy0 = cy + s * (ry0 + (ryM - ry0) * t);
-    u.style.left = ux0.toFixed(1) + 'px';
-    u.style.top = uy0.toFixed(1) + 'px';
-    // 칼은 성이 있는 쪽 옆구리(좌/우)에 들고, 칼날은 성 중심을 겨눈다.
-    // 위아래 성분은 0.6배로 줄여 찌를 때 이름표를 가리지 않게 한다. 순찰은 성 둘레(접선) 방향
-    var face = ux0 < cx ? 1 : -1;
-    var dx = cx - (ux0 + face * 26), dy = cy - uy0, len = Math.sqrt(dx * dx + dy * dy) || 1;
-    var dirX = dx / len, dirY = dy / len;
-    u.style.setProperty('--fx', face);
-    u.style.setProperty('--ux', dirX.toFixed(3));
-    u.style.setProperty('--uy', (dirY * 0.6).toFixed(3));
-    u.style.setProperty('--tx', s.toFixed(3));
-    u.style.setProperty('--ty', (-c).toFixed(3));
-    // 🗡️ 이모지는 원래 칼날이 왼쪽 아래(135°)를 향한다 → 목표 각도 − 135°만큼 돌린다
-    u.style.setProperty('--rot', (Math.atan2(dirY, dirX) * 180 / Math.PI - 135).toFixed(1) + 'deg');
-    u.classList.toggle('sc-reached', reached);
-    u.classList.toggle('sc-near', !reached && t <= 0.2);
-
-    // 좁은 화면에서는 이름표를 짧게(티커·정수 목표가) — .sc-long / .sc-short를 CSS가 바꿔 보여준다
-    u.querySelector('.sc-top').innerHTML = '<b><span class="sc-long">' + esc(h.name) + '</span><span class="sc-short">' + esc(h.code) + '</span></b>' +
-      '<span class="sc-pnl ' + (r.pnl == null ? 'flat' : cls(r.pnl)) + '">' +
-      (r.pnl == null ? '—' : arrow(r.pnl) + ' ' + pct(r.pnl / r.buy * 100)) + '</span>';
-    // "목표가까지"는 현재가에서 몇 % 빠지면 목표가인가 — 감시판과 같은 값
-    u.querySelector('.sc-bot').innerHTML = '<span class="sc-goal">' + (reached
-        ? '🎯 <span class="sc-long">목표가 도달 · </span>본 진입 검토!'
-        : '<span class="sc-long">목표 ' + usd(h.targetPrice) + '</span><span class="sc-short">$' + Math.round(h.targetPrice) + '</span>' + (dist == null ? ' · 시세 대기' : ' · −' + ((1 - h.targetPrice / r.curUSD) * 100).toFixed(1) + '%')) +
-      '</span><div class="sc-gauge"><i style="width:' + ((1 - t) * 100).toFixed(0) + '%"></i></div>';
-  });
-
-  map.classList.toggle('sc-day', marketOpen);
-  map.classList.toggle('sc-night', !marketOpen);
-  map.classList.toggle('sc-any-reached', anyReached);
-  el('scSky').textContent = marketOpen ? '☀️' : '🌙';
-  var st = el('scState');
-  st.className = 'badge' + (marketOpen ? ' open' : '');
-  st.textContent = marketOpen ? '정찰 중' : '장마감 · 야영';
-}
-window.addEventListener('resize', function () { if (scRows) renderScouts(scRows); });
-
-// ── 정찰병 카드 모달 ────────────────────────────────────
-var scoutModal = el('scoutModal');
-function scTile(k, v, s, vCls) {
-  return '<div class="sc-card-tile"><div class="k">' + k + '</div><div class="v ' + (vCls || '') + '">' + v + '</div>' +
-    (s ? '<div class="s">' + s + '</div>' : '') + '</div>';
-}
-function openScout(i) {
-  var r = scRows && scRows[i];
-  if (!r) return;
-  var h = r.h, cur = r.curUSD;
-  var dist = cur == null || !h.targetPrice ? null : (cur - h.targetPrice) / h.targetPrice;
-  var reached = dist != null && dist <= 0;
-  var t = dist == null ? 1 : (reached ? 0 : Math.min(dist, SC_FAR) / SC_FAR);
-  var mos = cur == null || !h.intrinsicValue ? null : (h.intrinsicValue - cur) / h.intrinsicValue * 100;
-  var room = cur == null || !h.intrinsicValue ? null : (h.targetPrice - cur) / h.intrinsicValue * 100; // 목표가 아래 여유 (02 §3 ③)
-  var toGo = cur == null ? null : (1 - h.targetPrice / cur) * 100;
-  var grade = (String(h.verdict).match(/등급\s*(\S+)/) || [])[1] || '—';
-  var probe = (String(h.entryReason).match(/정찰 진입 (P\d+)/) || [])[1] || '';
-  var ret = r.pnl == null ? null : r.pnl / r.buy * 100;
-
-  el('scCard').innerHTML =
-    '<div class="sc-card-hd' + (reached ? ' sc-reached' : '') + '">' +
-      '<div class="sc-card-av">🥷</div>' +
-      '<div><div class="sc-card-nm" id="scCardName">' + esc(h.name) + '<small>' + esc(h.code) + '</small></div>' +
-        '<div class="sc-card-sub"><span class="sc-card-chip">등급 ' + esc(grade) + '</span>' +
-        '<span class="sc-card-chip' + (reached ? ' sc-ok' : '') + '">' + (reached ? '🎯 목표가 도달' : '정찰 중') + (probe ? ' · ' + probe : '') + '</span>' +
-        '<span class="sc-card-chip">' + esc(h.sector) + '</span></div></div>' +
-      '<button class="sc-card-x" id="scCardX" aria-label="닫기">✕</button>' +
-    '</div>' +
-    '<div class="sc-card-bd">' +
-      '<div class="sc-card-hero"><b class="' + (ret == null ? 'flat' : cls(ret)) + '">' + (ret == null ? '—' : arrow(ret) + ' ' + pct(ret)) + '</b>' +
-        '<span class="' + (r.pnl == null ? 'flat' : cls(r.pnl)) + '">' + (r.pnl == null ? '시세 대기' : '평가손익 ' + arrow(r.pnl) + ' ' + won(Math.abs(r.pnl))) + '</span></div>' +
-      '<div class="sc-card-grid">' +
-        scTile('보유', h.shares + '주', '진입 ' + (h.entryDate || '—')) +
-        scTile('평단', num(h.avgPrice) + '원', '매입 ' + num(r.buy)) +
-        scTile('현재가', r.cur == null ? '—' : num(r.cur) + '원', cur == null ? '' : usd(cur)) +
-        scTile('평가액', r.val == null ? '—' : num(r.val) + '원') +
-        scTile('목표 매수가', usd(h.targetPrice), '기본 내재가치 × 등급 배수') +
-        scTile('내재가치', usd(h.intrinsicValue), '기본 시나리오') +
-        scTile('안전마진', mos == null ? '—' : mos.toFixed(1) + '%') +
-        scTile('목표가까지', toGo == null ? '—' : (reached ? '도달' : '−' + toGo.toFixed(1) + '%'), '현재가 기준 하락폭') +
-        scTile('목표가 아래 여유', room == null ? '—' : sgn(room) + room.toFixed(1) + '%', '갈아타기 비교 척도', room == null ? '' : (room >= 0 ? 'sc-good' : 'flat')) +
-      '</div>' +
-      '<div class="sc-card-gauge"><span>목표가 근접도</span><b>' + Math.round((1 - t) * 100) + '%</b></div>' +
-      '<div class="sc-card-bar' + (reached || t <= 0.2 ? ' sc-ok' : '') + '"><i style="width:' + ((1 - t) * 100).toFixed(0) + '%"></i></div>' +
-      '<div class="sc-card-info">' +
-        (reached
-          ? '<b>🎯 목표가에 도달했습니다.</b> 최신 실적 반영 여부를 확인하고 완주 분석 후 본 진입을 검토합니다 (02 §1 정찰 진입).'
-          : '<b>정찰 진입</b> — 목표가 전 소량 보유. 목표가 도달 → 완주 분석 → 통과 시 본 1회차 / 탈락 시 정찰분 정리 (02 §1).') +
-      '</div>' +
-      '<details><summary>진입 사유 보기</summary><p>' + esc(h.entryReason || '기록 없음') + '</p></details>' +
-    '</div>';
-  el('scCardX').addEventListener('click', closeScout);
-  scoutModal.hidden = false;
-}
-function closeScout() { scoutModal.hidden = true; }
-scoutModal.addEventListener('click', function (e) { if (e.target === scoutModal) closeScout(); });
-el('scMap').addEventListener('click', function (e) {
-  var u = e.target.closest('.sc-unit');
-  if (u) openScout(Number(u.dataset.i));
-});
 
 function tile(k, v, d, vCls, dCls) {
   return '<div class="stat"><div class="k">' + k + '</div>' +
@@ -646,33 +678,24 @@ function tile(k, v, d, vCls, dCls) {
     '<div class="d ' + (dCls || '') + '">' + d + '</div></div>';
 }
 
-// 현재가가 목표 매수가보다 얼마나 아래/위인지 (아래 = 매수 구간)
-function gapToTarget(curUSD, target) {
-  if (curUSD == null || !target) return null;
-  return (curUSD - target) / target * 100;
-}
-
 function renderHoldings(rows) {
-  var maxVal = Math.max.apply(null, rows.map(function (r) { return r.val || r.buy; }).concat([1]));
+  var maxW = Math.max.apply(null, rows.map(function (r) { return r.w; }).concat([TARGET_W]));
   var body = el('holdBody');
 
   body.innerHTML = rows.map(function (r, i) {
     var h = r.h, q = r.q;
-    var gap = gapToTarget(r.curUSD, h.targetPrice);
-    var gapTxt = gap == null ? '—'
-      : '<span style="color:' + (gap <= 0 ? 'var(--status-good)' : 'var(--text-secondary)') + ';font-weight:' + (gap <= 0 ? '700' : '400') + '">' +
-        (gap <= 0 ? '−' + Math.abs(gap).toFixed(1) + '% 아래' : '+' + gap.toFixed(1) + '% 위') + '</span>' +
-        '<div class="sm">' + (gap <= 0 ? '매수 구간' : '목표가 초과') + '</div>';
-
     var day = q && q.changePct != null
       ? '<span class="' + cls(q.changePct) + '">' + pct(q.changePct) + '</span>' : '—';
+    var dev = r.w - TARGET_W;
+    var wTxt = r.w.toFixed(1) + '%' +
+      '<div class="sm">' + (r.w > TRIM_W ? '<span class="warn">조정 — 5%로</span>' : '기준 5% ' + (dev >= 0 ? '+' : '−') + Math.abs(dev).toFixed(1)) + '</div>';
+    var ivGap = r.curUSD == null ? '' : (h.intrinsicValue / r.curUSD - 1) * 100;
 
     return '<tr class="clickable" data-i="' + i + '">' +
-      '<td><span class="tag" style="background:' + sectorColor(h.sector) + '">' + esc(h.sector) + '</span> ' + esc(h.name) +
+      '<td><span class="rk">' + h.rank + '</span><span class="tag" style="background:' + sectorColor(h.sector) + '">' + esc(h.sector) + '</span> ' + esc(h.name) +
         ' <span class="sm" style="display:inline">' + esc(h.code) + '</span>' +
-        '<div class="bar"><i style="width:' + ((r.val || r.buy) / maxVal * 100).toFixed(0) + '%;background:' + sectorColor(h.sector) + '"></i></div></td>' +
+        '<div class="bar"><i style="width:' + (r.w / maxW * 100).toFixed(0) + '%;background:' + sectorColor(h.sector) + '"></i></div></td>' +
       '<td>' + h.shares + '주</td>' +
-      '<td>' + (h.entryDate ? h.entryDate.slice(5).replace('-', '/') : '—') + '</td>' +
       '<td>' + num(h.avgPrice) + '</td>' +
       '<td>' + (r.cur == null ? '—' : num(r.cur)) +
         (r.curUSD != null ? '<div class="sm">' + usd(r.curUSD) + '</div>' : '') + '</td>' +
@@ -680,8 +703,8 @@ function renderHoldings(rows) {
       '<td>' + (r.val == null ? '—' : num(r.val)) + '</td>' +
       '<td class="' + cls(r.pnl || 0) + '">' + (r.pnl == null ? '—' : arrow(r.pnl) + ' ' + num(Math.abs(r.pnl))) + '</td>' +
       '<td class="' + cls(r.pnl || 0) + '">' + (r.pnl == null ? '—' : pct(r.pnl / r.buy * 100)) + '</td>' +
-      '<td>' + usd(h.targetPrice) + '<div class="sm">내재 ' + usd(h.intrinsicValue) + '</div></td>' +
-      '<td>' + gapTxt + '</td>' +
+      '<td>' + wTxt + '</td>' +
+      '<td>' + usd(h.intrinsicValue) + '<div class="sm">' + (ivGap === '' ? '시세 대기' : '현재가 대비 ' + sgn(ivGap) + ivGap.toFixed(0) + '%') + '</div></td>' +
       '</tr>';
   }).join('');
 
@@ -690,16 +713,23 @@ function renderHoldings(rows) {
   });
 }
 
+// 도넛은 업종 묶음별 합계 — 20조각은 읽을 수 없다
 function renderDonut(rows, totalAsset) {
-  var slices = rows.map(function (r) {
-    return { label: r.h.name, sector: r.h.sector, val: r.val == null ? r.buy : r.val };
-  }).concat([{ label: '현금', sector: '현금', val: DATA.cash }])
-    .sort(function (a, b) { return b.val - a.val; });
+  var by = {};
+  rows.forEach(function (r) {
+    var s = r.h.sector;
+    by[s] = by[s] || { label: s, val: 0, n: 0 };
+    by[s].val += r.val == null ? r.buy : r.val;
+    by[s].n += 1;
+  });
+  var slices = Object.keys(by).map(function (k) { return by[k]; })
+    .sort(function (a, b) { return b.val - a.val; })
+    .concat([{ label: '현금', val: DATA.cash, n: 0 }]);
 
   var acc = 0, stops = [];
   slices.forEach(function (s) {
     var p = totalAsset ? s.val / totalAsset * 100 : 0;
-    stops.push(sectorColor(s.sector) + ' ' + acc.toFixed(2) + '% ' + (acc + p).toFixed(2) + '%');
+    stops.push(sectorColor(s.label) + ' ' + acc.toFixed(2) + '% ' + (acc + p).toFixed(2) + '%');
     acc += p;
     s.pct = p;
   });
@@ -707,32 +737,32 @@ function renderDonut(rows, totalAsset) {
   el('donut').style.background = 'conic-gradient(' + stops.join(',') + ')';
   el('dTotal').textContent = (totalAsset / 10000).toFixed(0) + '만';
   el('legend').innerHTML = slices.map(function (s) {
-    return '<div><span class="dot" style="background:' + sectorColor(s.sector) + '"></span>' + esc(s.label) +
+    return '<div><span class="dot" style="background:' + sectorColor(s.label) + '"></span>' + esc(s.label) +
+      (s.n ? ' <span class="cnt">' + s.n + '종목</span>' : '') +
       '<span class="pct">' + s.pct.toFixed(1) + '%</span></div>';
   }).join('');
 }
 
-// ── 진입 사유 모달 ──────────────────────────────────────
+// ── 진입 근거 모달 ──────────────────────────────────────
 var reasonModal = el('reasonModal');
 function openReason(i, rows) {
   var r = rows[i], h = r.h;
-  var gap = gapToTarget(r.curUSD, h.targetPrice);
-  // 안전마진 = (내재가치 − 주가) ÷ 내재가치 — 체크리스트 4단계와 같은 공식
-  var mos = r.curUSD == null || !h.intrinsicValue ? null : (h.intrinsicValue - r.curUSD) / h.intrinsicValue * 100;
 
   el('rTitle').innerHTML = '<span class="tag" style="background:' + sectorColor(h.sector) + '">' + esc(h.sector) + '</span> ' +
     esc(h.name) + ' <span style="color:var(--text-muted);font-weight:400;font-size:13px">' + esc(h.code) + '</span>';
   el('rKv').innerHTML =
+    '<div>v2 순위 <b>' + h.rank + '위</b></div>' +
+    '<div>등급 <b>' + esc(h.grade) + '</b></div>' +
+    '<div>ROIC 5년 중앙값 <b>' + h.roic.toFixed(1) + '%</b></div>' +
+    '<div>FCF 수익률 <b>' + h.fcfYield.toFixed(1) + '%</b></div>' +
     '<div>보유 <b>' + h.shares + '주</b></div>' +
     '<div>평단 <b>' + won(h.avgPrice) + '</b></div>' +
     '<div>현재가 <b>' + (r.cur == null ? '—' : won(r.cur)) + '</b></div>' +
     '<div>평가손익 <b class="' + cls(r.pnl || 0) + '">' +
       (r.pnl == null ? '—' : arrow(r.pnl) + ' ' + won(Math.abs(r.pnl)) + ' (' + pct(r.pnl / r.buy * 100) + ')') + '</b></div>' +
-    '<div>목표 매수가 <b>' + usd(h.targetPrice) + '</b></div>' +
-    '<div>목표가 대비 <b>' + (gap == null ? '—' : (gap <= 0 ? '−' + Math.abs(gap).toFixed(1) + '% 아래' : '+' + gap.toFixed(1) + '% 위')) + '</b></div>' +
-    '<div>내재가치 <b>' + usd(h.intrinsicValue) + '</b></div>' +
-    '<div>안전마진 <b>' + (mos == null ? '—' : mos.toFixed(1) + '%') + '</b></div>' +
-    '<div class="full">체크리스트 판정 <b>' + esc(h.verdict) + '</b></div>';
+    '<div>비중 <b>' + r.w.toFixed(1) + '%</b> (기준 5%)</div>' +
+    '<div>내재가치 (참고) <b>' + usd(h.intrinsicValue) + '</b></div>' +
+    '<div class="full">업종 <b>' + esc(h.industry) + '</b></div>';
   el('rReason').textContent = h.entryReason || '기록 없음';
   reasonModal.hidden = false;
 }
@@ -746,12 +776,11 @@ var editErr = el('editErr');
 
 function fillEditGrid(holdings) {
   el('editGrid').innerHTML =
-    ['종목', '수량', '평단(원)', '목표가($)'].map(function (t) { return '<div class="hd">' + t + '</div>'; }).join('') +
+    ['종목', '수량', '평단(원)'].map(function (t) { return '<div class="hd">' + t + '</div>'; }).join('') +
     holdings.map(function (h, i) {
-      return '<div class="nm">' + esc(h.name) + '</div>' +
+      return '<div class="nm">' + esc(h.name) + ' <span class="sm" style="display:inline">' + esc(h.code) + '</span></div>' +
         '<input type="number" data-f="shares" data-i="' + i + '" value="' + h.shares + '">' +
-        '<input type="number" data-f="avgPrice" data-i="' + i + '" value="' + h.avgPrice + '">' +
-        '<input type="number" step="0.01" data-f="targetPrice" data-i="' + i + '" value="' + h.targetPrice + '">';
+        '<input type="number" data-f="avgPrice" data-i="' + i + '" value="' + h.avgPrice + '">';
     }).join('');
 }
 
@@ -768,7 +797,7 @@ editModal.addEventListener('click', function (e) { if (e.target === editModal) c
 
 el('btnSave').addEventListener('click', function () {
   var next = DATA.holdings.map(function (h) {
-    return { shares: h.shares, avgPrice: h.avgPrice, targetPrice: h.targetPrice };
+    return { shares: h.shares, avgPrice: h.avgPrice };
   });
   var bad = false;
   Array.prototype.forEach.call(el('editGrid').querySelectorAll('input'), function (inp) {
@@ -778,7 +807,7 @@ el('btnSave').addEventListener('click', function () {
   });
   var cash = Number(el('edCash').value);
   if (bad || !(cash >= 0)) {
-    editErr.textContent = '숫자를 확인해 주세요 (수량 0 이상, 나머지는 0보다 커야 합니다).';
+    editErr.textContent = '숫자를 확인해 주세요 (수량 0 이상, 평단은 0보다 커야 합니다).';
     return;
   }
   try {
@@ -800,7 +829,6 @@ document.addEventListener('keydown', function (e) {
   if (e.key !== 'Escape') return;
   if (!editModal.hidden) closeEdit();
   else if (!reasonModal.hidden) closeReason();
-  else if (!scoutModal.hidden) closeScout();
 });
 
 // ── 폴링 (정규장 30초 / 그 외 5분, 탭이 숨겨져 있으면 쉬어간다) ──
