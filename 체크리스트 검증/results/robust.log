@@ -1,0 +1,67 @@
+﻿grid       qv N10 R1                                IS CAGR= 11.7% Sh= 0.96 | OOS CAGR= 20.4% Sh= 1.09 hold=10.0
+grid       qv N10 R2                                IS CAGR= 12.2% Sh= 1.00 | OOS CAGR= 20.4% Sh= 1.08 hold=10.0
+grid       qv N10 R3                                IS CAGR= 12.6% Sh= 1.08 | OOS CAGR= 18.6% Sh= 1.00 hold= 9.8
+grid       qv N10 R6                                IS CAGR= 13.4% Sh= 1.17 | OOS CAGR= 19.5% Sh= 1.07 hold= 9.7
+grid       qv N10 R12                               IS CAGR= 12.4% Sh= 1.07 | OOS CAGR= 17.6% Sh= 1.00 hold= 9.7
+grid       qv N15 R1                                IS CAGR= 12.2% Sh= 1.09 | OOS CAGR= 20.4% Sh= 1.08 hold=15.0
+grid       qv N15 R2                                IS CAGR= 11.9% Sh= 1.07 | OOS CAGR= 19.5% Sh= 1.04 hold=15.0
+grid       qv N15 R3                                IS CAGR= 11.9% Sh= 1.09 | OOS CAGR= 19.1% Sh= 1.03 hold=14.6
+grid       qv N15 R6                                IS CAGR= 11.2% Sh= 1.05 | OOS CAGR= 17.6% Sh= 0.96 hold=14.6
+grid       qv N15 R12                               IS CAGR= 11.1% Sh= 1.03 | OOS CAGR= 15.6% Sh= 0.89 hold=14.5
+grid       qv N20 R1                                IS CAGR= 11.3% Sh= 1.05 | OOS CAGR= 19.1% Sh= 1.06 hold=20.0
+grid       qv N20 R2                                IS CAGR= 11.8% Sh= 1.09 | OOS CAGR= 19.2% Sh= 1.06 hold=19.9
+grid       qv N20 R3                                IS CAGR= 11.3% Sh= 1.09 | OOS CAGR= 18.8% Sh= 1.06 hold=19.6
+grid       qv N20 R6                                IS CAGR= 10.9% Sh= 1.05 | OOS CAGR= 17.6% Sh= 1.00 hold=19.5
+grid       qv N20 R12                               IS CAGR= 11.3% Sh= 1.09 | OOS CAGR= 16.8% Sh= 0.97 hold=19.4
+grid       qv N25 R1                                IS CAGR= 11.0% Sh= 1.03 | OOS CAGR= 20.7% Sh= 1.15 hold=25.0
+grid       qv N25 R2                                IS CAGR= 11.2% Sh= 1.06 | OOS CAGR= 20.1% Sh= 1.12 hold=24.9
+grid       qv N25 R3                                IS CAGR= 10.2% Sh= 1.01 | OOS CAGR= 18.1% Sh= 1.04 hold=24.5
+grid       qv N25 R6                                IS CAGR= 10.6% Sh= 1.05 | OOS CAGR= 16.8% Sh= 0.99 hold=24.3
+grid       qv N25 R12                               IS CAGR= 10.7% Sh= 1.02 | OOS CAGR= 16.6% Sh= 0.99 hold=24.2
+grid       qv N30 R1                                IS CAGR= 10.3% Sh= 0.97 | OOS CAGR= 18.5% Sh= 1.05 hold=30.0
+grid       qv N30 R2                                IS CAGR= 10.3% Sh= 0.98 | OOS CAGR= 17.4% Sh= 1.00 hold=29.9
+grid       qv N30 R3                                IS CAGR= 10.5% Sh= 1.03 | OOS CAGR= 17.4% Sh= 1.03 hold=29.4
+grid       qv N30 R6                                IS CAGR= 10.9% Sh= 1.06 | OOS CAGR= 16.2% Sh= 0.98 hold=29.2
+grid       qv N30 R12                               IS CAGR= 11.3% Sh= 1.07 | OOS CAGR= 16.7% Sh= 1.02 hold=29.0
+cost       qv N20 R3 cost0.001                      IS CAGR= 11.3% Sh= 1.09 | OOS CAGR= 18.8% Sh= 1.06 hold=19.6
+cost       doc cost0.001                            IS CAGR= 10.3% Sh= 0.81 | OOS CAGR= 18.0% Sh= 0.85 hold=10.0
+cost       qv N20 R3 cost0.003                      IS CAGR= 11.0% Sh= 1.07 | OOS CAGR= 18.4% Sh= 1.04 hold=19.6
+cost       doc cost0.003                            IS CAGR= 10.1% Sh= 0.79 | OOS CAGR= 17.5% Sh= 0.84 hold=10.0
+year       문서 규칙                                    IS CAGR= 10.3% Sh= 0.81 | OOS CAGR= 18.0% Sh= 0.85 hold=10.0
+year       품질만 전부                                   IS CAGR= 11.6% Sh= 1.05 | OOS CAGR= 15.8% Sh= 0.92 hold=124.5
+           전략     비교  구간  Sharpe차 5%     중앙   95%  P(차>0)  월초과 평균  월초과 t  이긴 해 비율
+후보(qv N20 R3)    SPY  IS      -0.306  0.152 0.561   0.720   0.001  0.237      NaN
+후보(qv N20 R3)    SPY OOS      -0.293 -0.009 0.238   0.472   0.001  0.471      NaN
+후보(qv N20 R3)    SPY ALL      -0.181  0.037 0.260   0.614   0.001  0.520    0.562
+후보(qv N20 R3) EW 대형주  IS      -0.325  0.160 0.590   0.726   0.000  0.165      NaN
+후보(qv N20 R3) EW 대형주 OOS      -0.051  0.220 0.444   0.917   0.004  1.449      NaN
+후보(qv N20 R3) EW 대형주 ALL      -0.042  0.179 0.401   0.907   0.002  1.170    0.688
+        문서 규칙    SPY  IS      -0.618 -0.136 0.348   0.330   0.000  0.026      NaN
+        문서 규칙    SPY OOS      -0.705 -0.225 0.172   0.189   0.002  0.326      NaN
+        문서 규칙    SPY ALL      -0.514 -0.181 0.090   0.137   0.001  0.287    0.500
+        문서 규칙 EW 대형주  IS      -0.585 -0.118 0.333   0.330  -0.000 -0.016      NaN
+        문서 규칙 EW 대형주 OOS      -0.453 -0.007 0.364   0.490   0.004  0.899      NaN
+        문서 규칙 EW 대형주 ALL      -0.351 -0.048 0.213   0.380   0.002  0.725    0.500
+       품질만 전부    SPY  IS      -0.226  0.114 0.460   0.713   0.001  0.408      NaN
+       품질만 전부    SPY OOS      -0.434 -0.152 0.080   0.146  -0.001 -0.447      NaN
+       품질만 전부    SPY ALL      -0.247 -0.052 0.143   0.334  -0.000 -0.016    0.688
+       품질만 전부 EW 대형주  IS      -0.212  0.127 0.455   0.735   0.001  0.338      NaN
+       품질만 전부 EW 대형주 OOS      -0.140  0.069 0.252   0.710   0.001  1.039      NaN
+       품질만 전부 EW 대형주 ALL      -0.088  0.090 0.252   0.800   0.001  0.864    0.562
+      후보(qv N20 R3)  문서 규칙  품질만 전부    SPY  EW 대형주
+2011          0.000  0.005  -0.049 -0.038  -0.039
+2012          0.068  0.170   0.190  0.160   0.178
+2013          0.330  0.313   0.326  0.323   0.353
+2014          0.158  0.221   0.138  0.135   0.152
+2015         -0.036 -0.178   0.013  0.012  -0.009
+2016          0.067  0.109   0.091  0.120   0.110
+2017          0.298  0.404   0.286  0.217   0.248
+2018          0.034 -0.119  -0.044 -0.046  -0.077
+2019          0.340  0.306   0.361  0.312   0.317
+2020          0.163  0.221   0.302  0.183   0.212
+2021          0.292  0.272   0.267  0.287   0.218
+2022         -0.091 -0.082  -0.177 -0.182  -0.165
+2023          0.257  0.398   0.267  0.262   0.171
+2024          0.232  0.049   0.105  0.249   0.145
+2025          0.153  0.219   0.055  0.177   0.127
+2026          0.180  0.098   0.152  0.143   0.131

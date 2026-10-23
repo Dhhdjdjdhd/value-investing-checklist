@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>진입대기 32 — 품질 등급별 목표가 감시판</title>
+<title>체크리스트 v2 선정 20 — 품질 관문 + 품질·가치 순위</title>
 <style>
   :root {
     color-scheme: light;
@@ -130,66 +130,71 @@
 <body>
 <div class="wrap" style="max-width:1080px">
 <header>
-  <div class="kicker">가치투자 체크리스트 · 2026-10-22 3기 후보서치 반영 · 완주 20 + 간이 12(잠정)</div>
-  <h1>진입대기 32 <span style="color:var(--text-muted);font-weight:600">품질 등급별 목표가 감시판</span></h1>
-  <div class="sub">목표가 = 기본 내재가치 × 등급 배수 (S ×0.9 · A ×0.85 · 일반 ×0.8). 종전 18종목 + 3기 후보서치(2026-10-22) 14종목 — 완주 4(BKNG 보유·NFLX·CPRT·DECK) + 간이 10(잠정, 보고서 없음). PYPL은 완주에서 패스(1단계 구조적)라 제외. S 없음. 기본 정렬: 목표가까지 가까운 순. 헤더를 누르면 정렬, 끌어서 놓으면 컬럼 이동. 종목명을 누르면 보고서가 열린다.</div>
+  <div class="kicker">가치투자 체크리스트 v2 · 2026-10-23 백테스트 검증 후 개정 · 정량 선정 20 + 유지 구간 10</div>
+  <h1>선정 20 <span style="color:var(--text-muted);font-weight:600">품질 관문 + 품질·가치 순위</span></h1>
+  <div class="sub">v2 규칙: ① 3단계 정량 관문 통과(ROIC 5년 중앙값 ≥15%, 순이익 흑자, EPS·매출 5년 증가, 장기부채÷순이익 ≤6) + 경기순환·금융 제외 + 시총 ≥$10B → ② 순위 = ROIC 백분위 + (FCF−SBC)÷시총 백분위 → ③ 상위 20 동일비중, 분기마다 점검, 보유 종목은 30위 안이면 유지. 기본 정렬: 순위. 헤더를 누르면 정렬, 끌어서 놓으면 컬럼 이동.</div>
 </header>
-<div class="notice">📌 <b>감시선이지 매수 규칙이 아니다.</b> 목표가 도달 → 그 종목만 템플릿 전체로 완주 분석 → 통과 시 매수. <span id="asof" class="muted">현재가 불러오는 중… (표의 값은 10/20 종가)</span></div>
+<div class="notice">📌 <b>정량 선정 목록이다 — 1·2단계(해자·경영진) 정성 거부권은 별도.</b> 목록 종목도 매수 전 템플릿 1·2단계와 "일시적 vs 구조적" 판별은 그대로 거친다. 정성 거부: ADBE(능력범위 밖 목록 — 소프트웨어의 AI 대체 속도 (00 §6)) → 다음 순위로 대체. <span id="asof" class="muted">현재가 불러오는 중… (표의 값은 2026-10-22 종가)</span></div>
 <section class="card">
   <div class="table-scroll"><table id="t">
     <thead><tr></tr></thead>
     <tbody></tbody>
   </table></div>
-  <p class="muted" style="margin-top:10px">초록 행 = 현재가 ≤ 목표가. 목표가 아래 여유 = (목표가 − 현재가) ÷ 기본 내재가치 — 등급이 달라도 비교할 수 있는 척도(갈아타기·기회비용 비교용, 02 §3 ③). 위치 막대: 회색 = 보수~낙관 범위, 하늘색 = 목표가 이하 구간, 검은 눈금 = 현재가. <button id="wt-reset" class="wt-reset">정렬·컬럼 순서 초기화</button></p>
+  <p class="muted" style="margin-top:10px">흐린 행(21~30위) = 유지 구간: 새로 사지는 않지만 이미 보유 중이면 팔지 않는다. ROIC = 5년 중앙값(02 §1 산식: NOPAT ÷ (자본+차입금), 현금 미차감). FCF수익률 = (영업현금흐름 − 설비투자 − 주식보상비) ÷ 시가총액. PER·FCF수익률은 현재가에 맞춰 다시 계산된다. 엔진 IV = 템플릿 4단계 기본 시나리오의 기계적 근사, 현재가/IV = 현재가가 IV보다 몇 % 높은가(초록 = IV 이하). 참고용이며 v2에서는 진입 조건이 아니다. <button id="wt-reset" class="wt-reset">정렬·컬럼 순서 초기화</button></p>
 </section>
-<div class="disclaimer">원본: 02.종목분석/&lt;종목&gt;_분석_20261022.md (완주 — 등급·내재가치·목표가) · 마이크로소프트_MSFT·알파벳_GOOGL·코파트_CPRT(10-22 재점검)·데커스_DECK(10-12, FY27 2Q 실적 반영 전) 분석 md · 전수감사_20261022.md · S스크린_20261022.md §5(ORLY·ROL) · <b>후보서치_20261022.md</b>(간이 10종목 — 보고서 없음, 낙관 미산정은 "—"). 현재가 초기값은 10/21 종가. 투자 권유가 아니다.</div>
+<section class="card">
+  <h2>왜 바꿨나 <span class="w">2011.04~2026.10 백테스트 · 미국 상장사 · 시점 정확한 SEC 공시값 · 편도 비용 0.1%</span></h2>
+  <table>
+    <thead><tr><th>전략</th><th>CAGR</th><th>변동성</th><th>Sharpe</th><th>최대낙폭</th></tr></thead>
+    <tbody>
+      <tr><td><b>체크리스트 v2</b> (이 목록의 규칙)</td><td>15.0%</td><td>14.1%</td><td><b>1.07</b></td><td>−22%</td></tr>
+      <tr><td>현행 체크리스트 (목표가 대기·10종목)</td><td>14.1%</td><td>18.5%</td><td>0.81</td><td>−24%</td></tr>
+      <tr><td>S&amp;P500 (SPY)</td><td>13.8%</td><td>14.1%</td><td>0.99</td><td>−24%</td></tr>
+      <tr><td>대형주 동일비중</td><td>12.3%</td><td>14.8%</td><td>0.86</td><td>−24%</td></tr>
+    </tbody>
+  </table>
+  <p class="muted" style="margin-top:10px">v2는 현행보다 위험이 확실히 낮고(변동성 −4.4%p), S&amp;P500과는 통계적으로 구분되지 않는다(Sharpe 우위 확률 70%). 주가가 없는 상장폐지 대형사(186개)가 빠져 있어 결과는 체크리스트 쪽에 다소 유리하다. 상세: 체크리스트 검증/99_최종보고서.md</p>
+</section>
+<div class="disclaimer">원본: 체크리스트 검증/results/screen_now.csv (SEC companyfacts 최초 공시값 + Yahoo 주가, 2026-10-22). 등급은 엔진의 정량 판정(1·2단계 정성 ⚠️ 미반영 — 사람 판정보다 후하다). 보고서 링크가 있는 종목만 이름을 누르면 열린다. 투자 권유가 아니다.</div>
 </div>
 <script>
-var ROWS = [{"t": "MA", "ko": "마스터카드", "g": "일반", "price": 622.62, "ivc": 469, "ivb": 654, "ivo": 873, "target": 523}, {"t": "COST", "ko": "코스트코", "g": "A", "price": 998.31, "ivc": 429, "ivb": 597, "ivo": 796, "target": 508}, {"t": "ADP", "ko": "ADP", "g": "일반", "price": 294.5, "ivc": 177, "ivb": 249, "ivo": 335, "target": 199.2}, {"t": "V", "ko": "비자", "g": "일반", "price": 407.85, "ivc": 285, "ivb": 399, "ivo": 534, "target": 318.8}, {"t": "AAPL", "ko": "애플", "g": "A", "price": 343.99, "ivc": 134, "ivb": 188, "ivo": 254, "target": 160.2}, {"t": "RACE", "ko": "페라리", "g": "일반", "price": 397.24, "ivc": 169, "ivb": 234, "ivo": 310, "target": 187}, {"t": "PG", "ko": "P&G", "g": "일반", "price": 156.84, "ivc": 71.4, "ivb": 99.2, "ivo": 133, "target": 79.3}, {"t": "KO", "ko": "코카콜라", "g": "일반", "price": 92.68, "ivc": 41.4, "ivb": 57.8, "ivo": 77.5, "target": 46.2}, {"t": "ISRG", "ko": "인튜이티브 서지컬", "g": "일반", "price": 428.12, "ivc": 190, "ivb": 264, "ivo": 352, "target": 211}, {"t": "META", "ko": "메타", "g": "일반", "price": 697.52, "ivc": 466, "ivb": 659, "ivo": 892, "target": 527}, {"t": "ASML", "ko": "ASML", "g": "일반", "price": 1676.69, "ivc": 825, "ivb": 1150, "ivo": 1535, "target": 920.4}, {"t": "CTAS", "ko": "신타스", "g": "A", "price": 220.15, "ivc": 105, "ivb": 147, "ivo": 196, "target": 124.7}, {"t": "MCO", "ko": "무디스", "g": "일반", "price": 481.05, "ivc": 304, "ivb": 424, "ivo": 565, "target": 339}, {"t": "CDNS", "ko": "케이던스", "g": "일반", "price": 326.07, "ivc": 123, "ivb": 172, "ivo": 229, "target": 137.4}, {"t": "MSFT", "ko": "마이크로소프트", "g": "일반", "price": 531.87, "ivc": 373, "ivb": 543, "ivo": 729, "target": 434}, {"t": "GOOGL", "ko": "알파벳", "g": "일반", "price": 340.28, "ivc": 220, "ivb": 312, "ivo": 408, "target": 250}, {"t": "ORLY", "ko": "오라일리", "g": "A", "p": 1, "nr": 1, "price": 89.20, "ivc": 46.9, "ivb": 67.5, "ivo": 91.2, "target": 57.3}, {"t": "ROL", "ko": "롤린스", "g": "A", "p": 1, "nr": 1, "price": 33.45, "ivc": 20.1, "ivb": 27.4, "ivo": 36.6, "target": 23.3},
-  // 2026-10-22 3기 후보서치(02.종목분석/후보서치_20261022.md) — 완주 4(BKNG·NFLX·CPRT·DECK) + 간이 10(잠정, 보고서 없음). ivo null = 간이 단계에서 낙관 미산정
-  {"t": "BKNG", "ko": "부킹홀딩스", "g": "일반", "h": 1, "price": 158.38, "ivc": 156.2, "ivb": 219.4, "ivo": 295.3, "target": 175.5}, {"t": "NFLX", "ko": "넷플릭스", "g": "일반", "price": 65.04, "ivc": 57.2, "ivb": 79.7, "ivo": 123.5, "target": 63.76}, {"t": "CPRT", "ko": "코파트", "g": "일반", "price": 27.59, "ivc": 22.5, "ivb": 30.3, "ivo": 52.4, "target": 24.2}, {"t": "DECK", "ko": "데커스", "g": "A", "nr": 1, "price": 85.49, "ivc": 81, "ivb": 133, "ivo": 194, "target": 113.05}, {"t": "ZTS", "ko": "조에티스", "g": "A", "p": 1, "nr": 1, "price": 79.62, "ivc": 85.56, "ivb": 116.15, "ivo": null, "target": 98.73}, {"t": "BSX", "ko": "보스턴 사이언티픽", "g": "일반", "p": 1, "nr": 1, "price": 44.51, "ivc": 42.4, "ivb": 55.4, "ivo": 74.0, "target": 44.3}, {"t": "BR", "ko": "브로드리지", "g": "A", "p": 1, "nr": 1, "price": 178.30, "ivc": 143.48, "ivb": 200.5, "ivo": null, "target": 170.42}, {"t": "FDS", "ko": "팩트셋", "g": "A", "p": 1, "nr": 1, "price": 319.91, "ivc": 257.53, "ivb": 359.39, "ivo": null, "target": 305.48}, {"t": "LDOS", "ko": "레이도스", "g": "일반", "p": 1, "nr": 1, "price": 129.23, "ivc": 118.2, "ivb": 153.8, "ivo": 201.2, "target": 123.1}, {"t": "ERIE", "ko": "이리 인뎀니티", "g": "일반", "p": 1, "nr": 1, "price": 244.12, "ivc": 221.6, "ivb": 290.4, "ivo": 373.4, "target": 232.3}, {"t": "RMD", "ko": "레즈메드", "g": "A", "p": 1, "nr": 1, "price": 246.20, "ivc": 190.10, "ivb": 264.66, "ivo": null, "target": 224.96}, {"t": "BURL", "ko": "벌링턴", "g": "일반", "p": 1, "nr": 1, "price": 248.13, "ivc": 201.0, "ivb": 281.6, "ivo": 379.9, "target": 225.3}, {"t": "JKHY", "ko": "잭 헨리", "g": "A", "p": 1, "nr": 1, "price": 153.41, "ivc": 118.77, "ivb": 161.6, "ivo": null, "target": 137.36}, {"t": "OTIS", "ko": "오티스", "g": "A", "p": 1, "nr": 1, "price": 72.35, "ivc": 52.30, "ivb": 73.18, "ivo": null, "target": 62.20}];
-function m(v) { return v >= 100 ? '$' + Math.round(v).toLocaleString() : '$' + v.toFixed(1); }
-function pct(v) { return (v >= 0 ? '+' : '') + (v * 100).toFixed(1) + '%'; }
-// 컬럼 정의 — v: 정렬 값(없으면 정렬 불가), asc: 첫 클릭을 오름차순으로, align: 헤더 정렬
+var ROWS = [{"rk": 1, "t": "DPZ", "ko": "도미노피자", "g": "A", "roic": 0.718, "fy": 0.0576, "pe": 18.1, "price": 317.7, "iv": 580.6, "nr": 1, "keep": 0}, {"rk": 2, "t": "BKNG", "ko": "부킹홀딩스", "g": "A", "roic": 0.399, "fy": 0.0691, "pe": 24.3, "price": 161.1, "iv": 208.26, "nr": 0, "keep": 0}, {"rk": 3, "t": "MCK", "ko": "맥케슨", "g": "일반", "roic": 0.943, "fy": 0.0455, "pe": 26.4, "price": 1012.34, "iv": 643.22, "nr": 1, "keep": 0}, {"rk": 4, "t": "DECK", "ko": "데커스", "g": "A", "roic": 0.348, "fy": 0.0846, "pe": 12.1, "price": 85.28, "iv": 184.61, "nr": 1, "keep": 0}, {"rk": 5, "t": "OTIS", "ko": "오티스", "g": "일반", "roic": 0.626, "fy": 0.0457, "pe": 21.6, "price": 75.6, "iv": 60.17, "nr": 1, "keep": 0}, {"rk": 6, "t": "LULU", "ko": "룰루레몬", "g": "일반", "roic": 0.356, "fy": 0.0694, "pe": 7.8, "price": 104.06, "iv": 546.22, "nr": 1, "keep": 0}, {"rk": 7, "t": "CAH", "ko": "카디널헬스", "g": "일반", "roic": 0.311, "fy": 0.0686, "pe": 35.3, "price": 255.64, "iv": 133.09, "nr": 1, "keep": 0}, {"rk": 8, "t": "DDS", "ko": "딜라즈", "g": "일반", "roic": 0.364, "fy": 0.0554, "pe": 19.8, "price": 719.61, "iv": 753.21, "nr": 1, "keep": 0}, {"rk": 9, "t": "LII", "ko": "레녹스", "g": "S", "roic": 0.401, "fy": 0.0455, "pe": 16.6, "price": 378.72, "iv": 626.16, "nr": 1, "keep": 0}, {"rk": 10, "t": "ADP", "ko": "ADP", "g": "A", "roic": 0.485, "fy": 0.0419, "pe": 28.1, "price": 307.94, "iv": 276.01, "nr": 0, "keep": 0}, {"rk": 11, "t": "PAYX", "ko": "페이첵스", "g": "A", "roic": 0.359, "fy": 0.052, "pe": 24.3, "price": 118.81, "iv": 99.31, "nr": 1, "keep": 0}, {"rk": 12, "t": "IT", "ko": "가트너", "g": "일반", "roic": 0.274, "fy": 0.064, "pe": 24.3, "price": 234.44, "iv": 367.59, "nr": 1, "keep": 0}, {"rk": 13, "t": "ULTA", "ko": "울타뷰티", "g": "일반", "roic": 0.561, "fy": 0.0361, "pe": 24.8, "price": 635.01, "iv": 681.79, "nr": 1, "keep": 0}, {"rk": 14, "t": "COR", "ko": "센코라", "g": "일반", "roic": 0.328, "fy": 0.0463, "pe": 42.5, "price": 338.48, "iv": 100.22, "nr": 1, "keep": 0}, {"rk": 15, "t": "TSCO", "ko": "트랙터서플라이", "g": "A", "roic": 0.473, "fy": 0.037, "pe": 16.9, "price": 34.73, "iv": 49.07, "nr": 1, "keep": 0}, {"rk": 16, "t": "TPR", "ko": "태피스트리", "g": "일반", "roic": 0.244, "fy": 0.0713, "pe": 15.7, "price": 113.92, "iv": 144.0, "nr": 1, "keep": 0}, {"rk": 17, "t": "AZO", "ko": "오토존", "g": "A", "roic": 0.707, "fy": 0.0317, "pe": 22.6, "price": 3270.7, "iv": 3239.4, "nr": 1, "keep": 0}, {"rk": 18, "t": "CHKP", "ko": "체크포인트", "g": "A", "roic": 0.259, "fy": 0.0579, "pe": 15.8, "price": 151.98, "iv": 176.97, "nr": 1, "keep": 0}, {"rk": 19, "t": "HD", "ko": "홈디포", "g": "A", "roic": 0.382, "fy": 0.0372, "pe": 23.0, "price": 327.73, "iv": 273.4, "nr": 1, "keep": 0}, {"rk": 20, "t": "QCOM", "ko": "퀄컴", "g": "일반", "roic": 0.271, "fy": 0.0526, "pe": 34.5, "price": 172.83, "iv": 65.19, "nr": 1, "keep": 0}, {"rk": 21, "t": "MEDP", "ko": "메드페이스", "g": "A", "roic": 0.508, "fy": 0.0335, "pe": 42.8, "price": 653.96, "iv": 603.4, "nr": 1, "keep": 1}, {"rk": 22, "t": "ACN", "ko": "액센츄어", "g": "S", "roic": 0.25, "fy": 0.0596, "pe": 19.1, "price": 258.74, "iv": 314.58, "nr": 1, "keep": 1}, {"rk": 23, "t": "PCAR", "ko": "팩카", "g": "일반", "roic": 0.229, "fy": 0.0636, "pe": 24.3, "price": 109.59, "iv": 100.84, "nr": 1, "keep": 1}, {"rk": 24, "t": "CMG", "ko": "치폴레", "g": "A", "roic": 0.386, "fy": 0.0352, "pe": 24.6, "price": 28.14, "iv": 47.11, "nr": 1, "keep": 1}, {"rk": 25, "t": "CF", "ko": "CF인더스트리스", "g": "일반", "roic": 0.212, "fy": 0.0914, "pe": 10.7, "price": 118.56, "iv": 210.76, "nr": 1, "keep": 1}, {"rk": 26, "t": "WSM", "ko": "윌리엄스소노마", "g": "A", "roic": 0.509, "fy": 0.0295, "pe": 29.5, "price": 260.8, "iv": 211.39, "nr": 1, "keep": 1}, {"rk": 27, "t": "ZTS", "ko": "조에티스", "g": "A", "roic": 0.219, "fy": 0.0604, "pe": 13.6, "price": 82.0, "iv": 206.78, "nr": 1, "keep": 1}, {"rk": 28, "t": "FICO", "ko": "페어아이작", "g": "A", "roic": 0.47, "fy": 0.0303, "pe": 31.0, "price": 823.27, "iv": 1093.2, "nr": 1, "keep": 1}, {"rk": 29, "t": "MA", "ko": "마스터카드", "g": "A", "roic": 0.511, "fy": 0.0289, "pe": 38.3, "price": 633.21, "iv": 659.63, "nr": 0, "keep": 1}, {"rk": 30, "t": "GGG", "ko": "그라코", "g": "A", "roic": 0.241, "fy": 0.0515, "pe": 22.5, "price": 69.28, "iv": 109.66, "nr": 1, "keep": 1}];
+function m(v) { return v == null ? '<span class="muted">—</span>' : (v >= 100 ? '$' + Math.round(v).toLocaleString() : '$' + v.toFixed(1)); }
+function pct(v, d) { return (v >= 0 ? '+' : '') + (v * 100).toFixed(d == null ? 1 : d) + '%'; }
+ROWS.forEach(function (r) { r.p0 = r.price; r.pe0 = r.pe; r.fy0 = r.fy; });
 var GRADE = { S: 0, A: 1, '일반': 2 };
 var COLS = [
-  { k: 'name', h: '종목', asc: true, v: function (r) { return r.ko; }, td: function (r) { return '<td>' + (r.nr ? r.ko : '<a href="/reports/' + r.t + '.html">' + r.ko + '</a>') + ' <span class="muted">' + r.t + '</span>' + (r.h ? ' <span class="tag pass" style="font-size:11px">보유</span>' : '') + '</td>'; } }, // nr = 보고서 HTML 없음(간이 판정 편입) · h = 3기 보유 중
-  { k: 'g', h: '등급', asc: true, align: 'center', v: function (r) { return GRADE[r.g]; }, td: function (r) { return '<td class="g g' + r.g + '">' + r.g + (r.p ? ' <small class="muted" style="font-weight:600">잠정</small>' : '') + '</td>'; } }, // p = 간이 판정 등급(완주 분석에서 확정, 02 §1)
+  { k: 'rk', h: '순위', asc: true, v: function (r) { return r.rk; }, td: function (r) { return '<td><b>' + r.rk + '</b></td>'; } },
+  { k: 'name', h: '종목', asc: true, v: function (r) { return r.ko; }, td: function (r) { return '<td>' + (r.nr ? r.ko : '<a href="/reports/' + r.t + '.html">' + r.ko + '</a>') + ' <span class="muted">' + r.t + '</span>' + (r.keep ? ' <span class="tag warn" style="font-size:11px">유지 구간</span>' : '') + '</td>'; } },
+  { k: 'g', h: '등급', asc: true, align: 'center', v: function (r) { return GRADE[r.g]; }, td: function (r) { return '<td class="g g' + r.g + '">' + r.g + '</td>'; } },
+  { k: 'roic', h: 'ROIC 5년', v: function (r) { return r.roic; }, td: function (r) { return '<td>' + (r.roic * 100).toFixed(0) + '%</td>'; } },
+  { k: 'fy', h: 'FCF수익률', v: function (r) { return r.fy; }, td: function (r) { return '<td>' + (r.fy * 100).toFixed(1) + '%</td>'; } },
+  { k: 'pe', h: 'PER', v: function (r) { return r.pe; }, td: function (r) { return '<td>' + r.pe.toFixed(1) + '</td>'; } },
   { k: 'price', h: '현재가', v: function (r) { return r.price; }, td: function (r) { return '<td><b>$' + r.price.toFixed(2) + '</b></td>'; } },
-  { k: 'ivc', h: '보수', v: function (r) { return r.ivc; }, td: function (r) { return '<td>' + m(r.ivc) + '</td>'; } },
-  { k: 'ivb', h: '기본', v: function (r) { return r.ivb; }, td: function (r) { return '<td>' + m(r.ivb) + '</td>'; } },
-  { k: 'ivo', h: '낙관', v: function (r) { return r.ivo || 0; }, td: function (r) { return '<td>' + (r.ivo ? m(r.ivo) : '<span class="muted">—</span>') + '</td>'; } },
-  { k: 'target', h: '목표가', v: function (r) { return r.target; }, td: function (r) { return '<td><b>' + m(r.target) + '</b></td>'; } },
-  { k: 'mos', h: '안전마진', v: function (r) { return r.mos; }, td: function (r) { return '<td class="' + (r.mos > 0 ? 'up' : 'warn-txt') + '">' + pct(r.mos) + '</td>'; } },
-  { k: 'gap', h: '목표가까지', v: function (r) { return r.gap; }, td: function (r) { return '<td><b>' + pct(r.gap) + '</b></td>'; } },
-  // 목표가 아래 여유 = (목표가 − 현재가) ÷ 기본 내재가치 — 갈아타기·기회비용 비교 척도 (02 §3 ③)
-  { k: 'room', h: '목표가 아래 여유', v: function (r) { return r.room; }, td: function (r) { return '<td class="' + (r.room > 0 ? 'up' : 'warn-txt') + '">' + pct(r.room) + '</td>'; } },
-  { k: 'bar', h: '위치 (보수 ~ 낙관)', align: 'left', td: function (r) {
-    var lo = Math.min(r.ivc, r.price) * 0.95, hi = Math.max(r.ivo || r.ivb, r.price) * 1.02, w = function (v) { return ((v - lo) / (hi - lo) * 100).toFixed(1) + '%'; };
-    return '<td><div class="bar"><b style="left:' + w(lo) + ';width:' + w(r.target) + '"></b><i style="left:' + w(r.price) + '"></i></div></td>';
-  } }
+  { k: 'iv', h: '엔진 IV(참고)', v: function (r) { return r.iv || 0; }, td: function (r) { return '<td>' + m(r.iv) + '</td>'; } },
+  { k: 'mos', h: '현재가/IV', v: function (r) { return r.mos == null ? 99 : r.mos; }, td: function (r) { return '<td class="' + (r.mos <= 0 ? 'up' : 'warn-txt') + '">' + (r.mos == null ? '—' : pct(r.mos)) + '</td>'; } }
 ];
 var BY = {};
 COLS.forEach(function (c) { BY[c.k] = c; });
-
-// 정렬·컬럼 순서 상태 — 브라우저에 저장해 새로고침 후에도 유지 (컬럼 구성이 바뀌면 저장값 무시)
-var STATE_KEY = 'vic-watch-table';
-var DEFAULT = { order: COLS.map(function (c) { return c.k; }), k: 'gap', dir: -1 };
+var STATE_KEY = 'vic-watch-v2';
+var DEFAULT = { order: COLS.map(function (c) { return c.k; }), k: 'rk', dir: 1 };
 var st = JSON.parse(JSON.stringify(DEFAULT));
 try {
   var saved = JSON.parse(localStorage.getItem(STATE_KEY));
   if (saved && saved.order && saved.order.length === COLS.length && saved.order.every(function (k) { return BY[k]; })) st = saved;
 } catch (e) {}
 function save() { try { localStorage.setItem(STATE_KEY, JSON.stringify(st)); } catch (e) {} }
-
 function render() {
-  ROWS.forEach(function (r) { r.mos = (r.ivb - r.price) / r.ivb; r.gap = r.target / r.price - 1; r.room = (r.target - r.price) / r.ivb; });
+  ROWS.forEach(function (r) {
+    r.pe = r.pe0 * r.price / r.p0; r.fy = r.fy0 * r.p0 / r.price;
+    r.mos = r.iv ? r.price / r.iv - 1 : null; // +면 IV보다 비쌈
+  });
   var col = BY[st.k];
   if (col && col.v) {
     ROWS.sort(function (a, b) {
       var x = col.v(a), y = col.v(b);
       var d = typeof x === 'string' ? x.localeCompare(y, 'ko') : x - y;
-      return d * st.dir || b.gap - a.gap; // 동률은 목표가까지 가까운 순
+      return d * st.dir || a.rk - b.rk;
     });
   }
   document.querySelector('#t thead tr').innerHTML = st.order.map(function (k) {
@@ -199,11 +204,9 @@ function render() {
       c.h + (on ? (st.dir > 0 ? ' ▲' : ' ▼') : '') + '</th>';
   }).join('');
   document.querySelector('#t tbody').innerHTML = ROWS.map(function (r) {
-    return '<tr class="' + (r.price <= r.target ? 'hit' : '') + '">' + st.order.map(function (k) { return BY[k].td(r); }).join('') + '</tr>';
+    return '<tr' + (r.keep ? ' style="opacity:.6"' : '') + '>' + st.order.map(function (k) { return BY[k].td(r); }).join('') + '</tr>';
   }).join('');
 }
-
-// 헤더 이벤트 — thead는 render마다 다시 그려지므로 thead에 위임
 var thead = document.querySelector('#t thead'), dragK = null;
 thead.addEventListener('click', function (e) {
   var th = e.target.closest('th'); if (!th) return;
@@ -215,7 +218,7 @@ thead.addEventListener('dragstart', function (e) {
   var th = e.target.closest('th'); if (!th) return;
   dragK = th.dataset.k; th.classList.add('wt-drag');
   e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', dragK); // Firefox는 setData가 있어야 드래그가 시작된다
+  e.dataTransfer.setData('text/plain', dragK);
 });
 thead.addEventListener('dragover', function (e) {
   var th = e.target.closest('th'); if (!th || !dragK) return;
@@ -228,7 +231,7 @@ thead.addEventListener('drop', function (e) {
   e.preventDefault();
   var to = th.dataset.k;
   if (to !== dragK) {
-    var right = st.order.indexOf(dragK) < st.order.indexOf(to); // 오른쪽으로 끌면 놓은 컬럼 뒤, 왼쪽이면 앞에 끼워 넣는다
+    var right = st.order.indexOf(dragK) < st.order.indexOf(to);
     st.order.splice(st.order.indexOf(dragK), 1);
     st.order.splice(st.order.indexOf(to) + (right ? 1 : 0), 0, dragK);
     save();
@@ -244,7 +247,6 @@ document.getElementById('wt-reset').addEventListener('click', function () {
   try { localStorage.removeItem(STATE_KEY); } catch (e) {}
   render();
 });
-
 render();
 Promise.all(ROWS.map(function (r) {
   return fetch('/api/quote/' + r.t).then(function (x) { return x.ok ? x.json() : null; }).then(function (q) { if (q && q.price) r.price = q.price; }).catch(function () {});

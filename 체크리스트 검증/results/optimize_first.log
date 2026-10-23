@@ -1,0 +1,53 @@
+﻿bench      SPY                                      IS CAGR= 10.8% Sh= 0.95 | OOS CAGR= 17.2% Sh= 1.06
+bench      EW 대형주(>=$10B)                           IS CAGR= 10.9% Sh= 0.94 | OOS CAGR= 13.9% Sh= 0.85
+base       문서 규칙 그대로                                IS CAGR= 10.3% Sh= 0.81 | OOS CAGR= 18.0% Sh= 0.85 hold=10.0
+base       품질만(가격 무시, 통과 전부)                        IS CAGR= 11.6% Sh= 1.05 | OOS CAGR= 15.8% Sh= 0.92 hold=124.5
+base       품질만 S·A                                  IS CAGR= 11.5% Sh= 1.08 | OOS CAGR= 14.7% Sh= 0.88 hold=69.9
+price      IV에 매수(배수 1.0)                           IS CAGR= 10.2% Sh= 0.79 | OOS CAGR= 19.6% Sh= 0.94 hold=10.0
+price      문서보다 깐깐(0.8/0.75/0.7)                    IS CAGR= 10.4% Sh= 0.83 | OOS CAGR= 18.2% Sh= 0.86 hold=10.0
+price      매우 깐깐(0.7/0.65/0.6)                      IS CAGR= 10.9% Sh= 0.84 | OOS CAGR= 13.8% Sh= 0.68 hold= 9.9
+price      등급 무관 일률 0.8                             IS CAGR= 10.0% Sh= 0.78 | OOS CAGR= 19.5% Sh= 0.94 hold=10.0
+price      스크린B식: 52주 −30%                          IS CAGR=  4.6% Sh= 0.43 | OOS CAGR= 18.8% Sh= 0.80 hold= 9.8
+price      스크린B식: 52주 −20%                          IS CAGR=  9.0% Sh= 0.69 | OOS CAGR= 17.7% Sh= 0.84 hold=10.0
+price      가격 무시 + 싼 순 10개                          IS CAGR= 10.0% Sh= 0.78 | OOS CAGR= 21.1% Sh= 0.98 hold=10.0
+grade      S·A만                                     IS CAGR= 10.3% Sh= 0.84 | OOS CAGR= 15.5% Sh= 0.74 hold= 9.8
+grade      ROIC 문턱 10%                              IS CAGR=  9.5% Sh= 0.67 | OOS CAGR= 14.2% Sh= 0.73 hold=10.0
+grade      ROIC 문턱 20%                              IS CAGR=  9.1% Sh= 0.68 | OOS CAGR= 19.1% Sh= 0.88 hold= 9.8
+grade      ROIC 문턱 25%                              IS CAGR=  9.5% Sh= 0.78 | OOS CAGR= 19.7% Sh= 0.90 hold= 9.5
+grade      경기순환 숫자판정 끔                              IS CAGR=  9.8% Sh= 0.76 | OOS CAGR= 17.5% Sh= 0.81 hold=10.0
+grade      ROIC 미달 = 경고(탈락 아님)                      IS CAGR= 10.0% Sh= 0.71 | OOS CAGR= 13.3% Sh= 0.67 hold=10.0
+grade      섹터 제외 끔                                  IS CAGR=  9.3% Sh= 0.72 | OOS CAGR= 16.0% Sh= 0.73 hold=10.0
+value      종료PER 배수 0.8                             IS CAGR= 11.2% Sh= 0.86 | OOS CAGR= 19.9% Sh= 0.94 hold=10.0
+value      종료PER 배수 1.0                             IS CAGR= 10.8% Sh= 0.85 | OOS CAGR= 23.0% Sh= 1.09 hold=10.0
+value      종료PER 상한 30                              IS CAGR= 10.3% Sh= 0.81 | OOS CAGR= 18.6% Sh= 0.88 hold=10.0
+value      종료PER 상한 99                              IS CAGR=  8.0% Sh= 0.62 | OOS CAGR= 16.3% Sh= 0.76 hold=10.0
+value      성장률 haircut 0.6                          IS CAGR= 12.3% Sh= 0.93 | OOS CAGR= 17.0% Sh= 0.80 hold= 9.9
+value      성장률 haircut 1.0                          IS CAGR=  7.9% Sh= 0.62 | OOS CAGR= 16.3% Sh= 0.77 hold=10.0
+value      성장률 상한 10%                               IS CAGR=  9.3% Sh= 0.70 | OOS CAGR= 12.9% Sh= 0.65 hold= 9.8
+value      성장률 상한 12%                               IS CAGR=  7.4% Sh= 0.59 | OOS CAGR= 17.2% Sh= 0.81 hold=10.0
+value      기준이익 = FCF−SBC                           IS CAGR= 11.8% Sh= 0.98 | OOS CAGR= 14.5% Sh= 0.75 hold=10.0
+value      기준이익 = min(순이익, FCF−SBC)                 IS CAGR= 10.5% Sh= 0.81 | OOS CAGR=  9.8% Sh= 0.52 hold= 9.9
+value      할인율 8%                                   IS CAGR= 10.9% Sh= 0.86 | OOS CAGR= 18.9% Sh= 0.88 hold=10.0
+value      할인율 10%                                  IS CAGR= 10.2% Sh= 0.78 | OOS CAGR= 19.6% Sh= 0.92 hold=10.0
+port       슬롯 5                                     IS CAGR=  8.3% Sh= 0.57 | OOS CAGR= 12.4% Sh= 0.58 hold= 5.0
+port       슬롯 20                                    IS CAGR=  9.8% Sh= 0.87 | OOS CAGR= 16.4% Sh= 0.82 hold=19.8
+exit       갈아타기 격차 None                             IS CAGR= 11.7% Sh= 0.97 | OOS CAGR= 14.6% Sh= 0.78 hold=10.0
+exit       갈아타기 격차 0.05                             IS CAGR= 10.6% Sh= 0.80 | OOS CAGR= 17.6% Sh= 0.83 hold=10.0
+exit       갈아타기 격차 0.3                              IS CAGR=  8.6% Sh= 0.69 | OOS CAGR= 15.4% Sh= 0.71 hold=10.0
+exit       낙관IV×1.0 넘으면 매도                          IS CAGR= 10.3% Sh= 0.81 | OOS CAGR= 18.0% Sh= 0.85 hold=10.0
+exit       낙관IV×1.3 넘으면 매도                          IS CAGR= 10.3% Sh= 0.81 | OOS CAGR= 18.0% Sh= 0.85 hold=10.0
+port       시총 문턱 $2B                                IS CAGR=  8.9% Sh= 0.61 | OOS CAGR= 18.3% Sh= 0.75 hold=10.0
+overhaul   재구성 qv 상위20 12개월                         IS CAGR= 11.3% Sh= 1.09 | OOS CAGR= 16.8% Sh= 0.97 hold=19.4
+overhaul   재구성 qv 상위20 3개월                          IS CAGR= 11.3% Sh= 1.09 | OOS CAGR= 18.8% Sh= 1.06 hold=19.6
+overhaul   재구성 qv 상위10 12개월                         IS CAGR= 12.4% Sh= 1.07 | OOS CAGR= 17.6% Sh= 1.00 hold= 9.7
+overhaul   재구성 fcf_yield 상위20 12개월                  IS CAGR= 10.7% Sh= 1.01 | OOS CAGR= 16.7% Sh= 1.04 hold=19.0
+overhaul   재구성 fcf_yield 상위20 3개월                   IS CAGR= 10.4% Sh= 0.99 | OOS CAGR= 17.8% Sh= 1.02 hold=19.4
+overhaul   재구성 fcf_yield 상위10 12개월                  IS CAGR=  9.0% Sh= 0.73 | OOS CAGR= 14.1% Sh= 0.79 hold= 9.2
+overhaul   재구성 earn_yield 상위20 12개월                 IS CAGR=  8.3% Sh= 0.78 | OOS CAGR= 16.8% Sh= 0.95 hold=18.7
+overhaul   재구성 earn_yield 상위20 3개월                  IS CAGR=  8.0% Sh= 0.73 | OOS CAGR= 17.0% Sh= 0.92 hold=19.3
+overhaul   재구성 earn_yield 상위10 12개월                 IS CAGR=  3.5% Sh= 0.33 | OOS CAGR= 17.1% Sh= 0.92 hold= 9.3
+overhaul   재구성 roic_med5 상위20 12개월                  IS CAGR= 12.5% Sh= 1.13 | OOS CAGR= 15.6% Sh= 0.90 hold=19.7
+overhaul   재구성 roic_med5 상위20 3개월                   IS CAGR= 12.3% Sh= 1.12 | OOS CAGR= 17.0% Sh= 0.94 hold=19.8
+overhaul   재구성 roic_med5 상위10 12개월                  IS CAGR= 11.5% Sh= 1.02 | OOS CAGR= 16.8% Sh= 0.94 hold= 9.9
+overhaul   재구성 qv 상위20 12개월 S·A만                    IS CAGR= 12.2% Sh= 1.17 | OOS CAGR= 14.8% Sh= 0.92 hold=19.5
+overhaul   재구성 qv 상위20 12개월 IV이하만                   IS CAGR=  8.6% Sh= 0.80 | OOS CAGR= 15.6% Sh= 0.92 hold=18.6
