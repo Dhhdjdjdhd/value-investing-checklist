@@ -6,6 +6,7 @@
     py src/fetch_sec.py companies   # 대형 CIK 의 submissions -> data/sec/companies.csv (이어받기)
     py src/fetch_sec.py cf          # 대형 CIK 의 companyfacts -> data/sec/cf_long.parquet (최초 공시값, 이어받기)
     py src/fetch_sec.py all         # 위 네 단계 순서대로
+    py src/fetch_sec.py cf_refresh 2027Q1   # 분기 재점검: 상장 중인 회사 companyfacts 다시 받기 (이어받기)
 
 - User-Agent 에 이메일을 넣지 않음. 요청 간격 0.25초(초당 4회 이하).
 - 여유 메모리 1GB 미만이면 단계 사이·요청 사이에서 멈춤(다시 실행하면 이어서 진행).
@@ -362,16 +363,69 @@ def fetch_companyfacts():
     return finished
 
 
-def combine_cf():
+def combine_cf(compact=False):
     parts = sorted(CF_PARTS.glob("part_*.parquet"))
     cf = pd.concat([pd.read_parquet(p) for p in parts], ignore_index=True)
-    cf = cf.drop_duplicates()
     for col in ("start", "end", "filed"):
         cf[col] = pd.to_datetime(cf[col])
     cf["cik"] = cf["cik"].astype("int64")
     cf["fy"] = pd.to_numeric(cf["fy"], errors="coerce").round().astype("Int32")  # 조각마다 float/int 섞임, 범위 밖 값 있음
+    cf = cf.drop_duplicates()  # 형 변환 뒤에: 새로 고침 조각(문자열 날짜)과 기존 조각이 같은 값으로 겹친다
     cf.to_parquet(CF_LONG, index=False)
     log(f"cf_long: {len(cf):,}행, CIK {cf.cik.nunique():,}개 -> {CF_LONG}")
+    if compact:  # 조각을 하나로 합쳐 분기마다 조각이 늘지 않게
+        tmp = CF_PARTS / "part_00000.parquet.tmp"
+        cf.to_parquet(tmp, index=False)
+        for p in parts:
+            p.unlink()
+        tmp.replace(CF_PARTS / "part_00000.parquet")
+
+
+def refresh_companyfacts(tag):
+    """분기 재점검용: 티커가 있는(상장 중인) 회사의 companyfacts를 다시 받아 새 공시를 더한다.
+    companyfacts는 과거 공시를 모두 담고 있어 기존 조각과 합치면 최초 공시값은 그대로, 새 값만 늘어난다.
+    진행 목록 cf_refresh_{tag}.txt로 이어받기."""
+    comp = pd.read_csv(COMPANIES)
+    ciks = sorted(set(comp[~comp.delisted_guess.astype(bool)].cik.astype(int)))
+    done_path = SEC_DIR / f"cf_refresh_{tag}.txt"
+    done = set(int(x) for x in done_path.read_text(encoding="utf-8").split()) if done_path.exists() else set()
+    todo = [c for c in ciks if c not in done]
+    part_no = max([int(p.stem.split("_")[1]) for p in CF_PARTS.glob("part_*.parquet")], default=-1) + 1
+    log(f"companyfacts 새로 고침({tag}): 대상 {len(ciks):,}개, 남은 {len(todo):,}개")
+    buf, done_now, t0, fails = [], [], time.time(), 0
+
+    def flush():
+        nonlocal part_no, buf, done_now
+        if buf:
+            CF_PARTS.mkdir(parents=True, exist_ok=True)
+            pd.DataFrame(buf, columns=CF_COLS).to_parquet(CF_PARTS / f"part_{part_no:05d}.parquet", index=False)
+            part_no += 1
+        with done_path.open("a", encoding="utf-8") as fh:
+            fh.writelines(f"{c}\n" for c in done_now)
+        buf, done_now = [], []
+
+    try:
+        for i, cik in enumerate(todo, 1):
+            check_memory()
+            if time_up():
+                log(f"TIME: --max-minutes 도달, {i - 1}/{len(todo)}에서 종료 (다시 실행하면 이어서)")
+                return False
+            try:
+                body = sec_get(f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json")
+                if body is not None:
+                    buf.extend(cf_rows(cik, json.loads(body)))
+                    del body
+            except Exception as e:  # noqa: BLE001 - 실패한 회사는 기존 값으로 둔다
+                fails += 1
+                log(f"  {cik}: {type(e).__name__}: {e}"[:200])
+            done_now.append(cik)
+            if len(done_now) >= CF_FLUSH_EVERY:
+                flush()
+                log(f"[{i}/{len(todo)}] {time.time() - t0:.0f}s, 실패 {fails}, free {free_mb() or 0:,.0f}MB")
+    finally:
+        flush()
+    combine_cf(compact=True)
+    return True
 
 
 REPORT = ROOT / "01_데이터.md"
@@ -542,6 +596,8 @@ def main():
         if step in ("companies", "all") and not fetch_companies():
             return 3  # 시간 제한으로 중단: 다시 실행
         if step in ("cf", "all") and not fetch_companyfacts():
+            return 3
+        if step == "cf_refresh" and not refresh_companyfacts(sys.argv[2]):
             return 3
         if step == "report":
             write_report()

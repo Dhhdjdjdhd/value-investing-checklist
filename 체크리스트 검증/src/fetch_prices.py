@@ -4,6 +4,7 @@
     py src/fetch_prices.py            # 이어받기 (manifest 에 있는 티커는 건너뜀)
     py src/fetch_prices.py --retry    # 실패한 티커만 다시
     py src/fetch_prices.py --max-minutes 9   # 9분 뒤 티커 사이에서 종료(종료코드 3, 다시 실행하면 이어서)
+    py src/fetch_prices.py --refresh 2026-12-28   # 마지막 일봉이 이 날짜보다 오래된 티커를 다시 받기
 
 저장
 - data/prices/{티커}.csv  : date,open,high,low,close,adj_close,volume (차트 아록리즘 분석 data_fetch 와 같은 형식)
@@ -74,7 +75,11 @@ def main():
     PRICES.mkdir(parents=True, exist_ok=True)
     jobs = pick_tickers(pd.read_csv(COMPANIES))
     man = pd.read_csv(MANIFEST) if MANIFEST.exists() else pd.DataFrame(columns=["yahoo", "status"])
-    if retry:
+    if "--refresh" in sys.argv:
+        # 분기 재점검: 마지막 일봉이 기준일보다 오래된 티커만 다시 받는다 (이어받기 겸용)
+        cutoff = sys.argv[sys.argv.index("--refresh") + 1]
+        done = set(man[(man.status == "ok") & (man.end.astype(str) >= cutoff)].yahoo)
+    elif retry:
         done = set(man[man.status == "ok"].yahoo)
     else:
         done = set(man.yahoo)

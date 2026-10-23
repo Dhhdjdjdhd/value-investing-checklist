@@ -53,6 +53,7 @@ class App(tk.Tk):
         nb = ttk.Notebook(self)
         nb.pack(fill='both', expand=True, padx=8, pady=(8, 0))
         nb.add(self._tickers_tab(nb), text='  종목  ')
+        nb.add(self._v2_tab(nb), text='  v2 장부  ')
         nb.add(self._mail_tab(nb), text='  메일  ')
         nb.add(self._task_tab(nb), text='  스케줄 · 로그  ')
 
@@ -60,6 +61,7 @@ class App(tk.Tk):
         ttk.Label(self, textvariable=self.status, anchor='w', foreground='#555').pack(fill='x', padx=10, pady=4)
 
         self.refresh_tickers()
+        self.refresh_v2()
         self.after(200, self._poll)
         self.background(core.task_status, lambda r: self.task_var.set(r))
 
@@ -314,6 +316,7 @@ class App(tk.Tk):
     def run_now(self):
         def done(msg):
             self.refresh_tickers()
+            self.refresh_v2()
             messagebox.showinfo('점검 결과', msg, parent=self)
         core.setup_logging()
         self.background(core.run_check, done, busy='점검 중… (사이트가 잠들어 있으면 1분쯤 걸립니다)')
@@ -383,6 +386,82 @@ class App(tk.Tk):
                             lambda _: messagebox.showinfo('완료', '테스트 메일을 보냈습니다. 받은편지함을 확인하세요.', parent=self),
                             busy='테스트 메일 보내는 중…')
 
+    # ── v2 장부 탭 — 시뮬레이터 장부(PORTFOLIO.html)를 마지막 점검 시세로 본다 ──
+    QUARTERLY = os.path.join(os.path.dirname(os.path.dirname(core.BASE)), '체크리스트 검증', 'src', 'quarterly.py')
+
+    def _v2_tab(self, parent):
+        f = ttk.Frame(parent, padding=8)
+        self.v2_head = tk.StringVar(value='')
+        self.v2_sub = tk.StringVar(value='')
+        ttk.Label(f, textvariable=self.v2_head, font=(FONT[0], 12, 'bold')).grid(row=0, column=0, sticky='w')
+        ttk.Label(f, textvariable=self.v2_sub, foreground='#555').grid(row=1, column=0, sticky='w', pady=(2, 6))
+        cols = [('rank', '순위', 45), ('name', '종목', 150), ('sector', '업종', 95), ('grade', '등급', 45),
+                ('shares', '보유', 60), ('avg', '평단(원)', 95), ('cur', '현재가(원)', 95), ('val', '평가액(원)', 110),
+                ('ret', '수익률', 70), ('w', '비중', 60), ('chg', '전일 대비', 70), ('dd', '고점 대비', 70),
+                ('earn', '다음 실적', 105), ('entry', '진입일', 90)]
+        self.v2_tree = ttk.Treeview(f, columns=[c[0] for c in cols], show='headings', selectmode='browse')
+        for key, label, w in cols:
+            self.v2_tree.heading(key, text=label)
+            self.v2_tree.column(key, width=w, anchor='w' if key in ('name', 'sector') else 'center')
+        self.v2_tree.tag_configure('over', foreground='#c0392b')
+        self.v2_tree.tag_configure('up', foreground='#c0392b')
+        self.v2_tree.tag_configure('down', foreground='#1f5fbf')
+        self.v2_tree.grid(row=2, column=0, sticky='nsew')
+        f.rowconfigure(2, weight=1)
+        f.columnconfigure(0, weight=1)
+        bar = ttk.Frame(f)
+        bar.grid(row=3, column=0, sticky='w', pady=(8, 0))
+        ttk.Button(bar, text='화면 새로고침', command=self.refresh_v2).pack(side='left', padx=(0, 6))
+        ttk.Button(bar, text='보유 현황 웹 화면 열기', command=lambda: os.startfile(core.V2_PAGE)).pack(side='left', padx=(0, 6))
+        ttk.Button(bar, text='분기 재점검 지금 실행…', command=self.run_quarterly).pack(side='left', padx=(0, 6))
+        ttk.Label(f, text='현재가는 마지막 점검(30분마다) 시세 · 빨강 = 이익 / 파랑 = 손실 (국내 관행) · 비중이 10%를 넘으면 빨간 글씨 — '
+                          '분기 재점검이 5%로 되돌립니다. 장부는 분기 재점검만 고칩니다(이 화면은 읽기 전용).',
+                  foreground='#777').grid(row=4, column=0, sticky='w', pady=(6, 0))
+        return f
+
+    def refresh_v2(self):
+        led = core.read_ledger()
+        self.v2_tree.delete(*self.v2_tree.get_children())
+        if not led:
+            self.v2_head.set('v2 장부를 읽지 못했습니다 — public/reports/PORTFOLIO.html 확인')
+            return
+        full = core.load_json(core.STATE_PATH, {})
+        tstate = full.get('tickers', {})
+        fx = (full.get('fx') or {}).get('USDKRW') or led['start'].get('fx')
+        rows, total = core.v2_snapshot(led, tstate, fx)
+        cost = sum(r['avgPrice'] * r['shares'] for r in rows)
+        pnl = sum(r['val'] for r in rows) - cost
+        start = led['start']
+        ret = total / start['capital'] - 1
+        self.v2_head.set(f'총자산 {total:,.0f}원  ({ret:+.2%}, {start["date"]} 시작 {start["capital"] / 1e8:g}억)   ·   '
+                         f'평가손익 {pnl:+,.0f}원   ·   현금 {led["cash"]:,.0f}원 ({led["cash"] / total:.1%})')
+        lr = led.get('lastReview')
+        self.v2_sub.set(f'보유 {len(rows)}종목 · 비중 {min(r["w"] for r in rows):.1%}~{max(r["w"] for r in rows):.1%} · '
+                        f'마지막 재점검 {lr["date"] + " (매도 " + str(lr["sold"]) + " · 신규 " + str(lr["bought"]) + ")" if lr else "없음"} · '
+                        f'다음 재점검 {core.next_review()} 03:00 (작업 V2QuarterlyReview) · 환율 {fx:,.2f}원')
+        for r in rows:
+            st = tstate.get(r['code']) or {}
+            last = st.get('last') or {}
+            e = st.get('earnings') or {}
+            rr = r['krw'] / r['avgPrice'] - 1
+            tags = ('over',) if r['w'] > core.V2_TRIM else (('up',) if rr > 0 else ('down',) if rr < 0 else ())
+            self.v2_tree.insert('', 'end', values=(
+                r['rank'], f'{r["name"]} ({r["code"]})', r['sector'], r['grade'], f'{r["shares"]}주',
+                f'{r["avgPrice"]:,.0f}', f'{r["krw"]:,.0f}', f'{r["val"]:,.0f}', f'{rr:+.1%}', f'{r["w"]:.1%}',
+                f'{r["change"]:+.1%}' if r['change'] is not None else '-',
+                f'{last["dd"]:+.1%}' if last.get('dd') is not None else '-',
+                (e['next'] + (' 추정' if e.get('estimated') else '')) if e.get('next') else '-',
+                r.get('entryDate', '-')), tags=tags)
+
+    def run_quarterly(self):
+        if not messagebox.askyesno(
+                '분기 재점검', 'SEC 재무·주가를 새로 받고(약 2시간) 순위를 다시 계산해 장부를 규칙대로 바꾼 뒤 '
+                '커밋·푸시하고 결과 메일을 보냅니다.\n원래는 1·4·7·10월 2일 03:00에 자동으로 돕니다.\n\n지금 실행할까요?', parent=self):
+            return
+        import subprocess
+        subprocess.Popen([core._pythonw(), self.QUARTERLY], cwd=os.path.dirname(os.path.dirname(self.QUARTERLY)))
+        self.status.set('분기 재점검을 백그라운드에서 시작했습니다 — 진행은 체크리스트 검증/logs/quarterly_<분기>.log, 끝나면 메일')
+
     # ── 스케줄·로그 탭 ──
     def _task_tab(self, parent):
         f = ttk.Frame(parent, padding=8)
@@ -424,7 +503,7 @@ class TickerDialog(tk.Toplevel):
         t = app.cfg['tickers'][index] if index is not None else {
             'symbol': '', 'name': '', 'enabled': True, 'levels': [10, 20, 30, 50], 'daily_drop_pct': 5}
         self.enabled = t.get('enabled', True)
-        self.extra = {k: t[k] for k in ('memo', 'target_price') if k in t}   # 화면에 없는 항목은 그대로 보존
+        self.extra = {k: t[k] for k in ('memo', 'target_price', 'group') if k in t}   # 화면에 없는 항목은 그대로 보존
         self.title('종목 수정' if index is not None else '종목 추가')
         self.transient(app)
         self.resizable(False, False)

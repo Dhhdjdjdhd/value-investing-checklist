@@ -25,6 +25,8 @@ content/private/
 종목 모니터링/drawdown-monitor/*.tmp
 종목 모니터링/drawdown-monitor/monitor.lock
 종목 모니터링/drawdown-monitor/logs/
+종목 모니터링/drawdown-monitor/config.backup_*.json
+종목 모니터링/drawdown-monitor/state.backup_*.json
 __pycache__/
 
 # S급 기계적 스크린 — SEC companyfacts 캐시(약 2GB, 재다운로드 가능)
@@ -39,6 +41,7 @@ __pycache__/
 체크리스트 검증/data/
 체크리스트 검증/logs/
 체크리스트 검증/results/*.parquet
+체크리스트 검증/results/quarterly_state.json
 .pytest_cache/
 
 # OS/에디터

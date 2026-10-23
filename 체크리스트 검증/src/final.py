@@ -6,6 +6,7 @@
   순위: ROIC 5년 중앙값 백분위 + (FCF−SBC)/시총 백분위
   보유: 상위 20 동일비중, 3개월마다 점검, 보유 종목은 30위 안이면 유지
 실행: py src/final.py -> results/final_*.csv, results/final_equity.png, results/screen_now.csv
+      py src/final.py --screen-only -> results/screen_now.csv 만 (분기 재점검)
 """
 import json
 
@@ -59,8 +60,12 @@ def main():
     ax.grid(alpha=0.3)
     fig.tight_layout()
     fig.savefig(RES / "final_equity.png", dpi=120)
+    screen(R)
 
-    # ---- 현재 선정
+
+def screen(R=None):
+    """현재(최신 월말) 종목 선정 -> results/screen_now.csv. 분기 재점검은 이것만 돌린다."""
+    R = R or Runner("first")
     rows_, st = R.state({**__import__("checklist").DEFAULT}, {**__import__("valuation").VDEFAULT})
     last_m = R.mc.index[-1]
     s = st[st.m == last_m].set_index("cik")
@@ -89,4 +94,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    screen() if "--screen-only" in sys.argv else main()

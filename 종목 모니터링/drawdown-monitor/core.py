@@ -567,6 +567,8 @@ SEC_ITEMS = {
     '5.02': '임원·이사 변동', '5.03': '정관 변경', '5.07': '주주총회 결과', '7.01': '공정공시(Reg FD)',
     '8.01': '기타 중요 사건',
 }
+# 관문 탈락으로 이어질 수 있는 8-K 항목 — v2 장부 종목은 이것만 따로 메일 (파산·사이버 사고·구조조정·손상·상장폐지·감사인·재작성)
+SEC_SERIOUS = {'1.03', '1.05', '2.05', '2.06', '3.01', '4.01', '4.02'}
 
 
 def fetch_filings(cik):
@@ -663,9 +665,17 @@ def filing_alerts(cfg, t, st):
     new = [f for f in filings if seen is not None and f['acc'] not in seen]
     undo = {'sec_seen': seen}
     st['sec_seen'] = [f['acc'] for f in filings]
+    serious = [f for f in new if set(f['items'].split(',')) & SEC_SERIOUS]
+    if t.get('group') == 'v2':
+        # v2 장부 종목: 실적 공시는 하루 요약(_run)으로 모으고, 그 밖의 공시는 중대 항목만 — 20종목 전부 받으면 너무 많다
+        new = [f for f in new if _is_earnings(f) or f in serious]
     if new:
         earn = [f for f in new if _is_earnings(f)]
-        if earn:
+        if serious and t.get('group') == 'v2':
+            subject = f'[중대 공시] {nm} ' + ' / '.join(f'{f["form"]} {_filing_desc(f)}' for f in serious[:3])
+            lead = ('관문 탈락으로 이어질 수 있는 공시입니다(파산·손상·상장폐지 통지·감사인 변경·재무제표 신뢰 불가 등). '
+                    'v2는 분기 재점검 때만 매매하지만, 이런 공시는 원문을 먼저 읽어 두세요.')
+        elif earn:
             subject = f'[실적 발표] {nm} 분기 실적 공시 ({earn[0]["date"]}) — R1~R3 점검할 차례'
             lead = ('실적이 발표됐습니다. 원칙: <b>분석 문서 5단계 R1~R3 관찰 지표를 임계값과 대조</b> → '
                     '필요하면 내재가치 갱신(2회 연속 하향이면 분할매수 정지) → 논제 점검 로그에 한 줄. '
@@ -902,11 +912,15 @@ def _run(cfg):
     state = load_json(STATE_PATH, {})
     cache = load_json(CACHE_PATH, {})
     tstate = state.setdefault('tickers', {})
-    errors, sent, reports = [], [], []
+    errors, sent, reports, digest = [], [], [], []
+
+    # v2 장부 보유 종목을 감시 목록에 맞춘다 (분기 재점검으로 바뀐 종목이 이번 점검부터 따라온다)
+    led = read_ledger()
+    v2_changed = bool(led) and sync_v2(cfg, led)
 
     # 분석 문서가 바뀌었으면 내재가치·가격선부터 맞춘다 (이번 점검의 가격선 판정에 바로 쓰인다)
     iv_mails, iv_changed = sync_valuations(cfg, state)
-    if iv_changed:
+    if iv_changed or v2_changed:
         save_json(CONFIG_PATH, cfg)
     for subject, html in iv_mails:
         try:
@@ -926,9 +940,13 @@ def _run(cfg):
             log.error('%s 조회 실패: %s', sym, e)
             errors.append(f'{sym}: {e}')
             continue
+        first = sym not in tstate
         st = tstate[sym] = {**new_ticker_state(), **tstate.get(sym, {})}
         before = copy.deepcopy(st)
         alerts = evaluate(t, q, stats, st, cfg.get('hysteresis_pct', 3))
+        if first:   # 처음 감시하는 종목은 지금 있는 낙폭 구간·가격선을 기록만 한다 (이미 빠져 있던 걸 새 소식처럼 보내지 않게)
+            alerts = [a for a in alerts if a['kind'] == 'daily']
+            log.info('%s 감시 시작 — 현재 구간 -%s%% 기록만', sym, st['level'])
         update_market_cap(sym, st)
         last = st['last']
         log.info('%s %.2f 전일 %+.2f%% 고점대비 %+.2f%% 단계 -%s%%',
@@ -970,6 +988,9 @@ def _run(cfg):
                 break
 
         for subject, html, undo in sec_mails:
+            if t.get('group') == 'v2' and subject.startswith('[실적'):
+                digest.append((t, subject, undo, st))   # 실적 공시·D-3는 하루 한 통으로 모은다
+                continue
             try:
                 send_mail(cfg, subject, html)
                 sent.append(subject)
@@ -985,6 +1006,16 @@ def _run(cfg):
         state['fx'] = {'USDKRW': fx['price'], 'checked': dt.datetime.now().strftime('%Y-%m-%d %H:%M')}
     except Exception as e:  # noqa: BLE001
         log.warning('환율(KRW=X) 조회 실패: %s', e)
+
+    if digest:
+        _v2_digest(cfg, digest, sent, errors)
+    if led and (state.get('fx') or {}).get('USDKRW'):
+        try:
+            rows, total = v2_snapshot(led, tstate, state['fx']['USDKRW'])
+            _v2_weight_alerts(cfg, state, rows, total, sent)
+            _v2_monthly(cfg, state, led, rows, total, sent)
+        except Exception as e:  # noqa: BLE001 — 장부 점검 실패가 시세 알림을 막지 않는다
+            log.error('v2 장부 점검 실패: %s', e)
 
     _fail_watch(cfg, state, [e for e in errors if not e.startswith('메일')])
     _weekly_summary(cfg, state, reports)
@@ -1033,6 +1064,164 @@ def _weekly_summary(cfg, state, reports):
         state['weekly_date'] = today
     except Exception as e:  # noqa: BLE001
         log.error('주간 요약 발송 실패: %s', e)
+
+
+# ── v2 시뮬레이터 장부 (01.가치투자 체크리스트/06 · public/reports/PORTFOLIO.html) ──────────────
+# 장부 원본은 PORTFOLIO.html의 데이터 블록. 분기 재점검(체크리스트 검증/src/quarterly.py, 작업 V2QuarterlyReview)이 고친다.
+# 이 모니터는 읽기만 한다: 감시 목록 맞추기 · 실적 하루 요약 · 비중 10% 초과 · 월간 성적표(S&P500 대비)
+
+LEDGER_PATH = os.path.join(os.path.dirname(os.path.dirname(BASE)), 'public', 'reports', 'PORTFOLIO.html')
+V2_TRIM = 0.10
+V2_REVIEW_MONTHS = (1, 4, 7, 10)   # 분기 재점검: 이 달 2일 03:00
+V2_PAGE = 'https://value-investing-checklist.onrender.com/reports/PORTFOLIO.html'
+
+
+def read_ledger():
+    try:
+        with open(LEDGER_PATH, encoding='utf-8') as f:
+            m = re.search(r'// <DATA>\nvar DEFAULT_DATA = (.*?);\n// </DATA>', f.read(), re.S)
+        return json.loads(m.group(1)) if m else None
+    except (OSError, ValueError) as e:
+        log.warning('v2 장부 읽기 실패: %s', e)
+        return None
+
+
+def next_review(today=None):
+    today = today or dt.date.today()
+    for y in (today.year, today.year + 1):
+        for m in V2_REVIEW_MONTHS:
+            d = dt.date(y, m, 2)
+            if d > today:
+                return d.isoformat()
+
+
+def sync_v2(cfg, led):
+    """장부 보유 종목 = 감시 목록의 group 'v2'. 바뀌었으면 True (config 저장 필요)."""
+    held = {h['code']: h for h in led['holdings']}
+    changed = False
+    keep = []
+    for t in cfg['tickers']:
+        if t.get('group') == 'v2' and t['symbol'] not in held:
+            log.info('v2 감시 해제(장부에서 빠짐): %s', t['symbol'])
+            changed = True
+            continue
+        keep.append(t)
+    cfg['tickers'] = keep
+    have = {t['symbol']: t for t in keep}
+    by_sector = {}
+    for h in led['holdings']:
+        by_sector.setdefault(h['sector'], []).append(h['code'])
+    for code, h in held.items():
+        compare = ['^GSPC'] + [c for c in by_sector[h['sector']] if c != code][:3]   # 원인 판별 비교군: 지수 + 같은 업종 보유 종목
+        memo = f'[v2 장부] 선정 {h["rank"]}위 · 등급 {h["grade"]} · {h["shares"]}주 · {h.get("industry", "")}'
+        t = have.get(code)
+        if t is None:
+            keep.append({'symbol': code, 'name': h['name'], 'enabled': True, 'group': 'v2', 'levels': [15, 25, 35, 50],
+                         'daily_drop_pct': 6, 'cik': h.get('cik'), 'compare': compare, 'memo': memo})
+            log.info('v2 감시 추가: %s', code)
+            changed = True
+            continue
+        if t.get('group') != 'v2':
+            # v1 감시판에 있던 종목(ADP 등)을 v2로 넘긴다 — v1 가격선(목표가 대기)은 v2에서 쓰지 않는다
+            for k in ('price_alerts', 'iv_low', 'iv_base', 'iv_high', 'target_price', 'valuation_note', 'md_sync', 'grade'):
+                t.pop(k, None)
+            t.update(group='v2', enabled=True, cik=h.get('cik') or t.get('cik'))
+            changed = True
+        if t.get('memo') != memo or t.get('compare') != compare:
+            t.update(memo=memo, compare=compare)
+            changed = True
+    return changed
+
+
+def v2_snapshot(led, tstate, fx):
+    """종목별 원화 평가액·비중. 시세가 없으면 평단으로 대신한다."""
+    rows = []
+    for h in led['holdings']:
+        last = (tstate.get(h['code']) or {}).get('last')
+        krw = last['price'] * fx if last else h['avgPrice']
+        rows.append({**h, 'krw': krw, 'val': krw * h['shares'], 'change': last['change'] if last else None})
+    total = sum(r['val'] for r in rows) + led['cash']
+    for r in rows:
+        r['w'] = r['val'] / total
+    return rows, total
+
+
+def _v2_send(cfg, subject, body, sent):
+    try:
+        send_mail(cfg, subject, _wrap(subject, body))
+        sent.append(subject)
+        log.info('메일 발송: %s', subject)
+        return True
+    except Exception as e:  # noqa: BLE001
+        log.error('메일 발송 실패 (%s): %s', subject, e)
+        return False
+
+
+def _v2_digest(cfg, items, sent, errors):
+    """v2 종목의 실적 공시·실적 D-3를 한 통으로. 실패하면 각 종목의 알림 상태를 되돌려 다음 점검에서 다시."""
+    today = dt.date.today().isoformat()
+    rows = [[f'{t["name"]} ({t["symbol"]})', subj.split('] ', 1)[0].lstrip('['),
+             f'<span style="text-align:left">{subj.split("] ", 1)[-1]}</span>',
+             f'<a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={int(t["cik"])}&type=8-K">공시 목록</a>'
+             if t.get('cik') else '-'] for t, subj, _, _ in items]
+    body = ('<p>v2는 실적 발표로 사고팔지 않습니다 — 새 숫자는 <b>분기 재점검(다음: ' + next_review() + ')</b> 때 순위에 '
+            '반영됩니다. 지금 볼 것은 관문 탈락 신호뿐입니다: 적자 전환, 매출·EPS 역성장, 큰 손상·일회성, 부채 급증.</p>'
+            + _table(['종목', '구분', '내용', '원문'], rows))
+    subject = f'[v2 실적] {today} — ' + ', '.join(t['name'] for t, _, _, _ in items[:4]) + (f' 외 {len(items) - 4}' if len(items) > 4 else '')
+    if not _v2_send(cfg, subject, body, sent):
+        errors.append('메일 실패: v2 실적 요약')
+        for _, _, undo, st in items:
+            st.update(undo)
+
+
+def _v2_weight_alerts(cfg, state, rows, total, sent):
+    """비중 10% 초과 — 처음 넘을 때 한 번. 9% 아래로 내려오면 해제."""
+    v2 = state.setdefault('v2', {})
+    over = set(v2.get('over', []))
+    for r in rows:
+        if r['w'] > V2_TRIM and r['code'] not in over:
+            subject = f'[v2 비중] {r["name"]}({r["code"]}) {r["w"] * 100:.1f}% — 10% 초과'
+            body = (f'<p>{r["name"]} 비중이 총자산의 <b>{r["w"] * 100:.1f}%</b>가 됐습니다(기준 5%, 조정 경계 10%). '
+                    f'다음 분기 재점검({next_review()})에서 자동으로 5%로 줄입니다 — 지금 할 일은 없습니다.</p>')
+            if _v2_send(cfg, subject, body, sent):
+                over.add(r['code'])
+        elif r['w'] < V2_TRIM - 0.01:
+            over.discard(r['code'])
+    v2['over'] = sorted(over)
+
+
+def _v2_monthly(cfg, state, led, rows, total, sent):
+    """매달 1일 아침 7시 이후 첫 점검 — 장부 성적표. 비교 기준은 같은 날 같은 원화를 SPY에 넣었을 때."""
+    now = dt.datetime.now()
+    key = now.strftime('%Y-%m')
+    v2 = state.setdefault('v2', {})
+    if v2.get('monthly') == key or now.hour < 7 or not cfg['email'].get('weekly_summary', True):
+        return
+    start = led['start']
+    if key <= start['date'][:7]:   # 시작한 달에는 보내지 않는다
+        v2['monthly'] = key
+        return
+    if not v2.get('spy_base'):
+        v2['spy_base'] = _close_on(cfg, 'SPY', start.get('priceDate', start['date']))
+    fx = state['fx']['USDKRW']
+    spy = fetch_quote(cfg, 'SPY')['price']
+    my = total / start['capital'] - 1
+    bench = spy * fx / (v2['spy_base'] * start['fx']) - 1
+    gap = (my - bench) * 100
+    top = sorted(rows, key=lambda r: -r['w'])
+    tbl = _table(['종목', '비중', '평단 대비', '전일 대비'], [
+        [f'{r["name"]} ({r["code"]})', f'{r["w"] * 100:.1f}%', _pct(r['krw'] / r['avgPrice'] - 1),
+         _pct(r['change']) if r['change'] is not None else '-'] for r in top])
+    review = (f'<p><b>이번 달은 분기 재점검 달입니다</b> — {now.year}-{now.month:02d}-02 03:00에 자동 실행되고 결과 메일이 따로 갑니다.</p>'
+              if now.month in V2_REVIEW_MONTHS else f'<p>다음 분기 재점검: {next_review()}</p>')
+    body = (f'<p>{start["date"]} 시작 이후 (원화, 환율 포함)</p>'
+            + _table(['', '수익률', '평가액'], [
+                ['<b>v2 장부</b>', f'<b>{_pct(my)}</b>', f'{total:,.0f}원'],
+                ['S&amp;P500 (SPY, 같은 날 같은 금액)', _pct(bench), f'{start["capital"] * (1 + bench):,.0f}원'],
+                ['차이', f'<b>{gap:+.1f}%p</b>', f'{start["capital"] * (my - bench):+,.0f}원']])
+            + review + tbl + f'<p><a href="{V2_PAGE}">보유 현황 화면</a> · 가상 시뮬레이터 기록이며 투자 권유가 아닙니다.</p>')
+    if _v2_send(cfg, f'[v2 월간] {key} — v2 {_pct(my)} / S&P500 {_pct(bench)} ({gap:+.1f}%p)', body, sent):
+        v2['monthly'] = key
 
 
 def send_test_mail(cfg):
