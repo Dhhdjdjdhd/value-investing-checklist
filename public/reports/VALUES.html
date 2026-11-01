@@ -53,6 +53,13 @@
   .calc p.note { color: var(--text-muted); font-size: 12.5px; }
   .formula { font-size: 14px; background: var(--page); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; color: var(--text-primary); }
   .formula:last-child { margin-bottom: 0; }
+  .plan .sub { font-size: 12.5px; margin-bottom: 10px; }
+  .plan table { font-size: 12.5px; margin-bottom: 10px; }
+  .plan th { font-size: 11px; padding: 0 8px 6px; }
+  .plan td { padding: 6px 8px; }
+  .plan td:last-child, .plan th:last-child { text-align: left; white-space: normal; min-width: 240px; }
+  .plan ul.notes { font-size: 12.5px; }
+  .plan ul.notes li { margin-bottom: 3px; }
 </style>
 </head>
 <body>
@@ -135,6 +142,30 @@
         <p><b>내재가치:</b> 1~10년 EPS 현재가치 합 155,146원 + 81,375원 = 236,521원 (표 237,000원)</p>
         <p><b>목표 매수가:</b> 236,521원 × 0.8 = 189,217원 (표 189,000원)</p>
         <p class="note">메모리 경기순환 방식입니다. 순현금은 더하지 않았습니다.</p>
+      </div>
+      <div class="calc plan">
+        <h3>삼성전자 분할매수 플랜</h3>
+        <p class="sub">한도 2천만 원. 메모리는 제외 업종이라 체크리스트 밖의 별도 판단입니다. 19만 원까지 내려오지 않으면 사지 않습니다.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>회차</th><th>매수가</th><th>금액</th><th>수량</th><th>누적 평균단가</th><th>이 가격의 의미</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1차</td><td>19만 원</td><td>684만 원</td><td>36주</td><td>19.0만 원</td><td>기본 가정(정상 EPS 1.5만 원, 순현금 제외)의 목표가 18.9만 원 부근</td></tr>
+              <tr><td>2차</td><td>17만 원</td><td>697만 원</td><td>41주</td><td>약 17.9만 원</td><td>정상 EPS 1만 원에 순현금을 더한 목표가 17.1만 원</td></tr>
+              <tr><td>3차</td><td>15만 원</td><td>600만 원</td><td>40주</td><td>약 16.9만 원</td><td>호황이 1년에 그치는 경우의 목표가 15.2만 원</td></tr>
+              <tr><td class="name">합계</td><td></td><td class="name">1,981만 원</td><td class="name">117주</td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="notes">
+          <li><strong>주문 방식:</strong> 지정가를 미리 걸어두지 말고, 가격이 오면 하락 이유를 본 뒤 직접 주문합니다.</li>
+          <li><strong>시장 전체 하락일 때:</strong> 체크리스트 규칙대로 다음 회차를 진행합니다.</li>
+          <li><strong>메모리 업황 때문일 때:</strong> 정상 EPS를 다시 계산한 뒤 진행합니다. 호황 EPS 4.5만 원 가정이 분기 실적으로 깨지면 멈춥니다.</li>
+          <li><strong>내재가치를 2번 연속 낮추게 되면:</strong> 다음 매수를 중단합니다.</li>
+          <li><strong>간격:</strong> 시장이 빠르게 빠져도 하루에 두 회차를 몰아서 사지 않습니다. 다음 회차는 다음 분기 실적을 보고 판단하면 더 안전합니다.</li>
+        </ul>
       </div>
       <div class="calc">
         <h3>SK하이닉스</h3>
