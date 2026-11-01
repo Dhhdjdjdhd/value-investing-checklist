@@ -27,7 +27,7 @@ const WATCH = { ticker: 'WATCH', name: '진입대기 32', desc: '등급별 목�
 // 내재가치 요약표 — 종목별 시총 순위·내재가치·목표 매수가
 const VALUES = { ticker: 'VALUES', name: '내재가치 표', desc: '시총 순위·목표 매수가' };
 
-// 미국 테크 내재가치표 — 잠재력 상위 6개사의 내재가치·목표 매수가
+// 미국 테크 내재가치표 — 시총 상위 기술주의 내재가치·목표 매수가
 const USTECH = { ticker: 'USTECH', name: '미국 테크 표', desc: '내재가치·목표 매수가' };
 
 // 종목 탭 = 진입대기 14종목 + 완주 분석 2종목(MSFT·GOOGL) 보고서(public/reports/<티커>.html). 등급 순(S → A → 일반)
