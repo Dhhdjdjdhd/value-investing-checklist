@@ -24,6 +24,9 @@ const PORTFOLIO = { ticker: 'PORTFOLIO', name: '포트폴리오', desc: '보유�
 // 진입대기 감시판 — 품질 등급별 목표가 목록 (2026-10-21 품질 우주 1회차)
 const WATCH = { ticker: 'WATCH', name: '진입대기 32', desc: '등급별 목표가 감시판' };
 
+// 내재가치 요약표 — 종목별 시총 순위·내재가치·목표 매수가
+const VALUES = { ticker: 'VALUES', name: '내재가치 표', desc: '시총 순위·목표 매수가' };
+
 // 종목 탭 = 진입대기 14종목 + 완주 분석 2종목(MSFT·GOOGL) 보고서(public/reports/<티커>.html). 등급 순(S → A → 일반)
 // 종전에는 02.종목분석 md 목록으로 만들었으나, 시뮬레이터 재시작(2026-10-21)으로 보고서를 이 14개로 교체했다
 // 등급 = 2026-10-22 완주 분석 확정(02.종목분석/<종목>_분석_20261022.md). MSFT·GOOGL은 기존 완주 분석
@@ -225,6 +228,24 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
               }`}
             >
               {WATCH.desc}
+            </span>
+          </button>
+
+          <button
+            onClick={() => select(VALUES.ticker)}
+            className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
+              active === VALUES.ticker
+                ? 'bg-navy text-white'
+                : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
+            }`}
+          >
+            <span className="block text-[14px] font-bold">{VALUES.name}</span>
+            <span
+              className={`block text-[11px] ${
+                active === VALUES.ticker ? 'text-white/70' : 'text-muted'
+              }`}
+            >
+              {VALUES.desc}
             </span>
           </button>
 

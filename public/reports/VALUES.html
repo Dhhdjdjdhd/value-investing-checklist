@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>종목별 내재가치·목표 매수가</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --border: rgba(11,11,11,0.10);
+    --delta-good: #006300; --status-critical: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --border: rgba(255,255,255,0.10);
+      --delta-good: #0ca30c;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; white-space: nowrap; }
+  th { text-align: right; font-size: 12px; font-weight: 600; color: var(--text-muted); padding: 0 10px 8px; border-bottom: 1px solid var(--gridline); }
+  td { text-align: right; padding: 10px; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: 0; }
+  th:nth-child(-n+2), td:nth-child(-n+2) { text-align: left; }
+  td.name { font-weight: 700; }
+  td.target { font-weight: 700; }
+  .below { color: var(--delta-good); font-weight: 700; }
+  .above { color: var(--status-critical); font-weight: 700; }
+  ul.notes { color: var(--text-secondary); font-size: 13.5px; padding-left: 18px; }
+  ul.notes li { margin-bottom: 6px; }
+  ul.notes strong { color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">2026-10-30 종가 기준</div>
+    <h1>종목별 내재가치·목표 매수가</h1>
+    <p class="sub">코스피 보통주 시가총액 순위순. 목표 매수가 = 내재가치 × 0.8 (일반 등급)</p>
+  </header>
+
+  <section class="card">
+    <h2>코스피</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>순위</th><th>종목</th><th>시총</th><th>현재가</th><th>내재가치</th><th>목표 매수가</th><th>현재가 ÷ 목표가</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td class="name">삼성전자</td><td>1,289조</td><td>220,500</td><td>237,000</td><td class="target">189,000</td><td class="above">+17%</td></tr>
+          <tr><td>2</td><td class="name">SK하이닉스</td><td>1,016조</td><td>1,391,000</td><td>1,800,000</td><td class="target">1,440,000</td><td class="below">−3%</td></tr>
+          <tr><td>7</td><td class="name">현대차</td><td>56.7조</td><td>278,500</td><td>351,000</td><td class="target">281,000</td><td class="below">−1%</td></tr>
+          <tr><td>65</td><td class="name">크래프톤</td><td>8.3조</td><td>181,300</td><td>307,000</td><td class="target">246,000</td><td class="below">−26%</td></tr>
+          <tr><td>94</td><td class="name">오리온</td><td>4.5조</td><td>114,200</td><td>182,000</td><td class="target">146,000</td><td class="below">−22%</td></tr>
+          <tr><td>165</td><td class="name">제일기획</td><td>1.9조</td><td>18,360</td><td>28,600</td><td class="target">22,900</td><td class="below">−20%</td></tr>
+          <tr><td>216</td><td class="name">NICE평가정보</td><td>1.0조</td><td>17,320</td><td>24,500</td><td class="target">19,600</td><td class="below">−12%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>미국</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>티커</th><th>종목</th><th>시총</th><th>현재가</th><th>내재가치</th><th>목표 매수가</th><th>현재가 ÷ 목표가</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>MSFT</td><td class="name">마이크로소프트</td><td>$3.88조</td><td>$521.91</td><td>$557</td><td class="target">$446</td><td class="above">+17%</td></tr>
+          <tr><td>GOOGL</td><td class="name">알파벳</td><td>$3.44조</td><td>$279.84</td><td>$322</td><td class="target">$258</td><td class="above">+8%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>읽는 법</h2>
+    <ul class="notes">
+      <li><strong>모두 참고용 단순 계산입니다.</strong> 아래 가정은 대부분 제가 정한 값이라, 목표가 아래라고 해서 매수 신호는 아닙니다.</li>
+      <li><strong>순위:</strong> ETF와 우선주를 뺀 코스피 보통주 시가총액 순위입니다.</li>
+      <li><strong>삼성전자·SK하이닉스:</strong> 2년 호황(EPS 4.5만 원 / 35만 원) 뒤 정상 EPS 1.5만 원 / 10만 원. 메모리는 체크리스트 제외 업종입니다. 하이닉스만 순현금을 더했습니다.</li>
+      <li><strong>현대차:</strong> 기준 EPS 3만 원, 성장 4%/3%, 10년 뒤 PER 8배. 순현금은 넣지 않았습니다.</li>
+      <li><strong>크래프톤·오리온·제일기획·NICE평가정보:</strong> 최근 12개월 EPS, 성장 5%/3% · 6%/4% · 3%/2% · 7%/4%, 10년 뒤 PER 10배에 순현금을 더했습니다. 제일기획의 순현금은 광고주 자금이 섞였을 수 있어 절반만 반영했습니다.</li>
+      <li><strong>할인율:</strong> 한국 종목 10%, 알파벳 9.5%, 마이크로소프트 9%.</li>
+      <li><strong>미국 종목:</strong> 분석 파일의 공식 값이 아니라 수정안입니다(지분가치 반영). 파일 값은 알파벳 $312 / $250, 마이크로소프트 $543 / $462입니다.</li>
+      <li><strong>미반영:</strong> 추천 4종목의 3분기 확정 실적은 확인하지 못했습니다.</li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>

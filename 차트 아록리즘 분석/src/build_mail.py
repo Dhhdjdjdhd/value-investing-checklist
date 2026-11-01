@@ -19,10 +19,12 @@ code,pre{background:#f6f6f6;font-size:12px}
 
 
 def main():
-    md = (ROOT / "99_최종보고서.md").read_text(encoding="utf-8")
+    import sys
+    src = sys.argv[1] if len(sys.argv) > 1 else "99_최종보고서.md"  # 2차 연구: py src/build_mail.py 11_ML결과.md
+    md = (ROOT / src).read_text(encoding="utf-8")
     body = markdown.markdown(md, extensions=["tables", "fenced_code"])
     note = ("<p style='color:#666'>전체 자료: E:\\value-investing-checklist\\차트 아록리즘 분석 "
-            "(00~05 문서, results\\ 표·차트, src\\ 코드)</p>")
+            "(00~12 문서, results\\ 표·차트, src\\ 코드)</p>")
     html = f"<html><head><meta charset='utf-8'><style>{CSS}</style></head><body>{note}{body}</body></html>"
     (RESULTS / "report_mail.html").write_text(html, encoding="utf-8")
     print("written", RESULTS / "report_mail.html")
