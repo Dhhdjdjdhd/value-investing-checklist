@@ -31,7 +31,7 @@ const VALUES = { ticker: 'VALUES', name: '내재가치 표', desc: '시총 순�
 const USTECH = { ticker: 'USTECH', name: '미국 테크 표', desc: '내재가치·목표 매수가' };
 
 // 목표가 감시 12 — 드로다운 모니터에 목표 매수가 알림을 건 해자 3종 이상 12개 (2026-11-15)
-const TARGET12 = { ticker: 'TARGET12', name: '목표가 감시 12', desc: '모니터 알림 종목' };
+const TARGET12 = { ticker: 'TARGET12', name: '목표가 감시', desc: '모니터 알림 종목' };
 
 // 데스크톱 사이드바 숨김 상태 저장 키 — 새로고침 후에도 유지
 const SIDEBAR_KEY = 'vic-sidebar-hidden';
