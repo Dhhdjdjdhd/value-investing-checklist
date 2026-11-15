@@ -253,7 +253,14 @@ def analyze(rows):
                 cur.update(trough=d, depth=dd)
     if cur:
         eps.append(cur)
-    return {'ath': peak, 'ath_date': peak_d, 'start': rows[0][0],
+    # 이동평균선 알림용: 최근 두 종가가 각각 그날의 N일선 위였나 (마지막 행은 장중 값일 수 있음)
+    closes = [c for _, c in rows]
+    ma = {}
+    for n in (50, 200):
+        if len(closes) >= n + 1:
+            m1, m0 = sum(closes[-n:]) / n, sum(closes[-n - 1:-1]) / n
+            ma[str(n)] = {'value': m1, 'above_2d': closes[-1] > m1 and closes[-2] > m0}
+    return {'ath': peak, 'ath_date': peak_d, 'start': rows[0][0], 'ma': ma,
             'episodes': [e for e in eps if e['depth'] <= EPISODE_MIN_DEPTH]}
 
 
@@ -307,7 +314,7 @@ def level_summary(stats, level):
 
 def new_ticker_state():
     return {'level': 0, 'max_level': 0, 'daily_key': None, 'ath_seen': 0, 'ath_seen_date': None,
-            'price_hits': [], 'last': None}
+            'price_hits': [], 'above_hits': [], 'ma_hits': [], 'last': None}
 
 
 def evaluate(t, q, stats, st, hyst):
@@ -359,6 +366,29 @@ def evaluate(t, q, stats, st, hyst):
         alerts.append({'kind': 'price_up', 'level': st['level'], 'price': max(up)})
         hits.difference_update(up)
     st['price_hits'] = sorted(hits)
+
+    # 위쪽 가격선 (환율 1,500원 등) — 처음 올라설 때 한 번. hyst% 아래로 내려가면 조용히 해제해 다음에 다시 알린다.
+    ahits = set(st.get('above_hits', []))
+    crossed = [pa for pa in t.get('price_alerts_above', []) if price >= pa['price'] and pa['price'] not in ahits]
+    if crossed:
+        high = max(crossed, key=lambda pa: pa['price'])
+        alerts.append({'kind': 'price_above', 'level': st['level'], 'price': high['price'], 'label': high['label']})
+        ahits.update(pa['price'] for pa in crossed)
+    ahits.difference_update([p for p in ahits if price < p * (1 - hyst / 100)])
+    st['above_hits'] = sorted(ahits)
+
+    # 이동평균선 돌파 (예: 50일선 위 2일 연속) — 한 번 알리고, 현재가가 그 선보다 hyst% 아래로 내려가면 해제
+    mhits = set(st.get('ma_hits', []))
+    for ma in t.get('ma_alerts_above', []):
+        n = str(ma['days']); m = stats.get('ma', {}).get(n)
+        if not m:
+            continue
+        if n not in mhits and m['above_2d'] and price > m['value']:
+            alerts.append({'kind': 'ma_above', 'level': st['level'], 'days': ma['days'], 'ma': m['value'], 'label': ma['label']})
+            mhits.add(n)
+        elif n in mhits and price < m['value'] * (1 - hyst / 100):
+            mhits.discard(n)
+    st['ma_hits'] = sorted(mhits)
 
     st['last'] = {'price': price, 'prev_close': q.get('prevClose'), 'change': chg, 'dd': dd,
                   'ath': ath, 'ath_date': ath_date, 'currency': q.get('currency', ''),
@@ -424,7 +454,7 @@ def ticker_report(t, stats, last, focus_level, brief=False):
             _money(pa['price'], cur), f'<span style="text-align:left">{pa["label"]}</span>',
             _pct(pa['price'] / last['price'] - 1), '<b>도달</b>' if last['price'] <= pa['price'] else '-']
             for pa in sorted(t['price_alerts'], key=lambda pa: -pa['price'])]))
-    if brief:
+    if brief or not t['levels']:   # 낙폭 단계가 없는 종목(환율·지수 가격선 전용)은 낙폭 통계 생략
         return ''.join(parts)
 
     rows = []
@@ -472,6 +502,16 @@ def build_alert(t, stats, last, a, extra=''):
         lead = (f'{nm}이 <b>{_money(a["price"], cur)}</b> 아래로 내려왔습니다 — <b>{a["label"]}</b>.<br>'
                 '목표가 도달 ≠ 자동 매수: ① 분석이 최신 분기 실적을 반영했는지 ② 하락 원인이 시장·업종 공통인지 '
                 '개별 악재인지(개별이면 일시적/구조적 4문항) 먼저 확인하세요.'
+                + (f'<br>{t["memo"]}' if t.get('memo') else ''))
+    elif a['kind'] == 'price_above':
+        cur = last['currency']
+        subject = f'[가격선 돌파] {nm} {_money(a["price"], cur)} 이상 — {a["label"]} (현재 {_money(last["price"], cur)})'
+        lead = (f'{nm}이 <b>{_money(a["price"], cur)}</b> 위로 올라왔습니다 — <b>{a["label"]}</b>.'
+                + (f'<br>{t["memo"]}' if t.get('memo') else ''))
+    elif a['kind'] == 'ma_above':
+        cur = last['currency']
+        subject = f'[추세 회복] {nm} {a["days"]}일선({_money(a["ma"], cur)}) 위 2일 연속 — {a["label"]} (현재 {_money(last["price"], cur)})'
+        lead = (f'{nm}이 {a["days"]}일 이동평균선 <b>{_money(a["ma"], cur)}</b> 위에서 2일 연속 마감했습니다 — <b>{a["label"]}</b>.'
                 + (f'<br>{t["memo"]}' if t.get('memo') else ''))
     elif a['kind'] == 'price_up':
         cur = last['currency']
@@ -874,7 +914,7 @@ def _acquire_lock():
         return False
 
 
-ALERT_KEYS = ('level', 'max_level', 'price_hits', 'daily_key', 'earn_remind')
+ALERT_KEYS = ('level', 'max_level', 'price_hits', 'above_hits', 'ma_hits', 'daily_key', 'earn_remind')
 
 
 def reset_alerts(symbol=None):
@@ -915,7 +955,7 @@ def _run(cfg):
     errors, sent, reports, digest = [], [], [], []
 
     # v2 장부 보유 종목을 감시 목록에 맞춘다 (분기 재점검으로 바뀐 종목이 이번 점검부터 따라온다)
-    led = read_ledger()
+    led = read_ledger() if cfg.get('v2_monitor', True) else None   # config 'v2_monitor': false → 장부 동기화·비중·월간 성적표 끔
     v2_changed = bool(led) and sync_v2(cfg, led)
 
     # 분석 문서가 바뀌었으면 내재가치·가격선부터 맞춘다 (이번 점검의 가격선 판정에 바로 쓰인다)
@@ -983,7 +1023,7 @@ def _run(cfg):
                 # 알림 단계를 되돌려 다음 실행에서 다시 보내게 한다
                 log.error('메일 발송 실패 (%s): %s', subject, e)
                 errors.append(f'메일 실패: {e}')
-                for k in ('level', 'max_level', 'daily_key', 'price_hits'):
+                for k in ('level', 'max_level', 'daily_key', 'price_hits', 'above_hits', 'ma_hits'):
                     st[k] = before[k]
                 break
 

@@ -503,7 +503,7 @@ class TickerDialog(tk.Toplevel):
         t = app.cfg['tickers'][index] if index is not None else {
             'symbol': '', 'name': '', 'enabled': True, 'levels': [10, 20, 30, 50], 'daily_drop_pct': 5}
         self.enabled = t.get('enabled', True)
-        self.extra = {k: t[k] for k in ('memo', 'target_price', 'group') if k in t}   # 화면에 없는 항목은 그대로 보존
+        self.extra = {k: t[k] for k in ('memo', 'target_price', 'group', 'price_alerts_above', 'ma_alerts_above') if k in t}   # 화면에 없는 항목은 그대로 보존
         self.title('종목 수정' if index is not None else '종목 추가')
         self.transient(app)
         self.resizable(False, False)
