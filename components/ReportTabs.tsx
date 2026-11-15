@@ -30,32 +30,8 @@ const VALUES = { ticker: 'VALUES', name: '내재가치 표', desc: '시총 순�
 // 미국 테크 내재가치표 — 시총 상위 기술주의 내재가치·목표 매수가
 const USTECH = { ticker: 'USTECH', name: '미국 테크 표', desc: '내재가치·목표 매수가' };
 
-// 종목 탭 = 진입대기 14종목 + 완주 분석 2종목(MSFT·GOOGL) 보고서(public/reports/<티커>.html). 등급 순(S → A → 일반)
-// 종전에는 02.종목분석 md 목록으로 만들었으나, 시뮬레이터 재시작(2026-10-21)으로 보고서를 이 14개로 교체했다
-// 등급 = 2026-10-22 완주 분석 확정(02.종목분석/<종목>_분석_20261022.md). MSFT·GOOGL은 기존 완주 분석
-// 2026-10-22 3기 후보서치 완주 4개 추가 — BKNG(3기 보유)·NFLX·CPRT를 맨 위에, PYPL(패스)은 맨 아래
-const WATCHLIST = [
-  { ticker: 'BKNG', name: '부킹홀딩스', grade: '일반 · 보유' },
-  { ticker: 'NFLX', name: '넷플릭스', grade: '일반' },
-  { ticker: 'CPRT', name: '코파트', grade: '일반' },
-  { ticker: 'COST', name: '코스트코', grade: 'A' },
-  { ticker: 'AAPL', name: '애플', grade: 'A' },
-  { ticker: 'CTAS', name: '신타스', grade: 'A' },
-  { ticker: 'MA', name: '마스터카드', grade: '일반' },
-  { ticker: 'V', name: '비자', grade: '일반' },
-  { ticker: 'ADP', name: 'ADP', grade: '일반' },
-  { ticker: 'PG', name: 'P&G', grade: '일반' },
-  { ticker: 'MSFT', name: '마이크로소프트', grade: '일반' },
-  { ticker: 'GOOGL', name: '알파벳', grade: '일반' },
-  { ticker: 'META', name: '메타', grade: '일반' },
-  { ticker: 'KO', name: '코카콜라', grade: '일반' },
-  { ticker: 'ISRG', name: '인튜이티브 서지컬', grade: '일반' },
-  { ticker: 'RACE', name: '페라리', grade: '일반' },
-  { ticker: 'ASML', name: 'ASML', grade: '일반' },
-  { ticker: 'MCO', name: '무디스', grade: '일반' },
-  { ticker: 'CDNS', name: '케이던스', grade: '일반' },
-  { ticker: 'PYPL', name: '페이팔', grade: '패스' },
-];
+// 목표가 감시 12 — 드로다운 모니터에 목표 매수가 알림을 건 해자 3종 이상 12개 (2026-11-15)
+const TARGET12 = { ticker: 'TARGET12', name: '목표가 감시 12', desc: '모니터 알림 종목' };
 
 // 데스크톱 사이드바 숨김 상태 저장 키 — 새로고침 후에도 유지
 const SIDEBAR_KEY = 'vic-sidebar-hidden';
@@ -270,29 +246,23 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
             </span>
           </button>
 
-          {WATCHLIST.map((s) => {
-            const on = s.ticker === active;
-            return (
-              <button
-                key={s.ticker}
-                onClick={() => select(s.ticker)}
-                className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
-                  on
-                    ? 'bg-navy text-white'
-                    : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
-                }`}
-              >
-                <span className="block text-[14px] font-bold">{s.name}</span>
-                <span
-                  className={`block text-[11px] ${
-                    on ? 'text-white/70' : 'text-muted'
-                  }`}
-                >
-                  {s.ticker} · {s.grade === '패스' ? '패스' : `등급 ${s.grade}`}
-                </span>
-              </button>
-            );
-          })}
+          <button
+            onClick={() => select(TARGET12.ticker)}
+            className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
+              active === TARGET12.ticker
+                ? 'bg-navy text-white'
+                : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
+            }`}
+          >
+            <span className="block text-[14px] font-bold">{TARGET12.name}</span>
+            <span
+              className={`block text-[11px] ${
+                active === TARGET12.ticker ? 'text-white/70' : 'text-muted'
+              }`}
+            >
+              {TARGET12.desc}
+            </span>
+          </button>
         </nav>
 
         <div className="space-y-2 border-t border-line p-3">

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>목표가 감시 12</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7; --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --border: rgba(11,11,11,0.10);
+    --delta-good: #006300; --status-critical: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --border: rgba(255,255,255,0.10);
+      --delta-good: #0ca30c;
+    }
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--page); color: var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif; line-height: 1.6; padding: 32px 16px 64px; }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  .kicker { font-size: 13px; color: var(--text-muted); letter-spacing: .04em; }
+  h1 { font-size: 28px; font-weight: 800; margin: 4px 0 2px; }
+  .sub { color: var(--text-secondary); font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; white-space: nowrap; }
+  th { text-align: right; font-size: 12px; font-weight: 600; color: var(--text-muted); padding: 0 10px 8px; border-bottom: 1px solid var(--gridline); }
+  td { text-align: right; padding: 10px; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: 0; }
+  th:nth-child(-n+3), td:nth-child(-n+3) { text-align: left; }
+  td.name { font-weight: 700; }
+  td.target { font-weight: 700; }
+  .gap { color: var(--status-critical); font-weight: 700; }
+  .tag { font-size: 12px; color: var(--text-muted); }
+  ul.notes { color: var(--text-secondary); font-size: 13.5px; padding-left: 18px; }
+  ul.notes li { margin-bottom: 6px; }
+  ul.notes strong { color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">2026-11-13 종가 기준 · 드로다운 모니터 알림 등록 종목</div>
+    <h1>목표가 감시 12</h1>
+    <p class="sub">해자 3종 이상 회사만. 목표 매수가에 닿으면 메일 1통. 목표가에 가까운 순서.</p>
+  </header>
+
+  <section class="card">
+    <h2>목표 매수가 알림 12개</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>회사</th><th>티커</th><th>해자</th><th>등급</th><th>기본 내재가치</th><th>목표 매수가</th><th>현재가</th><th>목표까지</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td class="name">마이크로소프트</td><td>MSFT</td><td>4종</td><td>A</td><td>$543</td><td class="target">$434</td><td>$523.88</td><td class="gap">−17%</td></tr>
+          <tr><td>2</td><td class="name">MSCI</td><td>MSCI</td><td>3종</td><td>S <span class="tag">간이</span></td><td>$590.49</td><td class="target">$531.44</td><td>$658.17</td><td class="gap">−19%</td></tr>
+          <tr><td>3</td><td class="name">마스터카드</td><td>MA</td><td>3종</td><td>일반</td><td>$653.8</td><td class="target">$523.0</td><td>$661.19</td><td class="gap">−21%</td></tr>
+          <tr><td>4</td><td class="name">아마존</td><td>AMZN</td><td>3종</td><td>일반</td><td>$261</td><td class="target">$208.7</td><td>$266.66</td><td class="gap">−22%</td></tr>
+          <tr><td>5</td><td class="name">비자</td><td>V</td><td>3종</td><td>일반</td><td>$398.5</td><td class="target">$318.8</td><td>$425.76</td><td class="gap">−25%</td></tr>
+          <tr><td>6</td><td class="name">TSMC</td><td>TSM</td><td>3종</td><td>일반</td><td>$371</td><td class="target">$296.5</td><td>$398.73</td><td class="gap">−26%</td></tr>
+          <tr><td>7</td><td class="name">S&amp;P 글로벌</td><td>SPGI</td><td>3종</td><td>일반</td><td>$408</td><td class="target">$326</td><td>$473.59</td><td class="gap">−31%</td></tr>
+          <tr><td>8</td><td class="name">무디스</td><td>MCO</td><td>3종</td><td>일반</td><td>$424</td><td class="target">$339</td><td>$508.20</td><td class="gap">−33%</td></tr>
+          <tr><td>9</td><td class="name">ASML</td><td>ASML</td><td>3종</td><td>일반</td><td>$1,150</td><td class="target">$920.4</td><td>$1,495.16</td><td class="gap">−38%</td></tr>
+          <tr><td>10</td><td class="name">아이덱스</td><td>IDXX</td><td>3종</td><td>S <span class="tag">간이</span></td><td>$442.31</td><td class="target">$398.08</td><td>$704.23</td><td class="gap">−43%</td></tr>
+          <tr><td>11</td><td class="name">CME 그룹</td><td>CME</td><td>3종</td><td>A</td><td>$209.8</td><td class="target">$178.4</td><td>$317.97</td><td class="gap">−44%</td></tr>
+          <tr><td>12</td><td class="name">애플</td><td>AAPL</td><td>3종</td><td>A</td><td>$188.4</td><td class="target">$160.2</td><td>$356.27</td><td class="gap">−55%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>읽는 법</h2>
+    <ul class="notes">
+      <li><strong>선정 기준:</strong> 체크리스트에서 센 해자 종류(브랜드·전환비용·네트워크·원가/규모·무형자산)가 3종 이상. 마이크로소프트만 4종.</li>
+      <li><strong>목표 매수가</strong> = 기본 내재가치 × 등급 비율 (S 0.9 · A 0.85 · 일반 0.8). 목표가 아래로 와도 바로 사지 않고, 최신 실적으로 내재가치를 다시 계산한 뒤 1회차 매수.</li>
+      <li><strong>간이:</strong> MSCI·아이덱스는 1~5단계 완주 전 간이 평가값(2026-10-21). 아이덱스는 그 뒤 주가가 $558 → $704로 올라 재계산 필요. 나머지 10개는 완주 분석값.</li>
+      <li><strong>분석일:</strong> 마이크로소프트 2026-07-26(10/18 재계산) · 비자·마스터카드·애플·ASML·무디스 2026-10-22 · CME·S&amp;P 글로벌·TSMC·아마존 2026-11-15. 원문은 02.종목분석 폴더.</li>
+      <li><strong>주요 위험:</strong> 아마존 AI 투자·부채 급증 · TSMC 대만 지정학 · S&amp;P 글로벌 데이터 사업 AI 대체 · CME 신규 경쟁 거래소 · 무디스 채권 발행 사이클 · ASML 반도체 장비 사이클.</li>
+      <li><strong>현재가</strong>는 이 표를 만든 날의 값이라 고정입니다. 실시간 판정은 드로다운 모니터가 30분마다 합니다.</li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>
