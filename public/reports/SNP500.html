@@ -343,9 +343,23 @@ function recalc() {
 }
 recalc();
 
+// 첫 방문 재시도 — Render 무료 플랜은 슬립·재시작 직후 몇 초~수십 초 동안 API가 502/503을 준다.
+// 그때 한 번 실패하고 끝나면 새로고침해야만 보였다. 실패하면 2·4·8·15·30초 뒤 다시 부른다.
+var RETRY_MS = [2000, 4000, 8000, 15000, 30000];
+function getJson(url, tries) {
+  tries = tries || 0;
+  return fetch(url, { cache: 'no-store' })
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (d) { if (d && d.error) return Promise.reject(d.error); return d; })
+    .catch(function (e) {
+      if (tries >= RETRY_MS.length) return Promise.reject(e);
+      return new Promise(function (ok) { setTimeout(ok, RETRY_MS[tries]); })
+        .then(function () { return getJson(url, tries + 1); });
+    });
+}
+
 // 서버 저장값 로드 — 도착하면 기본값을 덮고 화면을 다시 그린다
-fetch('/api/hold')
-  .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+getJson('/api/hold')
   .then(function (d) {
     var v = d && d.hold;
     if (!Array.isArray(v) || !v.length) return; // 저장된 값 없음 — 기본값 유지
@@ -567,6 +581,7 @@ renderHold();
 
 // ── 시세 폴링 (정규장 30초 — 네이버 실시간 소스라 짧게, 그 외 5분) ──
 var timer;
+var failCount = 0; // 연속 실패 횟수 — 첫 방문 직후 실패는 몇 초 만에 다시 시도한다
 function schedule(ms) { clearTimeout(timer); timer = setTimeout(tick, ms); }
 function asJson(r) { return r.ok ? r.json() : Promise.reject(r.status); }
 function tick() {
@@ -574,8 +589,9 @@ function tick() {
   // 둘 다 KRX라 장 시간이 같다 — 타이머 하나로 같이 돌린다.
   // IRP-2 쪽은 보조 정보라, 실패해도 메인 시세 갱신을 막지 않는다.
   Promise.all([
-    fetch('/api/quote/' + TICKER).then(asJson),
-    fetch('/api/quote/' + TDF_TICKER).then(asJson).catch(function () { return null; }),
+    fetch('/api/quote/' + TICKER, { cache: 'no-store' }).then(asJson)
+      .then(function (q) { return q && q.error ? Promise.reject(q.error) : q; }),
+    fetch('/api/quote/' + TDF_TICKER, { cache: 'no-store' }).then(asJson).catch(function () { return null; }),
   ])
     .then(function (r) {
       if (r[1]) {
@@ -584,12 +600,13 @@ function tick() {
       } else if (!lastTdfQuote) {
         document.getElementById('tdfChange').textContent = '시세를 불러오지 못했습니다';
       }
+      failCount = 0;
       // renderStats → renderHold가 lastTdfQuote를 읽으므로 반드시 그 뒤에 부른다
       schedule(renderStats(r[0]) ? 30 * 1000 : 5 * 60 * 1000);
     })
     .catch(function () {
-      document.getElementById('stChange').textContent = '시세를 불러오지 못했습니다';
-      schedule(5 * 60 * 1000);
+      document.getElementById('stChange').textContent = lastQuote ? '갱신 실패 — 다시 시도 중' : '시세를 불러오는 중…';
+      schedule(failCount < RETRY_MS.length ? RETRY_MS[failCount++] : 5 * 60 * 1000);
     });
 }
 document.addEventListener('visibilitychange', function () { if (!document.hidden) tick(); });
@@ -623,8 +640,7 @@ RANGES.forEach(function (r) {
 function loadChart() {
   var box = document.getElementById('chartBox');
   box.classList.add('loading'); // 이전 렌더를 흐리게 유지 (레이아웃 점프 방지)
-  fetch('/api/history/' + TICKER + '?range=' + curRange)
-    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+  getJson('/api/history/' + TICKER + '?range=' + curRange)
     .then(function (d) {
       chartData = d;
       hoverIdx = -1;
@@ -818,8 +834,7 @@ function miniChart(cfg) {
   function load() {
     var box = document.getElementById(cfg.box);
     box.classList.add('loading');
-    fetch('/api/history/' + encodeURIComponent(cfg.ticker) + '?range=' + curRange)
-      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    getJson('/api/history/' + encodeURIComponent(cfg.ticker) + '?range=' + curRange)
       .then(function (d) { data = d; hoverI = -1; draw(); })
       .catch(function () {
         document.getElementById(cfg.foot).textContent = '데이터를 불러오지 못했습니다';
