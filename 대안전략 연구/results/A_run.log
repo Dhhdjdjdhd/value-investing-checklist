@@ -1,0 +1,17 @@
+A0 v2 기준 (Q+V)                  IS Sh 1.19 CAGR 12.5% | OOS Sh 1.05 CAGR 17.6% | ALL 15.0% MDD -22% TO 48%
+A1 Q+V+M                        IS Sh 0.94 CAGR 9.8% | OOS Sh 0.93 CAGR 16.1% | ALL 13.0% MDD -25% TO 71%
+A2 Q+V+0.5M                     IS Sh 1.03 CAGR 10.3% | OOS Sh 0.95 CAGR 15.5% | ALL 12.9% MDD -22% TO 53%
+A3 Q+V+2M                       IS Sh 1.00 CAGR 11.2% | OOS Sh 0.91 CAGR 16.4% | ALL 13.8% MDD -26% TO 95%
+A4 Q+V, M 하위 1/3 제외             IS Sh 1.02 CAGR 10.7% | OOS Sh 0.98 CAGR 16.9% | ALL 13.8% MDD -26% TO 95%
+A5 관문 + M만                      IS Sh 1.09 CAGR 12.9% | OOS Sh 0.75 CAGR 14.6% | ALL 13.7% MDD -31% TO 125%
+A6 관문 없음 + M만 (순수 모멘텀)          IS Sh 1.00 CAGR 10.7% | OOS Sh 0.93 CAGR 17.6% | ALL 14.1% MDD -17% TO 351%
+A7 Q+V+B (주식수 감소)               IS Sh 1.15 CAGR 12.6% | OOS Sh 1.02 CAGR 17.8% | ALL 15.2% MDD -21% TO 44%
+A8 Q+V+Y (주주환원, 근사)             IS Sh 1.04 CAGR 11.1% | OOS Sh 1.17 CAGR 20.8% | ALL 15.9% MDD -20% TO 55%
+A9 Q+V+M+B                      IS Sh 1.10 CAGR 11.7% | OOS Sh 1.05 CAGR 18.0% | ALL 14.8% MDD -24% TO 52%
+
+학습 1위 후보: A7 Q+V+B (주식수 감소)  IS 1.15 vs A0 1.19 | OOS 1.02 vs A0 1.05  -> v2 유지
+rule     vs  median     lo    hi   P>0
+  A0    SPY   0.076 -0.172 0.307 0.700
+  A0 EW 대형주   0.213 -0.022 0.438 0.932
+  A7    SPY   0.039 -0.179 0.258 0.618
+  A7 EW 대형주   0.178 -0.028 0.388 0.921

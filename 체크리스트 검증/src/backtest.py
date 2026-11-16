@@ -105,6 +105,9 @@ def simulate(ann, mc, tri, dd, P=DEFAULT, V=VDEFAULT, S=SDEFAULT, rows=None, sta
             # 품질+가치 복합: ROIC 백분위 + FCF 수익률 백분위 (같은 달 통과 종목 안에서)
             okq = s.grade.isin(S["allow_grades"])  # 순위는 통과 종목 안에서 (B14)
             s["qv"] = s.roic_med5.where(okq).rank(pct=True) + s.fcf_yield.where(okq).rank(pct=True)
+            if S.get("score"):  # 외부 순위 함수(대안전략 연구): NaN이면 후보에서 뺌
+                s["score"] = S["score"](s, okq)
+                ok &= s.score.notna()
             cand_key = {"dd": "dd_rank"}.get(S["rank"], S["rank"])
             cand = s[ok].sort_values(cand_key, ascending=False)
             # 청산 ①: 탈락 / ④: 고평가 (판정은 시총 필터 전 전체 상태로 — 시총이 줄었다고 팔지 않음)
