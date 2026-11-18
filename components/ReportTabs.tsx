@@ -33,6 +33,9 @@ const USTECH = { ticker: 'USTECH', name: '미국 테크 표', desc: '내재가�
 // 목표가 감시 12 — 드로다운 모니터에 목표 매수가 알림을 건 해자 3종 이상 12개 (2026-11-15)
 const TARGET12 = { ticker: 'TARGET12', name: '목표가 감시', desc: '모니터 알림 종목' };
 
+// 미국 30년 국채 금리 — 국채 20% 분할매수 알림선(5.20·5.67·5.75·6.00%)과 함께 보는 차트 (2026-11-18)
+const TYX = { ticker: 'TYX', name: '30년 국채 금리', desc: '^TYX · 분할매수 알림선' };
+
 // 데스크톱 사이드바 숨김 상태 저장 키 — 새로고침 후에도 유지
 const SIDEBAR_KEY = 'vic-sidebar-hidden';
 
@@ -261,6 +264,24 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
               }`}
             >
               {TARGET12.desc}
+            </span>
+          </button>
+
+          <button
+            onClick={() => select(TYX.ticker)}
+            className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
+              active === TYX.ticker
+                ? 'bg-navy text-white'
+                : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
+            }`}
+          >
+            <span className="block text-[14px] font-bold">{TYX.name}</span>
+            <span
+              className={`block text-[11px] ${
+                active === TYX.ticker ? 'text-white/70' : 'text-muted'
+              }`}
+            >
+              {TYX.desc}
             </span>
           </button>
         </nav>

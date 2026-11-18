@@ -1057,6 +1057,7 @@ def _run(cfg):
         except Exception as e:  # noqa: BLE001 — 장부 점검 실패가 시세 알림을 막지 않는다
             log.error('v2 장부 점검 실패: %s', e)
 
+    _date_alerts(cfg, state, sent, errors)
     _fail_watch(cfg, state, [e for e in errors if not e.startswith('메일')])
     _weekly_summary(cfg, state, reports)
     save_json(CACHE_PATH, cache)
@@ -1064,6 +1065,38 @@ def _run(cfg):
 
     msg = f'점검 완료: {len(reports)}종목, 메일 {len(sent)}통'
     return msg + (('\n오류:\n' + '\n'.join(errors)) if errors else '')
+
+
+DATE_ALERT_GRACE_DAYS = 3
+
+
+def _date_alerts(cfg, state, sent, errors):
+    """config의 date_alerts — 정한 날짜(한국 시각) 07:00 이후 첫 점검에서 한 번 보낸다.
+    PC가 꺼져 있었으면 그 뒤 DATE_ALERT_GRACE_DAYS일까지는 늦게라도 보내고, 그보다 지나면 건너뛴다.
+    항목: {"id": "고유값", "send_on": "YYYY-MM-DD", "title": "제목", "body": "HTML 본문"}"""
+    now = dt.datetime.now()
+    done = set(state.get('date_alerts_sent', []))
+    for a in cfg.get('date_alerts', []):
+        aid = a.get('id') or a['send_on'] + a['title']
+        if aid in done:
+            continue
+        d = dt.date.fromisoformat(a['send_on'])
+        if now.date() < d or (now.date() == d and now.hour < 7):
+            continue
+        if (now.date() - d).days > DATE_ALERT_GRACE_DAYS:
+            done.add(aid)
+            log.info('날짜 알림 기한 지남, 건너뜀: %s', a['title'])
+            continue
+        subject = f'[일정] {a["title"]}'
+        try:
+            send_mail(cfg, subject, _wrap(a['title'], a.get('body', '')))
+            sent.append(subject)
+            done.add(aid)
+            log.info('메일 발송: %s', subject)
+        except Exception as e:  # noqa: BLE001
+            log.error('메일 발송 실패 (%s): %s', subject, e)
+            errors.append(f'메일 실패: {e}')
+    state['date_alerts_sent'] = sorted(done)
 
 
 def _fail_watch(cfg, state, errors):
