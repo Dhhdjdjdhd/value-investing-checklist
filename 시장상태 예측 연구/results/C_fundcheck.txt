@@ -1,0 +1,92 @@
+추가 점검: 펀드·신탁 제외 조건 미작동이 체크리스트 v2 결과에 준 영향 (작업자 3, 2026-11-22)
+==============================================================================
+
+1. 유니버스 점검
+   패널 name 열이 전부 비어 있음: True  → 엔진의 이름 조건은 한 종목도 걸러내지 못했다(SIC 6221 조건만 작동).
+   엔진 유니버스(월말 시총이 있는 종목) 2,101개 중 SIC 6221: 0개(정상 제외됨)
+   이름 조건(TRUST·ETF·FUND)에 걸리는데 유니버스에 남아 있던 종목: 39개
+     그중 펀드·상품 신탁: 2개 / 일반 기업(이름만): 37개
+
+   남아 있던 종목 목록 (분류 / 티커 / 이름 / SIC / 역대 최대 월말 시총 십억 달러)
+     [펀드·상품 신탁] BXSL   Blackstone Secured Lending Fund              SIC nan  | 6.8
+     [펀드·상품 신탁] MSDL   Morgan Stanley Direct Lending Fund           SIC nan  | 1.8
+     [일반 기업(이름만 TRUST 등)] ADAM   ADAMAS TRUST, INC.                           SIC 6798.0 Real Estate Investment Trusts | 1.7
+     [일반 기업(이름만 TRUST 등)] AHRT   AH Realty Trust, Inc.                        SIC 6500.0 Real Estate | 1.2
+     [일반 기업(이름만 TRUST 등)] COLD   AMERICOLD REALTY TRUST                       SIC 6798.0 Real Estate Investment Trusts | 9.1
+     [일반 기업(이름만 TRUST 등)] AHT    ASHFORD HOSPITALITY TRUST INC                SIC 6798.0 Real Estate Investment Trusts | 1.1
+     [일반 기업(이름만 TRUST 등)] BXMT   BLACKSTONE MORTGAGE TRUST, INC.              SIC 6798.0 Real Estate Investment Trusts | 4.8
+     [일반 기업(이름만 TRUST 등)] BDN    BRANDYWINE REALTY TRUST                      SIC 6798.0 Real Estate Investment Trusts | 3.2
+     [일반 기업(이름만 TRUST 등)] CPT    CAMDEN PROPERTY TRUST                        SIC 6798.0 Real Estate Investment Trusts | 17.8
+     [일반 기업(이름만 TRUST 등)] CMTG   Claros Mortgage Trust, Inc.                  SIC 6500.0 Real Estate | 2.7
+     [일반 기업(이름만 TRUST 등)] CMCT   Creative Media & Community Trust Corp        SIC 6798.0 Real Estate Investment Trusts | 1.9
+     [일반 기업(이름만 TRUST 등)] DLR    DIGITAL REALTY TRUST, INC.                   SIC 6798.0 Real Estate Investment Trusts | 69.9
+     [일반 기업(이름만 TRUST 등)] DHC    DIVERSIFIED HEALTHCARE TRUST                 SIC 6798.0 Real Estate Investment Trusts | 5.3
+     [일반 기업(이름만 TRUST 등)] EPRT   ESSENTIAL PROPERTIES REALTY TRUST, INC.      SIC 6798.0 Real Estate Investment Trusts | 6.7
+     [일반 기업(이름만 TRUST 등)] ESS    ESSEX PROPERTY TRUST, INC.                   SIC 6798.0 Real Estate Investment Trusts | 23.1
+     [일반 기업(이름만 TRUST 등)] FRT    FEDERAL REALTY INVESTMENT TRUST              SIC 6798.0 Real Estate Investment Trusts | 11.7
+     [일반 기업(이름만 TRUST 등)] FR     FIRST INDUSTRIAL REALTY TRUST INC            SIC 6798.0 Real Estate Investment Trusts | 8.7
+     [일반 기업(이름만 TRUST 등)] FCPT   Four Corners Property Trust, Inc.            SIC 6798.0 Real Estate Investment Trusts | 2.7
+     [일반 기업(이름만 TRUST 등)] FBRT   Franklin BSP Realty Trust, Inc.              SIC 6798.0 Real Estate Investment Trusts | 1.1
+     [일반 기업(이름만 TRUST 등)] HR     Healthcare Realty Trust Inc                  SIC 6798.0 Real Estate Investment Trusts | 7.6
+     [일반 기업(이름만 TRUST 등)] IRT    INDEPENDENCE REALTY TRUST, INC.              SIC 6798.0 Real Estate Investment Trusts | 4.9
+     [일반 기업(이름만 TRUST 등)] ILPT   Industrial Logistics Properties Trust        SIC 6798.0 Real Estate Investment Trusts | 1.8
+     [일반 기업(이름만 TRUST 등)] KRG    KITE REALTY GROUP TRUST                      SIC 6798.0 Real Estate Investment Trusts | 6.3
+     [일반 기업(이름만 TRUST 등)] KREF   KKR Real Estate Finance Trust Inc.           SIC 6798.0 Real Estate Investment Trusts | 1.2
+     [일반 기업(이름만 TRUST 등)] LXP    LXP Industrial Trust                         SIC 6798.0 Real Estate Investment Trusts | 4.5
+     [일반 기업(이름만 TRUST 등)] MPT    MEDICAL PROPERTIES TRUST INC                 SIC 6798.0 Real Estate Investment Trusts | 12.5
+     [일반 기업(이름만 TRUST 등)] NXDT   NEXPOINT DIVERSIFIED REAL ESTATE TRUST       SIC 6798.0 Real Estate Investment Trusts | 0.5
+     [일반 기업(이름만 TRUST 등)] NTRS   NORTHERN TRUST CORP                          SIC 6022.0 State Commercial Banks | 35.7
+     [일반 기업(이름만 TRUST 등)] PEB    Pebblebrook Hotel Trust                      SIC 6798.0 Real Estate Investment Trusts | 3.2
+     [일반 기업(이름만 TRUST 등)] PMT    PennyMac Mortgage Investment Trust           SIC 6798.0 Real Estate Investment Trusts | 2.1
+     [일반 기업(이름만 TRUST 등)] PDM    Piedmont Realty Trust, Inc.                  SIC 6512.0 Opeators of  Nonresidential Buildings | 3.5
+     [일반 기업(이름만 TRUST 등)] RWT    REDWOOD TRUST INC                            SIC 6798.0 Real Estate Investment Trusts | 2.0
+     [일반 기업(이름만 TRUST 등)] RLJ    RLJ Lodging Trust                            SIC 6798.0 Real Estate Investment Trusts | 4.1
+     [일반 기업(이름만 TRUST 등)] STWD   STARWOOD PROPERTY TRUST, INC.                SIC 6798.0 Real Estate Investment Trusts | 7.4
+     [일반 기업(이름만 TRUST 등)] SVC    Service Properties Trust                     SIC 6798.0 Real Estate Investment Trusts | 5.0
+     [일반 기업(이름만 TRUST 등)] MITT   TPG Mortgage Investment Trust, Inc.          SIC 6798.0 Real Estate Investment Trusts | 0.6
+     [일반 기업(이름만 TRUST 등)] TRTX   TPG RE Finance Trust, Inc.                   SIC 6798.0 Real Estate Investment Trusts | 1.4
+     [일반 기업(이름만 TRUST 등)] UHT    UNIVERSAL HEALTH REALTY INCOME TRUST         SIC 6798.0 Real Estate Investment Trusts | 1.7
+     [일반 기업(이름만 TRUST 등)] VNO    VORNADO REALTY TRUST                         SIC 6798.0 Real Estate Investment Trusts | 22.9
+
+2. (a) v2 포트폴리오에 들어간 적이 있는가 — 2011.04 ~ 2026.10, 보유 종목 연인원 3,439종목·월, 한 번이라도 보유한 종목 96개
+   없음. 이름 조건에 걸리는 종목은 v2 포트폴리오에 한 달도 들어가지 않았다.
+   참고: 이 39개 종목이 v2 관문 전체(등급 통과·제외 섹터 아님·시총 ≥ $100억)를 통과한 종목·월 수: 0
+   탈락 이유(최근 상태 기준): 제외 섹터(SIC) 34개, 등급 X 38개, 연도 행 자체가 있는 종목 39개 / 39개
+
+3. (b) 필터를 적용해 다시 돌린 결과
+   <원본(엔진 그대로)>
+     v2        학습 2011.04~2018.12     CAGR 12.49%  변동성 10.43%  Sharpe 1.186  MDD -10.62%  (92개월)
+     v2        검증 2019.01~2026.10     CAGR 17.56%  변동성 16.90%  Sharpe 1.047  MDD -22.16%  (94개월)
+     v2        전체                     CAGR 15.03%  변동성 14.06%  Sharpe 1.071  MDD -22.16%  (186개월)
+     EW 대형주 학습 2011.04~2018.12     CAGR 10.93%  변동성 11.86%  Sharpe 0.937  MDD -16.59%  (93개월)
+     EW 대형주 검증 2019.01~2026.10     CAGR 13.91%  변동성 17.24%  Sharpe 0.845  MDD -24.26%  (94개월)
+     EW 대형주 전체                     CAGR 12.42%  변동성 14.78%  Sharpe 0.870  MDD -24.26%  (187개월)
+   <이름 조건 전부 제외(엔진이 의도한 규칙)> — 제외 39개, 원본과 월 수익 최대 차이 0.00e+00 (완전히 같음)
+     v2        학습 2011.04~2018.12     CAGR 12.49%  변동성 10.43%  Sharpe 1.186  MDD -10.62%  (92개월)
+     v2        검증 2019.01~2026.10     CAGR 17.56%  변동성 16.90%  Sharpe 1.047  MDD -22.16%  (94개월)
+     v2        전체                     CAGR 15.03%  변동성 14.06%  Sharpe 1.071  MDD -22.16%  (186개월)
+     EW 대형주 학습 2011.04~2018.12     CAGR 10.96%  변동성 11.86%  Sharpe 0.939  MDD -16.52%  (93개월)
+     EW 대형주 검증 2019.01~2026.10     CAGR 13.96%  변동성 17.26%  Sharpe 0.847  MDD -24.16%  (94개월)
+     EW 대형주 전체                     CAGR 12.46%  변동성 14.79%  Sharpe 0.872  MDD -24.16%  (187개월)
+   <펀드·상품 신탁만 제외(일반 기업은 남김)> — 제외 2개, 원본과 월 수익 최대 차이 0.00e+00 (완전히 같음)
+     v2        학습 2011.04~2018.12     CAGR 12.49%  변동성 10.43%  Sharpe 1.186  MDD -10.62%  (92개월)
+     v2        검증 2019.01~2026.10     CAGR 17.56%  변동성 16.90%  Sharpe 1.047  MDD -22.16%  (94개월)
+     v2        전체                     CAGR 15.03%  변동성 14.06%  Sharpe 1.071  MDD -22.16%  (186개월)
+     EW 대형주 학습 2011.04~2018.12     CAGR 10.93%  변동성 11.86%  Sharpe 0.937  MDD -16.59%  (93개월)
+     EW 대형주 검증 2019.01~2026.10     CAGR 13.91%  변동성 17.24%  Sharpe 0.845  MDD -24.26%  (94개월)
+     EW 대형주 전체                     CAGR 12.42%  변동성 14.78%  Sharpe 0.870  MDD -24.26%  (187개월)
+
+   원본 재현 확인: 전체 구간 CAGR 15.0%, Sharpe 1.07, MDD -22% (최종보고서 15.0% / 1.07 / −22%)
+
+4. 결론 (작업자 해석)
+   - 엔진의 이름 조건이 작동하지 않은 것은 사실이지만, 체크리스트 v2 결과(15.0% / Sharpe 1.07 / MDD −22%)에는 영향이 없다.
+     이름 조건에 걸리는 39개 종목은 v2 포트폴리오에 한 달도 들어가지 않았고, 필터를 적용해 다시 돌린 월 수익이 원본과 완전히 같다.
+   - 이유: 39개 중 34개는 SIC 제외 섹터(리츠·은행)로 이미 걸러졌고, 38개는 등급 X다. 관문 전체를 통과한 종목·월이 0이다.
+   - 진짜 펀드 성격은 2개(BXSL, MSDL: 사모대출 BDC, SIC 없음)뿐이고 시총이 100억 달러 미만이라 후보가 된 적이 없다.
+     금·코인 신탁(GLD, IBIT 등)은 SIC 6221 조건으로 정상 제외돼 유니버스에 없다.
+   - 나머지 37개는 이름에 TRUST 가 들어간 일반 기업이다(리츠 36개와 Northern Trust). 이름 조건을 그대로 살리면 이들이
+     동일비중 대형주 기준선에서 빠진다. 그 영향도 작다(EW 전체 CAGR 12.42% → 12.46%, Sharpe 0.870 → 0.872).
+   - 권고: 엔진을 고칠 필요는 없다. 고친다면 이름 조건은 지우고 SIC 6221 + BDC 목록으로 두는 편이 맞다(이름 조건은 리츠를 잘못 뺀다).
+   - 파트 C 에 미친 영향(스스로 밝힘): 파트 C 는 companies.csv 이름으로 이 조건을 적용했으므로, 위 리츠·Northern Trust 등
+     이름만 TRUST 인 일반 기업이 사건 표에서 빠졌다(제외 75개사 중 SIC 6221 이 아닌 쪽). 대부분 S '순환·제외섹터' 집단에 속할 종목이다.
+     파트 C 판정을 바꿀 규모는 아니라고 보지만 다시 돌려 확인하지는 않았다.

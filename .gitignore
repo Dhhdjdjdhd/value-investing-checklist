@@ -51,3 +51,8 @@ Thumbs.db
 .idea/
 .playwright-mcp/
 차트 아록리즘 분석/
+
+# 재생성 가능한 대용량 패널(GitHub 100MB 제한 초과)
+사이먼스식 백테스트/data/*.pkl
+# 재배포 권한 없는 논문 PDF
+짐 사이먼스 자료/sources/arxiv_*.pdf

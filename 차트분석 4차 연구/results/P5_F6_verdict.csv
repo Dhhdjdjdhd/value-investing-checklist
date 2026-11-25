@@ -1,0 +1,6 @@
+﻿rule,통과_B학습 1950~1999,통과_B검증 2000~2026.10,통과_A원화 1991~2026.10,판정
+F1 VIX≥30,False,False,False,탈락
+F3 VIX급등(20일평균×1.5),False,False,False,탈락
+F4 고점대비-10%,False,False,False,탈락
+F4 고점대비-20%,False,False,False,탈락
+F5 52주신저가,False,False,False,탈락
