@@ -1,0 +1,103 @@
+E:\value-investing-checklist\물타기 백테스트\src\quality_dip.py:45: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([x.rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\quality_dip.py:45: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([x.rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\quality_dip.py:45: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([x.rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\quality_dip.py:45: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([x.rename('x'), spy.rename('s')], axis=1).dropna()
+            묶음     종목     청산    vsSP  완료사이클  최악평가손  최대투입  현재평가손익  현재단계  처음부터5천보유vsSP
+0     A_2000우량     GE  avg20  -9,272      7 -3,119 5,000      14     1       -27,215
+1     A_2000우량     GE    ref -45,568      3 -3,451 5,000      14     1       -27,215
+2     A_2000우량     GE   hold -39,928      0 -3,451 5,000  16,855     5       -27,215
+3     A_2000우량   MSFT  avg20  20,729     13 -1,080 5,000       0     0        30,722
+4     A_2000우량   MSFT    ref   7,631      5 -1,556 5,000       0     0        30,722
+5     A_2000우량   MSFT   hold 112,595      0 -1,556 5,000 149,675     5        30,722
+6     A_2000우량   CSCO  avg20 -23,344      5 -3,811 5,000     -24     1       -25,916
+7     A_2000우량   CSCO    ref -23,782      2 -3,811 5,000     -24     1       -25,916
+8     A_2000우량   CSCO   hold -22,420      0 -3,811 5,000  15,347     5       -25,916
+9     A_2000우량   INTC  avg20 -13,484     13 -3,061 5,000    -498     5       -28,445
+10    A_2000우량   INTC    ref  -7,908      7 -3,061 5,000    -595     5       -28,445
+11    A_2000우량   INTC   hold -29,033      0 -3,010 5,000   9,428     5       -28,445
+12    A_2000우량    WMT  avg20   3,031     10    -91   625       0     0         7,316
+13    A_2000우량    WMT    ref   1,324      6    -94   625      86     1         7,316
+14    A_2000우량    WMT   hold   2,424      0    -94   625   7,030     2         7,316
+15    A_2000우량    XOM  avg20   2,491     13   -645 5,000       0     0         7,530
+16    A_2000우량    XOM    ref   3,782      5   -862 5,000       0     0         7,530
+17    A_2000우량    XOM   hold  -1,241      0    -54   625   5,961     2         7,530
+18    A_2000우량    PFE  avg20     597     10   -531 2,500       0     0       -26,502
+19    A_2000우량    PFE    ref     489      4 -1,626 5,000     262     4       -26,502
+20    A_2000우량    PFE   hold -16,764      0   -703 2,500   7,267     4       -26,502
+21    A_2000우량     KO  avg20   2,476      6   -116 1,250       0     0        -2,987
+22    A_2000우량     KO    ref    -557      3   -141 1,250       0     0        -2,987
+23    A_2000우량     KO   hold  -1,726      0   -141 1,250  10,458     3        -2,987
+24    A_2000우량    MRK  avg20  10,572      9 -1,081 5,000       0     0       -10,878
+25    A_2000우량    MRK    ref   5,770      6 -1,615 5,000       0     0       -10,878
+26    A_2000우량    MRK   hold   5,088      0   -871 5,000  47,915     5       -10,878
+27    A_2000우량    JNJ  avg20     473      6    -65   625       0     0        20,773
+28    A_2000우량    JNJ    ref    -194      5    -65   625       0     0        20,773
+29    A_2000우량    JNJ   hold   1,908      0    -32   312   4,226     1        20,773
+30    A_2000우량    IBM  avg20  11,007     13   -518 2,500       2     2       -18,452
+31    A_2000우량    IBM    ref   7,531      6   -647 2,500       2     2       -18,452
+32    A_2000우량    IBM   hold -11,443      0   -519 2,500  14,834     4       -18,452
+33    A_2000우량   ORCL  avg20  14,841     14 -3,203 5,000  -1,310     5       -16,098
+34    A_2000우량   ORCL    ref   7,217      8 -3,200 5,000  -1,343     5       -16,098
+35    A_2000우량   ORCL   hold   3,697      0 -2,219 5,000  47,594     5       -16,098
+36    A_2000우량     PG  avg20  10,463      9   -340 2,500       0     0        -6,697
+37    A_2000우량     PG    ref  23,974      7   -340 2,500       0     0        -6,697
+38    A_2000우량     PG   hold   7,322      0   -340 2,500  25,714     4        -6,697
+39    A_2000우량      C  avg20 -26,190      6 -4,786 5,000  -1,719     5       -36,737
+40    A_2000우량      C    ref -20,837      1 -4,786 5,000  -1,719     5       -36,737
+41    A_2000우량      C   hold -47,381      0 -4,735 5,000    -929     5       -36,737
+42    A_2000우량    AIG  avg20 -37,742      4 -4,946 5,000  -3,989     5       -39,027
+43    A_2000우량    AIG    ref -47,979      1 -4,961 5,000  -4,266     5       -39,027
+44    A_2000우량    AIG   hold -43,159      0 -4,946 5,000  -3,993     5       -39,027
+45    A_2000우량     HD  avg20  29,726     13   -871 5,000      95     2         8,117
+46    A_2000우량     HD    ref  16,940      4 -1,735 5,000      94     2         8,117
+47    A_2000우량     HD   hold  44,146      0 -1,735 5,000  94,740     5         8,117
+48    A_2000우량    BAC  avg20 -14,862     12 -4,278 5,000     -18     1       -19,681
+49    A_2000우량    BAC    ref -15,802      6 -4,268 5,000     -18     1       -19,681
+50    A_2000우량    BAC   hold -20,756      0 -3,214 5,000  31,260     5       -19,681
+51    A_2000우량    BMY  avg20  -4,332     11 -1,643 5,000       0     0       -25,716
+52    A_2000우량    BMY    ref  13,790      4 -1,643 5,000     500     3       -25,716
+53    A_2000우량    BMY   hold -25,097      0 -1,356 5,000  23,339     5       -25,716
+54  B_현재우량(사후)   MSFT  avg20     380      6    -96   625       0     0       115,352
+55  B_현재우량(사후)   MSFT    ref     728      6    -96   625       0     0       115,352
+56  B_현재우량(사후)   MSFT   hold   8,841      0    -25   312  12,611     1       115,352
+57  B_현재우량(사후)  GOOGL  avg20   1,941     10   -185 1,250     -40     2       122,033
+58  B_현재우량(사후)  GOOGL    ref   2,475      9   -185 1,250     -40     2       122,033
+59  B_현재우량(사후)  GOOGL   hold   7,537      0     -1   312  11,757     1       122,033
+60  B_현재우량(사후)     MA  avg20   1,993     11   -115 1,250       0     0       184,246
+61  B_현재우량(사후)     MA    ref   1,771      9   -115 1,250       0     0       184,246
+62  B_현재우량(사후)     MA   hold  13,651      0    -23   312  16,968     1       184,246
+63  B_현재우량(사후)      V  avg20   1,263      6    -75   625       0     0       124,369
+64  B_현재우량(사후)      V    ref   2,365      5    -75   625       0     0       124,369
+65  B_현재우량(사후)      V   hold  10,116      0     -1   312  13,635     1       124,369
+66  B_현재우량(사후)   AAPL  avg20     689      9   -174 1,250       0     0       599,593
+67  B_현재우량(사후)   AAPL    ref   2,167      7   -174 1,250       0     0       599,593
+68  B_현재우량(사후)   AAPL   hold  24,567      0   -174 1,250  30,929     3       599,593
+69  B_현재우량(사후)   COST  avg20      74      5    -28   625       0     0        98,099
+70  B_현재우량(사후)   COST    ref     410      4    -28   625       0     0        98,099
+71  B_현재우량(사후)   COST   hold   8,008      0    -28   312  11,592     1        98,099
+72  B_현재우량(사후)    UNH  avg20   4,298     10   -715 5,000      10     1        27,974
+73  B_현재우량(사후)    UNH    ref   1,319      5   -725 5,000   1,350     5        27,974
+74  B_현재우량(사후)    UNH   hold  11,822      0   -198 1,250  27,535     3        27,974
+75  B_현재우량(사후)   ADBE  avg20   1,997     10 -1,696 5,000  -1,035     5        -2,726
+76  B_현재우량(사후)   ADBE    ref  -2,726      6 -1,936 5,000  -1,323     5        -2,726
+77  B_현재우량(사후)   ADBE   hold     153      0    -70   625   7,442     2        -2,726
+78  B_현재우량(사후)   ASML  avg20   4,321     12   -570 2,500     -54     2       347,819
+79  B_현재우량(사후)   ASML    ref   6,650      9   -570 2,500     -54     2       347,819
+80  B_현재우량(사후)   ASML   hold  26,787      0    -10   312  30,610     1       347,819
+81  B_현재우량(사후)   SPGI  avg20   3,343     11   -116   625       0     0        79,453
+82  B_현재우량(사후)   SPGI    ref   4,291      9   -116   625     106     2        79,453
+83  B_현재우량(사후)   SPGI   hold  13,215      0    -45   625  20,901     2        79,453
+
+== 묶음 요약 (만원, S&P만 대비)
+                  종목수  이긴비율        평균        중앙         최악         최고     최악평가손   처음부터보유평균
+묶음         청산                                                                             
+A_2000우량   avg20   18  0.61 -1,267.70  1,536.79 -37,742.00  29,726.22 -4,946.30 -11,660.75
+           hold    18  0.39 -4,542.61 -6,584.34 -47,380.60 112,595.32 -4,946.48 -11,660.75
+           ref     18  0.56 -4,121.01    906.50 -47,978.71  23,973.54 -4,960.98 -11,660.75
+B_현재우량(사후) avg20   10  1.00  2,029.96  1,967.12      73.96   4,320.66 -1,695.51 169,621.34
+           hold    10  1.00 12,469.62 10,969.14     153.08  26,786.60   -198.43 169,621.34
+           ref     10  0.90  1,944.96  1,968.66  -2,725.72   6,650.14 -1,935.86 169,621.34

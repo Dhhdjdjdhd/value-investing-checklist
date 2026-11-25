@@ -1,0 +1,170 @@
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+E:\value-investing-checklist\물타기 백테스트\src\design.py:23: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  df = pd.concat([A[name].rename('x'), spy.rename('s')], axis=1).dropna()
+== 학습 상위 10 (SOX·NDX 평균)
+                   Sharpe   dSh  CAGR    MDD  avg_w  cycles
+a   p   m   n b                                            
+0.3 1.0 2.0 5 0.2   0.278 0.012 0.070 -0.549  0.029  71.000
+        1.5 7 0.2   0.273 0.006 0.069 -0.542  0.032  59.500
+        2.0 5 0.1   0.273 0.007 0.069 -0.550  0.026 132.000
+              0.3   0.272 0.002 0.069 -0.548  0.055  36.000
+0.5 1.3 2.0 5 0.2   0.272 0.009 0.068 -0.543  0.012  57.000
+0.7 1.0 1.5 5 0.1   0.272 0.007 0.068 -0.547  0.020  91.000
+              0.3   0.271 0.005 0.068 -0.546  0.028  31.500
+0.3 1.3 2.0 5 0.2   0.271 0.004 0.068 -0.546  0.032  53.500
+    1.0 2.0 7 0.3   0.271 0.008 0.068 -0.546  0.009  48.500
+0.7 1.0 1.5 5 0.2   0.271 0.005 0.068 -0.548  0.027  45.000
+== 학습 하위 5
+                   Sharpe    dSh  CAGR    MDD  avg_w  cycles
+a   p   m   n b                                             
+0.5 1.0 1.5 7 0.3   0.260 -0.005 0.066 -0.551  0.021  26.500
+0.3 1.3 1.5 5 0.3   0.259 -0.010 0.066 -0.553  0.049  24.500
+0.5 1.0 2.0 5 0.2   0.259 -0.009 0.066 -0.551  0.036  47.000
+        1.5 5 0.3   0.258 -0.012 0.065 -0.549  0.053  26.500
+0.3 1.0 1.5 5 0.3   0.256 -0.017 0.065 -0.553  0.080  26.500
+선택: {'a': np.float64(0.3), 'p': np.float64(1.0), 'm': np.float64(2.0), 'n': np.int64(5), 'b': np.float64(0.2)}
+              기간     자산              전략          시작  CAGR   vol  Sharpe    MDD  평균비중  최대비중  사이클  평균단계  고정Sharpe  고정CAGR  고정MDD  SP_Sharpe  SP_CAGR  SP_MDD  현재단계
+0   학습 1996~2010    SOX             선택안  1996-01-02 0.069 0.215   0.276 -0.554 0.037 0.143   54 1.630     0.266   0.067 -0.554      0.261    0.066  -0.552     5
+1   학습 1996~2010    SOX  원안C(같은 5,000만)  1996-01-02 0.071 0.213   0.281 -0.545 0.010 0.196  161 1.963     0.263   0.066 -0.553      0.261    0.066  -0.552     1
+2   학습 1996~2010    NDX             선택안  1996-01-02 0.070 0.213   0.281 -0.543 0.021 0.180   88 1.557     0.265   0.067 -0.551      0.261    0.066  -0.552     1
+3   학습 1996~2010    NDX  원안C(같은 5,000만)  1996-01-02 0.067 0.213   0.267 -0.551 0.003 0.151  106 1.755     0.262   0.066 -0.552      0.261    0.066  -0.552     1
+4   학습 1996~2010    XLK             선택안  1999-12-22 0.008 0.223   0.038 -0.543 0.050 0.175   38 1.895     0.013   0.003 -0.550      0.022    0.005  -0.552     1
+5   학습 1996~2010    XLK  원안C(같은 5,000만)  1999-12-22 0.007 0.222   0.031 -0.551 0.005 0.150   52 2.173     0.021   0.005 -0.552      0.022    0.005  -0.552     1
+6   학습 1996~2010  KOSPI             선택안  2004-12-17 0.037 0.229   0.175 -0.550 0.028 0.179   32 1.500     0.161   0.034 -0.556      0.147    0.030  -0.552     1
+7   학습 1996~2010  KOSPI  원안C(같은 5,000만)  2004-12-17 0.036 0.231   0.169 -0.550 0.017 0.189   41 1.634     0.155   0.032 -0.554      0.147    0.030  -0.552     1
+8   학습 1996~2010   삼성전자             선택안  2004-12-01 0.044 0.225   0.201 -0.530 0.026 0.206   27 1.630     0.161   0.034 -0.548      0.147    0.031  -0.552     1
+9   학습 1996~2010   삼성전자  원안C(같은 5,000만)  2004-12-01 0.042 0.226   0.194 -0.532 0.024 0.195   38 1.763     0.160   0.034 -0.548      0.147    0.031  -0.552     1
+10  검증 2011~2026    SOX             선택안  2011-01-03 0.139 0.172   0.748 -0.328 0.009 0.176  116 1.500     0.737   0.136 -0.337      0.735    0.135  -0.337     3
+11  검증 2011~2026    SOX  원안C(같은 5,000만)  2011-01-03 0.136 0.171   0.739 -0.334 0.002 0.046  125 1.552     0.735   0.135 -0.337      0.735    0.135  -0.337     3
+12  검증 2011~2026    NDX             선택안  2011-01-03 0.136 0.171   0.736 -0.335 0.009 0.158  120 1.483     0.736   0.135 -0.337      0.735    0.135  -0.337     4
+13  검증 2011~2026    NDX  원안C(같은 5,000만)  2011-01-03 0.135 0.171   0.735 -0.337 0.001 0.022   78 1.372     0.735   0.135 -0.337      0.735    0.135  -0.337     3
+14  검증 2011~2026    XLK             선택안  2011-01-03 0.136 0.172   0.737 -0.333 0.008 0.159  121 1.479     0.736   0.135 -0.337      0.735    0.135  -0.337     4
+15  검증 2011~2026    XLK  원안C(같은 5,000만)  2011-01-03 0.135 0.171   0.735 -0.337 0.001 0.021   81 1.346     0.735   0.135 -0.337      0.735    0.135  -0.337     4
+16  검증 2011~2026  KOSPI             선택안  2011-01-03 0.139 0.168   0.767 -0.340 0.043 0.144   65 1.708     0.764   0.140 -0.338      0.764    0.143  -0.337     2
+17  검증 2011~2026  KOSPI  원안C(같은 5,000만)  2011-01-03 0.145 0.173   0.775 -0.336 0.006 0.123   68 1.779     0.764   0.143 -0.337      0.764    0.143  -0.337     4
+18  검증 2011~2026   삼성전자             선택안  2011-01-03 0.147 0.170   0.797 -0.337 0.021 0.172   86 1.581     0.781   0.145 -0.337      0.764    0.143  -0.337     2
+19  검증 2011~2026   삼성전자  원안C(같은 5,000만)  2011-01-03 0.146 0.174   0.780 -0.337 0.006 0.156  131 1.710     0.768   0.144 -0.337      0.764    0.143  -0.337     5
+20            전체    SOX             선택안  1996-01-02 0.105 0.194   0.492 -0.554 0.023 0.176  168 1.560     0.482   0.103 -0.553      0.478    0.101  -0.552     3
+21            전체    SOX  원안C(같은 5,000만)  1996-01-02 0.104 0.193   0.490 -0.545 0.006 0.196  286 1.783     0.479   0.102 -0.552      0.478    0.101  -0.552     3
+22            전체    NDX             선택안  1996-01-02 0.104 0.193   0.489 -0.543 0.015 0.180  206 1.510     0.480   0.102 -0.551      0.478    0.101  -0.552     4
+23            전체    NDX  원안C(같은 5,000만)  1996-01-02 0.102 0.192   0.481 -0.551 0.002 0.151  184 1.592     0.478   0.101 -0.552      0.478    0.101  -0.552     3
+24            전체    XLK             선택안  1999-12-22 0.082 0.194   0.404 -0.543 0.025 0.175  159 1.579     0.397   0.081 -0.551      0.397    0.080  -0.552     4
+25            전체    XLK  원안C(같은 5,000만)  1999-12-22 0.081 0.193   0.400 -0.551 0.003 0.150  132 1.667     0.397   0.080 -0.552      0.397    0.080  -0.552     4
+26            전체  KOSPI             선택안  2004-12-17 0.110 0.187   0.559 -0.550 0.039 0.179   98 1.633     0.555   0.111 -0.557      0.550    0.111  -0.552     2
+27            전체  KOSPI  원안C(같은 5,000만)  2004-12-17 0.114 0.191   0.567 -0.550 0.009 0.189  110 1.718     0.551   0.111 -0.553      0.550    0.111  -0.552     4
+28            전체   삼성전자             선택안  2004-12-01 0.117 0.187   0.590 -0.530 0.023 0.206  112 1.589     0.564   0.113 -0.549      0.549    0.111  -0.552     2
+29            전체   삼성전자  원안C(같은 5,000만)  2004-12-01 0.116 0.190   0.580 -0.532 0.011 0.195  170 1.718     0.556   0.112 -0.550      0.549    0.111  -0.552     5
+== 이웃 안정성(검증)
+asset              KOSPI    NDX    SOX    XLK   삼성전자
+a   p   m   n b                                     
+0.3 1.0 1.5 5 0.2 +0.001 -0.000 +0.005 -0.002 +0.021
+        2.0 5 0.1 -0.001 -0.001 +0.011 -0.001 +0.016
+              0.2 +0.003 -0.000 +0.011 +0.001 +0.016
+              0.3 +0.014 +0.002 +0.007 -0.000 +0.027
+            7 0.2 +0.013 -0.000 +0.003 +0.000 +0.004
+    1.3 2.0 5 0.2 +0.014 -0.000 +0.003 -0.000 +0.008
+0.5 1.0 2.0 5 0.2 +0.000 +0.000 +0.001 +0.000 +0.004
+0.7 1.0 2.0 5 0.2 +0.006 -0.001 +0.001 -0.000 +0.003
+== 5년 롤링 (4억 기준, 원)
+         n  SP이김         평균vsSP          최악vsSP  고정이김         평균vs고정  최대비중
+asset                                                                     
+KOSPI  203 0.463 -5,976,701.483 -53,947,265.599 0.655  2,696,699.725 0.183
+NDX    310 0.884  4,990,881.373 -14,368,260.344 0.735  3,887,877.756 0.182
+SOX    310 0.948  9,953,035.244 -10,558,284.203 0.987  9,095,912.414 0.186
+XLK    263 0.806  3,951,422.723 -19,955,023.717 0.738  3,370,216.532 0.180
+삼성전자   204 0.931 12,887,068.210  -9,285,134.758 0.941 10,900,637.480 0.208
