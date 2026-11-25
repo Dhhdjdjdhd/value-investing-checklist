@@ -77,6 +77,48 @@ def load_px(code):
     return None, None
 
 
+def fix_share_units(ann, px):
+    """주식수 1000배 오류 보정 (2026-11-19). fix_units는 회사 중앙값과 비교해서, 틀린 해가 다수면(조선내화 3년 중 2년)
+    오히려 맞는 해를 틀린 쪽으로 바꾼다. 그래서 두 근거가 모두 맞을 때만 고친다:
+    ① 주식수 ÷ EPS 역산 주식수 ≈ 1000배(300~3000)  ② 그 주식수로 낸 결산일 PBR > 100 (반대 방향은 1/1000, PBR < 0.01).
+    EPS 쪽이 틀린 회사(대한제당 등)는 PBR이 정상이라 건드리지 않는다."""
+    n = 0
+    for i, r in ann.iterrows():
+        df = px.get(r.ticker, (None, None))[0]
+        if df is None or not (r.sh_implied > 0) or not (r.equity > 0) or not (r.sh_adj > 0):
+            continue
+        k = df.index.searchsorted(r.fye, side="right") - 1
+        if k < 0 or (r.fye - df.index[k]).days > 10:
+            continue
+        q, pbr = r.sh_adj / r.sh_implied, df.close.iloc[k] * r.sh_adj / r.equity
+        if 300 < q < 3000 and pbr > 100:
+            ann.at[i, "sh_adj"] = r.sh_adj / 1000
+            n += 1
+        elif 1 / 3000 < q < 1 / 300 and pbr < 0.01:
+            ann.at[i, "sh_adj"] = r.sh_adj * 1000
+            n += 1
+    log(f"주식수 1000배 보정 {n}행")
+
+
+def flags(ann, mc, tri):
+    """②금액 단위 오류 ③감자 등으로 시총이 틀렸을 의심 — 회사 단위 표시. kr_backtest에서 제외 실험에 쓴다."""
+    a = ann[ann.cy >= 2016].sort_values(["cik", "cy"])
+    g = a.groupby("cik")
+    ra = a.assets / g.assets.shift(1)
+    won = a[(ra > 50) | (ra < 0.02) | ((a.assets < 1e9) & (a.mcap_fy > 1e11))]
+    pbr = a.mcap_fy / a.equity.where(a.equity > 0)
+    ratio = a[(a.mcap_fy / a.rev > 100) | (pbr > 50) | (pbr < 0.05)]
+    # 주가 변화로 설명되지 않는 월 시총 3배 이상 급변 = 주식수 단계 변화(감자·수정주가 불일치)
+    jm = (np.log(mc / mc.shift(1)) - np.log(tri / tri.shift(1))).abs() > np.log(3)
+    jump = jm.loc[jm.index >= pd.Period("2017-01", "M")].any()
+    out = []
+    for why, s in (("금액단위", set(won.cik)), ("시총비율", set(ratio.cik)), ("주식수급변", set(jump[jump].index))):
+        out += [{"cik": c, "why": why} for c in s]
+    f = pd.DataFrame(out).groupby("cik").why.agg("+".join).reset_index()
+    f["name"] = f.cik.map(ann.drop_duplicates("cik").set_index("cik").name)
+    return f
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     OUT.mkdir(parents=True, exist_ok=True)
@@ -100,6 +142,7 @@ def main():
     # Yahoo 분할 이력은 Yahoo 가격을 쓰는 회사에만 적용, 나머지는 주식수 점프 휴리스틱
     tick = {c: t for c, t in zip(ann.cik, ann.ticker) if px.get(t, (None, None))[1] == "yahoo"}
     ann["sh_adj"] = shares_today_basis(ann, sp, tick)
+    fix_share_units(ann, px)
     ann["eps_c"] = ann["ni"] / ann["sh_adj"]
     ann["opm"] = ann["op"] / ann["rev"]
     ann["roe"] = (ann["ni"] / ann["equity"]).where(ann["equity"] > 0)
@@ -141,6 +184,9 @@ def main():
     pd.DataFrame(m_mcap).to_parquet(OUT / "monthly_mcap_first.parquet")
     pd.DataFrame(m_tri).to_parquet(OUT / "monthly_tri_first.parquet")
     pd.DataFrame(m_dd).to_parquet(OUT / "monthly_dd_first.parquet")
+    fl = flags(ann, pd.DataFrame(m_mcap), pd.DataFrame(m_tri))
+    fl.to_csv(OUT / "flags.csv", index=False, encoding="utf-8-sig")
+    log(f"이상치 표시 {len(fl)}개사 → panel/flags.csv")
     log(f"done rows {len(ann)} priced {len(m_mcap)} (yahoo {sum(v == 'yahoo' for v in src.values())})")
 
 

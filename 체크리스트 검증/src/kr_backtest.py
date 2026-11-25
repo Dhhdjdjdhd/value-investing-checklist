@@ -6,6 +6,7 @@
 - 비용: 편도 0.2%(증권거래세·수수료·슬리피지), 민감도 0.4%
 - 벤치마크: KODEX 200(069500, 배당 포함), 같은 우주(시총 하한 이상) 동일비중
 실행: py src/kr_backtest.py  -> results/kr_*.csv, results/kr_equity.png
+      py src/kr_backtest.py excl -> 이상치 회사(panel/flags.csv) 제외 실험, results/kr_excl_*
 """
 import sys
 from pathlib import Path
@@ -30,6 +31,8 @@ RES = Path(__file__).resolve().parent.parent / "results"
 IS = ("2018-04", "2022-12")
 OOS = ("2023-01", None)
 COST = 0.002
+EXCL = len(sys.argv) > 1 and sys.argv[1] == "excl"
+P = "kr_excl_" if EXCL else "kr_"
 CAPS = (1e12, 5e11, 3e11)
 FINAL = {**CAND, "rebalance": 3, "buffer": 1.5, "cost": COST, "start": IS[0]}
 plt.rcParams["font.family"] = "Malgun Gothic"
@@ -64,6 +67,12 @@ def pass_counts(st, mc, cap):
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     ann, mc, tri, dd = backtest.load("first")
+    if EXCL:  # ②금액 단위 ③감자 등 시총 의심 회사를 통째로 뺀다 (2026-11-19 A안)
+        bad = set(pd.read_csv(KR / "panel" / "flags.csv").cik)
+        ann = ann[~ann.cik.isin(bad)]
+        keep = [c for c in mc.columns if c not in bad]
+        mc, tri, dd = mc[keep], tri[keep], dd[keep]
+        print(f"이상치 제외 {len(bad)}개사")
     rows = evaluate_rows(ann, DEFAULT, VDEFAULT)
     st = monthly_state(rows, mc.index)
 
@@ -74,7 +83,7 @@ def main():
     cap = next((c for c in CAPS if cnt[c].median() >= 30), CAPS[-1])
     print(f"→ 채택 하한 {cap / 1e8:,.0f}억")
     pd.DataFrame({f"{c / 1e8:.0f}억": cut(pass_counts(st, mc, c), IS[0], None) for c in CAPS}).to_csv(
-        RES / "kr_pass_counts.csv", encoding="utf-8-sig")
+        RES / f"{P}pass_counts.csv", encoding="utf-8-sig")
 
     # 2) 전략 실행
     run = lambda S: simulate(ann, mc, tri, dd, DEFAULT, VDEFAULT, {**S, "min_mcap": cap}, rows=rows, state=st)
@@ -91,20 +100,20 @@ def main():
         for c in m.columns:
             out.append({"구간": tag, "전략": c, **perf(sub[c])})
     perf_df = pd.DataFrame(out)
-    perf_df.to_csv(RES / "kr_perf.csv", index=False, encoding="utf-8-sig")
+    perf_df.to_csv(RES / f"{P}perf.csv", index=False, encoding="utf-8-sig")
     print(perf_df.round(3).to_string(index=False))
     b = []
     for nm in ("v2", "현행"):
         for bn in ("KODEX200", "EW 동일비중"):
             ci, p = boot_sharpe_diff(m[nm], m[bn])
             b.append({"전략": nm, "비교": bn, "Sharpe차 중앙": ci[1], "90% 구간": f"{ci[0]:+.2f} ~ {ci[2]:+.2f}", "P(차>0)": p})
-    pd.DataFrame(b).to_csv(RES / "kr_boot.csv", index=False, encoding="utf-8-sig")
+    pd.DataFrame(b).to_csv(RES / f"{P}boot.csv", index=False, encoding="utf-8-sig")
     print(pd.DataFrame(b).round(3).to_string(index=False))
     yr = (1 + m).groupby(m.index.year).prod() - 1
-    yr.to_csv(RES / "kr_yearly.csv", encoding="utf-8-sig")
+    yr.to_csv(RES / f"{P}yearly.csv", encoding="utf-8-sig")
     print(yr.round(3).to_string())
     print("평균 보유", round(v2n.mean(), 1), "/ 연 회전율", round((v2log.act == "buy").sum() / (len(v2) / 12) / 20, 2))
-    m.to_csv(RES / "kr_monthly.csv", encoding="utf-8-sig")
+    m.to_csv(RES / f"{P}monthly.csv", encoding="utf-8-sig")
 
     eq = (1 + m[["v2", "현행", "KODEX200", "EW 동일비중"]]).cumprod()
     fig, ax = plt.subplots(figsize=(10, 5))
@@ -115,7 +124,7 @@ def main():
     ax.legend()
     ax.grid(alpha=0.3)
     fig.tight_layout()
-    fig.savefig(RES / "kr_equity.png", dpi=120)
+    fig.savefig(RES / f"{P}equity.png", dpi=120)
 
 
 if __name__ == "__main__":
