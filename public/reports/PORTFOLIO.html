@@ -93,6 +93,8 @@
   .card-head h2 { margin-bottom: 0; }
   .btn { border: 1px solid var(--border); background: transparent; color: var(--text-secondary); border-radius: 8px; padding: 5px 14px; font-size: 13px; cursor: pointer; font-family: inherit; }
   .btn:hover { background: var(--gridline); }
+  .pf-fxbtn { margin-top: 8px; }
+  .pf-fxbtn[aria-pressed="true"] { background: var(--text-primary); color: var(--page); border-color: var(--text-primary); }
   .btn.primary { background: var(--text-primary); color: var(--page); border-color: var(--text-primary); font-weight: 700; }
   .modal-ov { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
   .modal-ov[hidden] { display: none; }
@@ -136,6 +138,7 @@
   <div class="kicker">포트폴리오 · 시뮬레이터 4기 — 체크리스트 v2 (2026-10-23 시작)</div>
   <h1>보유 현황</h1>
   <div class="sub" id="asof">시세 불러오는 중…</div>
+  <button class="btn pf-fxbtn" id="btnFx" aria-pressed="false">현재 환율 적용</button>
 </header>
 
 <div id="err"></div>
@@ -164,7 +167,7 @@
   <div class="foot">
     ※ 비중 = 평가액 ÷ 총자산. 기준 비중은 종목당 <b>5%</b>(20종목 동일비중)이며, 한 종목이 <b>10%</b>를 넘으면 <span class="warn">조정</span> 표시가 붙습니다 — 분기 점검 때 5%로 되돌립니다.<br>
     ※ 내재가치는 DCF 기본값(달러)으로 <b>참고용</b>입니다. v2는 목표가까지 기다리지 않고 품질·가치 순위로 삽니다(백테스트에서 목표가 대기가 성과를 깎았음).<br>
-    ※ 수익률 = 평가손익 ÷ 매입금액. 평단은 진입 시점 환율로 환산한 <b>원화</b>, 현재가는 <b>실시간 환율</b> 환산이라 환율 변동도 손익에 반영됩니다.
+    ※ 수익률 = 평가손익 ÷ 매입금액. 기본은 <b>달러</b> 표시(환율 변동 제외, 주가 손익만)이고, 상단 <b>현재 환율 적용</b>을 누르면 <b>원화</b>로 바꿔 평단은 진입 환율 1,324.68원, 현재가는 실시간 환율로 환산해 환율 변동까지 손익에 넣습니다. 편집 창의 평단은 원화로 입력합니다.
   </div>
 </div>
 
@@ -611,6 +614,10 @@ var TARGET_W = 5, TRIM_W = 10;   // 기준 비중 / 조정 경계 (%)
 function num(n) { return Math.round(n).toLocaleString('ko-KR'); }
 function won(n) { return num(n) + '원'; }
 function usd(n) { return '$' + n.toFixed(2); }
+// 표시 통화 — 환율 고정 모드는 달러(원화값 ÷ 진입 환율), 현재 환율 모드는 원화
+function amt(n) { return useLiveFx ? num(n) : '$' + Math.round(n / DATA.start.fx).toLocaleString('en-US'); }
+function amtU(n) { return useLiveFx ? won(n) : amt(n); }
+function prc(n) { return useLiveFx ? num(n) : usd(n / DATA.start.fx); }
 function sgn(n) { return n >= 0 ? '+' : ''; }
 function cls(n) { return n > 0 ? 'up' : (n < 0 ? 'down' : 'flat'); }
 function arrow(n) { return n > 0 ? '▲' : (n < 0 ? '▼' : '–'); }
@@ -629,7 +636,8 @@ function sectorColor(name) { return SECTOR_COLORS[name] || '#3d8d8d'; }
 // ── 시세 ────────────────────────────────────────────────
 // 원화 환산에 환율이 필요하다: 평단(avgPrice)이 진입 시점 환율로 환산된 원화이기 때문.
 var quotes = {};
-var fxRate = null; // USD/KRW
+var fxRate = null; // USD/KRW (실시간)
+var useLiveFx = false; // 기본: 진입 환율 고정 → 환율 변동 제외
 var marketOpen = false;
 
 function fetchQuote(code) {
@@ -644,6 +652,7 @@ function curKRW(h) {
   var q = quotes[h.code];
   if (!q) return null;
   if (q.currency && q.currency !== 'KRW') {
+    if (!useLiveFx) return q.price * DATA.start.fx;
     if (!fxRate) return null;
     return q.price * fxRate;
   }
@@ -675,7 +684,9 @@ function render() {
   el('asof').innerHTML =
     '<span class="badge' + (marketOpen ? ' open' : '') + '">' + (marketOpen ? '정규장' : '장마감') + '</span> ' +
     (anyQ ? esc(anyQ.asOf) + ' 기준' : '시세 대기 중') +
-    (fxRate ? ' · 환율 ' + fxRate.toFixed(2) + '원' : '');
+    (useLiveFx
+      ? (fxRate ? ' · 현재 환율 ' + fxRate.toFixed(2) + '원 적용' : ' · 환율 대기 중')
+      : ' · 달러 표시 (환율 변동 제외)' + (fxRate ? ' · 현재 환율 ' + fxRate.toFixed(2) + '원' : ''));
 
   var rows = DATA.holdings.map(function (h) {
     var q = quotes[h.code];
@@ -704,9 +715,9 @@ function render() {
   }, 0);
 
   el('kpis').innerHTML =
-    tile('총 자산', won(totalAsset), '주식 ' + num(stockValue) + ' + 현금 ' + num(DATA.cash)) +
-    tile('평가손익', arrow(pnl) + ' ' + won(Math.abs(pnl)), '매입금액 대비 ' + (cost ? pct(pnl / cost * 100) : '—'), cls(pnl), cls(pnl)) +
-    tile('당일 변동', arrow(day) + ' ' + won(Math.abs(day)), '주가 기준(환율 제외)', cls(day)) +
+    tile('총 자산', amtU(totalAsset), '주식 ' + amt(stockValue) + ' + 현금 ' + amt(DATA.cash)) +
+    tile('평가손익', arrow(pnl) + ' ' + amtU(Math.abs(pnl)), '매입금액 대비 ' + (cost ? pct(pnl / cost * 100) : '—'), cls(pnl), cls(pnl)) +
+    tile('당일 변동', arrow(day) + ' ' + amtU(Math.abs(day)), '주가 기준(환율 제외)', cls(day)) +
     tile('현금 비중', cashPct.toFixed(1) + '%', trims ? '<span class="warn">비중 조정 대상 ' + trims + '종목</span>' : '조정 대상 없음 (모두 ' + TRIM_W + '% 이하)');
   el('holdCnt').textContent = rows.length + '종목';
 
@@ -754,12 +765,12 @@ function renderHoldings(rows) {
         ' <span class="sm" style="display:inline">' + esc(h.code) + '</span>' +
         '<div class="bar"><i style="width:' + (r.w / maxW * 100).toFixed(0) + '%;background:' + sectorColor(h.sector) + '"></i></div></td>' +
       '<td>' + h.shares + '주</td>' +
-      '<td>' + num(h.avgPrice) + '</td>' +
-      '<td>' + (r.cur == null ? '—' : num(r.cur)) +
-        (r.curUSD != null ? '<div class="sm">' + usd(r.curUSD) + '</div>' : '') + '</td>' +
+      '<td>' + prc(h.avgPrice) + '</td>' +
+      '<td>' + (r.cur == null ? '—' : prc(r.cur)) +
+        (useLiveFx && r.curUSD != null ? '<div class="sm">' + usd(r.curUSD) + '</div>' : '') + '</td>' +
       '<td>' + day + '</td>' +
-      '<td>' + (r.val == null ? '—' : num(r.val)) + '</td>' +
-      '<td class="' + cls(r.pnl || 0) + '">' + (r.pnl == null ? '—' : arrow(r.pnl) + ' ' + num(Math.abs(r.pnl))) + '</td>' +
+      '<td>' + (r.val == null ? '—' : amt(r.val)) + '</td>' +
+      '<td class="' + cls(r.pnl || 0) + '">' + (r.pnl == null ? '—' : arrow(r.pnl) + ' ' + amt(Math.abs(r.pnl))) + '</td>' +
       '<td class="' + cls(r.pnl || 0) + '">' + (r.pnl == null ? '—' : pct(r.pnl / r.buy * 100)) + '</td>' +
       '<td>' + wTxt + '</td>' +
       '<td>' + usd(h.intrinsicValue) + '<div class="sm">' + (ivGap === '' ? '시세 대기' : '현재가 대비 ' + sgn(ivGap) + ivGap.toFixed(0) + '%') + '</div></td>' +
@@ -814,10 +825,10 @@ function openReason(i, rows) {
     '<div>ROIC 5년 중앙값 <b>' + h.roic.toFixed(1) + '%</b></div>' +
     '<div>FCF 수익률 <b>' + h.fcfYield.toFixed(1) + '%</b></div>' +
     '<div>보유 <b>' + h.shares + '주</b></div>' +
-    '<div>평단 <b>' + won(h.avgPrice) + '</b></div>' +
-    '<div>현재가 <b>' + (r.cur == null ? '—' : won(r.cur)) + '</b></div>' +
+    '<div>평단 <b>' + (useLiveFx ? won(h.avgPrice) : prc(h.avgPrice)) + '</b></div>' +
+    '<div>현재가 <b>' + (r.cur == null ? '—' : (useLiveFx ? won(r.cur) : prc(r.cur))) + '</b></div>' +
     '<div>평가손익 <b class="' + cls(r.pnl || 0) + '">' +
-      (r.pnl == null ? '—' : arrow(r.pnl) + ' ' + won(Math.abs(r.pnl)) + ' (' + pct(r.pnl / r.buy * 100) + ')') + '</b></div>' +
+      (r.pnl == null ? '—' : arrow(r.pnl) + ' ' + amtU(Math.abs(r.pnl)) + ' (' + pct(r.pnl / r.buy * 100) + ')') + '</b></div>' +
     '<div>비중 <b>' + r.w.toFixed(1) + '%</b> (기준 5%)</div>' +
     '<div>내재가치 (참고) <b>' + usd(h.intrinsicValue) + '</b></div>' +
     '<div class="full">업종 <b>' + esc(h.industry) + '</b></div>';
@@ -841,6 +852,12 @@ function fillEditGrid(holdings) {
         '<input type="number" data-f="avgPrice" data-i="' + i + '" value="' + h.avgPrice + '">';
     }).join('');
 }
+
+el('btnFx').addEventListener('click', function () {
+  useLiveFx = !useLiveFx;
+  this.setAttribute('aria-pressed', useLiveFx);
+  render();
+});
 
 el('btnEdit').addEventListener('click', function () {
   fillEditGrid(DATA.holdings);

@@ -1,0 +1,15 @@
+# T7 데이터 출처 (받은 날짜 2026-11-26)
+- 금: datahub.io core/gold-prices monthly.csv (원자료 Deutsche Bundesbank, LBMA 오후 고시 월평균, USD/oz) — results/t7_raw_gold_datahub_monthly.csv
+  * FRED GOLDAMGBD228NLBM 은 2026-11-26 요청 시 404(삭제됨). 설계서가 허용한 '동등한 공개 월별 자료'로 대체.
+  * 월평균이라 월말 고시보다 변동성이 조금 작게 나온다. 2000-09~ GC=F 월말과 비교표(t7_gold_source_check.csv)로 영향 크기를 적었다.
+- 30년 국채 금리: FRED GS30(1977-02~), GS20(1953-04~) — results/t7_raw_fred_GS30.csv, t7_raw_fred_GS20.csv (월평균, %)
+  * 1989-01~ 는 대안전략 연구 캐시 ^TYX 월말(data/y_TYX_c.csv) — alloc.build() 그대로.
+- S&P500: Yahoo ^GSPC 일간 → 월말 종가(1970-01~) — results/t7_raw_yahoo_GSPC_m.csv; 배당은 대안전략 연구/data/shiller/ie_data.xls (Robert Shiller, D열, 연율 배당).
+  * 1990-01~ 는 alloc.build().ru (^GSPC+2.8%/년 → 1993-03부터 SPY 조정종가) 그대로.
+- 원/달러·CD91: 대안전략 연구/data/ecos_krw.csv (ECOS, alloc.build() 재사용). 원화 보조 결과는 1990-01~.
+
+# 조립 로그
+- S&P: 1971-01~1989-12 Yahoo ^GSPC 월말 + Shiller D/12 / 1990-01~ alloc.build().ru. 1971~89 배당수익률 평균 4.13%/년
+- 30년 국채 금리: 1970-12~1977-01 GS20+0.059%p(1977-02~1978-01 평균 스프레드) / 1977-02~1988-12 GS30 / 1989-01~ ^TYX. 1990~ alloc(bh−carry)와 최대 차 6.94e-18 (동일 확인)
+- 금: datahub 월평균 1833-01~2026-10, 1971-01 $38 → 2026-10 $4105. GC=F(월말)와 월수익 상관 0.618 (2000-09~)
+- 달러 자산 표: 1971-01~2026-10 670개월 / 원화 보조: 1990-01~2026-10 442개월
