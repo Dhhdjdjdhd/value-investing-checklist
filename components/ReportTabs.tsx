@@ -36,6 +36,9 @@ const TARGET12 = { ticker: 'TARGET12', name: '목표가 감시', desc: '모니�
 // 미국 30년 국채 금리 — 국채 20% 분할매수 알림선(5.20·5.67·5.75·6.00%)과 함께 보는 차트 (2026-11-18)
 const TYX = { ticker: 'TYX', name: '30년 국채 금리', desc: '^TYX · 분할매수 알림선' };
 
+// S&P500 선물 차트 — 트레이딩뷰 위젯(ES1!), 360750 가격의 기준 (2026-11-27)
+const ESF = { ticker: 'ESF', name: 'S&P 선물', desc: '24시간 S&P · 트레이딩뷰' };
+
 // 데스크톱 사이드바 숨김 상태 저장 키 — 새로고침 후에도 유지
 const SIDEBAR_KEY = 'vic-sidebar-hidden';
 
@@ -136,6 +139,24 @@ export default function ReportTabs({ stocks }: { stocks: StockMeta[] }) {
               }`}
             >
               {MONITOR.desc}
+            </span>
+          </button>
+
+          <button
+            onClick={() => select(ESF.ticker)}
+            className={`mb-0.5 block w-full rounded px-3 py-2.5 text-left transition-colors ${
+              active === ESF.ticker
+                ? 'bg-navy text-white'
+                : 'text-ink-2 hover:bg-paper-2 hover:text-navy'
+            }`}
+          >
+            <span className="block text-[14px] font-bold">{ESF.name}</span>
+            <span
+              className={`block text-[11px] ${
+                active === ESF.ticker ? 'text-white/70' : 'text-muted'
+              }`}
+            >
+              {ESF.desc}
             </span>
           </button>
 
