@@ -105,6 +105,12 @@
   #holdModal .chart-sub { margin-top: 2px; }
   #holdModal .stats { margin: 10px 0 12px; }
   #holdModal .head-btns { display: flex; gap: 6px; }
+  /* 고점 대비 칸은 숫자 옆에 고점을 붙여 다른 칸보다 넓게 */
+  #holdModal .modal { max-width: 780px; }
+  #holdModal .stats { grid-template-columns: 1fr 1.3fr 1fr; }
+  #holdModal .stat .d { white-space: nowrap; }
+  .snp-dd-row { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+  .snp-dd-peak { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
   /* 보유 현황 표는 종목 2개면 13줄 가까이 된다 — 모달 높이를 줄이려고 행 간격을 촘촘하게 */
   #holdModal th, #holdModal td { padding: 5px 10px; line-height: 1.35; }
   #holdModal tr.grp td { padding: 12px 10px 2px; }
@@ -141,8 +147,11 @@
     .modal { padding: 18px 16px; }
     /* 표는 화면 폭에 욱여넣지 않는다 — 컬럼 폭을 확보하고 가로 스크롤로 본다 */
     #holdModal table { min-width: 600px; }
-    /* 좁은 화면에서는 평가금액 타일을 숨긴다 — 현재가·평가손익 두 칸이 한 줄에 딱 맞는다 */
-    #holdModal .stat-value { display: none; }
+    /* 좁은 화면: 현재가는 한 줄 전체, 고점 대비·과거 빈도 두 칸은 그 아래 한 줄 */
+    #holdModal .stat-price { grid-column: 1 / -1; }
+    #holdModal .stats { grid-template-columns: 1fr 1fr; }
+    #holdModal .stat .d { white-space: normal; }
+    .snp-dd-row { flex-wrap: wrap; white-space: normal; } /* 반 칸 폭이라 고점은 아래 줄로 */
     #holdModal .modal { padding: 14px; }
     /* 모달 타일 숫자(현재가·평가손익)는 반 칸 폭이라 20px이면 빡빡하다 — 한 단계 작게 */
     #holdModal .stat .v { font-size: 17px; }
@@ -248,20 +257,22 @@
       </div>
     </div>
     <div class="stats">
-      <div class="stat">
+      <div class="stat stat-price">
         <div class="k">현재가 <span class="badge">360750</span></div>
         <div class="v" id="mdPrice">—</div>
         <div class="d" id="mdAvgLine">평단 —</div>
       </div>
-      <div class="stat stat-value">
-        <div class="k">평가금액 <span class="badge">전체</span></div>
-        <div class="v" id="stValue">—</div>
-        <div class="d">매입 <span id="stCost"></span></div>
+      <!-- 평가금액·평가손익은 아래 표 총합계와 같아 빼고, 고점 대비 낙폭과 그 낙폭의 과거 빈도를 둔다 -->
+      <div class="stat">
+        <div class="k">고점 대비 <span class="badge">360750</span></div>
+        <!-- 낙폭과 기준 고점을 한 덩어리로 — 숫자 옆에 고점을 작게 붙인다 -->
+        <div class="v snp-dd-row"><span id="ddNow">—</span><span class="snp-dd-peak" id="ddPeak"></span></div>
+        <div class="d" id="ddSpx">S&amp;P500 —</div>
       </div>
       <div class="stat">
-        <div class="k">평가손익</div>
-        <div class="v" id="stPl">—</div>
-        <div class="d" id="stPlPct"></div>
+        <div class="k">과거 발생 빈도</div>
+        <div class="v" id="ddFreq">—</div>
+        <div class="d" id="ddSpxFreq">S&amp;P500 —</div>
       </div>
     </div>
     <div class="table-scroll">
@@ -527,24 +538,73 @@ function renderHold() {
     aEl.textContent = '평단 —';
   }
 
-  var t = buildTable();
-  document.getElementById('stCost').textContent = won(t.buy);
+  buildTable();
+  renderDrawdown();
+}
 
-  var vEl = document.getElementById('stValue');
-  var plEl = document.getElementById('stPl');
-  var pctEl = document.getElementById('stPlPct');
-  if (!t.priced || t.buy <= 0) {
-    vEl.textContent = '—';
-    plEl.textContent = '—'; plEl.className = 'v';
-    pctEl.textContent = ''; pctEl.className = 'd';
-    return;
+// ── 고점 대비 낙폭 + 과거 발생 빈도 ──
+// 전체 일봉(range=all)으로 날마다 "그날까지 최고 종가 대비 낙폭"을 구하고,
+// 지금 낙폭 이상으로 빠져 있던 거래일 비율을 빈도로 쓴다. 분배금 미반영 종가 기준.
+var SPX = '^GSPC';
+var ddHist = {};       // 심볼 → { t, c } (모달 처음 열 때 한 번만 받는다)
+var ddLoading = false;
+
+function loadDrawdown() {
+  if (ddLoading) return;
+  ddLoading = true;
+  [TICKER, SPX].forEach(function (sym) {
+    getJson('/api/history/' + encodeURIComponent(sym) + '?range=all')
+      .then(function (d) { ddHist[sym] = d; renderDrawdown(); })
+      .catch(function () { ddHist[sym] = null; renderDrawdown(); });
+  });
+}
+
+// cur: 현재가(없으면 마지막 종가). 반환 { dd, peak, peakT, freq, from }
+function ddStats(d, cur) {
+  if (!d || !d.c || !d.c.length) return null;
+  var c = d.c, peak = 0, peakT = 0, dds = [];
+  for (var i = 0; i < c.length; i++) {
+    if (c[i] > peak) { peak = c[i]; peakT = d.t[i]; }
+    dds.push(c[i] / peak - 1);
   }
-  var pl = t.val - t.buy;
-  vEl.textContent = won(t.val);
-  plEl.textContent = sgn(pl) + won(pl);
-  plEl.className = 'v ' + cls(pl);
-  pctEl.textContent = '매입금액 대비 ' + sgn(pl) + (pl / t.buy * 100).toFixed(2) + '%';
-  pctEl.className = 'd ' + cls(pl);
+  var now = cur || c[c.length - 1];
+  if (now > peak) { peak = now; peakT = d.t[c.length - 1]; }
+  var dd = Math.min(0, now / peak - 1);
+  var hit = 0;
+  dds.forEach(function (x) { if (x <= dd + 1e-9) hit++; });
+  return { dd: dd, peak: peak, peakT: peakT, freq: hit / dds.length, from: d.t[0] };
+}
+
+// 유닉스 초 → YYYY-MM-DD (로컬 날짜 — toISOString은 UTC라 쓰지 않는다)
+function ymd(sec) {
+  var x = new Date(sec * 1000);
+  return x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+}
+function pct1(x) { return (x * 100).toFixed(1) + '%'; }
+// 빈도 표시: 1% 미만은 소수 한 자리까지
+function freqTxt(f) { return f < 0.01 ? (f * 100).toFixed(1) + '%' : Math.round(f * 100) + '%'; }
+
+function renderDrawdown() {
+  var nowEl = document.getElementById('ddNow');
+  var fEl = document.getElementById('ddFreq');
+  var m = ddStats(ddHist[TICKER], lastQuote && lastQuote.price);
+  if (m) {
+    nowEl.textContent = m.dd ? pct1(m.dd) : '0% (신고가)';
+    nowEl.className = m.dd < 0 ? 'down' : 'up';
+    document.getElementById('ddPeak').textContent = '고점 ' + won(m.peak) + ' (' + ymd(m.peakT).slice(2).replace(/-/g, '.') + ')';
+    fEl.textContent = '상위 ' + freqTxt(m.freq);
+  } else if (ddHist[TICKER] === null) {
+    nowEl.textContent = '—'; fEl.textContent = '—';
+    document.getElementById('ddPeak').textContent = '데이터를 불러오지 못했습니다';
+  }
+  var s = ddStats(ddHist[SPX]);
+  if (s) {
+    document.getElementById('ddSpx').textContent = 'S&P500 ' + (s.dd ? pct1(s.dd) : '0%') + ' · 고점 ' + num(s.peak);
+    document.getElementById('ddSpxFreq').textContent = 'S&P500 ' + ymd(s.from).slice(0, 4) + '년 이후 상위 ' + freqTxt(s.freq);
+  } else if (ddHist[SPX] === null) {
+    document.getElementById('ddSpx').textContent = 'S&P500 —';
+    document.getElementById('ddSpxFreq').textContent = 'S&P500 —';
+  }
 }
 
 // 시세 한 건을 스탯 타일 3종(상태 배지·현재가·등락)에 그린다 — 상단/IRP-2 카드가 공유
@@ -975,15 +1035,13 @@ btnFull.addEventListener('click', function () {
 // ── 계좌별 보유 현황 모달 (차트 클릭 → 오픈) ──
 var holdModal = document.getElementById('holdModal');
 
-function openHoldModal() { holdModal.hidden = false; }
+function openHoldModal() { holdModal.hidden = false; loadDrawdown(); }
 function closeHoldModal() { holdModal.hidden = true; }
 
 document.getElementById('chartSvg').onclick = openHoldModal;
 
+// 바깥 클릭으로는 닫지 않는다 — 닫기 버튼·Esc로만
 document.getElementById('btnHoldClose').addEventListener('click', closeHoldModal);
-holdModal.addEventListener('click', function (ev) {
-  if (ev.target === holdModal) closeHoldModal();
-});
 
 // ── 보유 내역 편집 모달 ──
 var modal = document.getElementById('editModal');
