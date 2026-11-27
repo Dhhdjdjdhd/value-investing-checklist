@@ -572,7 +572,7 @@ function ddStats(d, cur) {
   var dd = Math.min(0, now / peak - 1);
   var hit = 0;
   dds.forEach(function (x) { if (x <= dd + 1e-9) hit++; });
-  return { dd: dd, peak: peak, peakT: peakT, freq: hit / dds.length, from: d.t[0] };
+  return { now: now, dd: dd, peak: peak, peakT: peakT, freq: hit / dds.length, from: d.t[0] };
 }
 
 // 유닉스 초 → YYYY-MM-DD (로컬 날짜 — toISOString은 UTC라 쓰지 않는다)
@@ -599,7 +599,7 @@ function renderDrawdown() {
   }
   var s = ddStats(ddHist[SPX]);
   if (s) {
-    document.getElementById('ddSpx').textContent = 'S&P500 ' + (s.dd ? pct1(s.dd) : '0%') + ' · 고점 ' + num(s.peak);
+    document.getElementById('ddSpx').textContent = 'S&P500 ' + (s.dd ? pct1(s.dd) : '0%') + ' · ' + num(s.now) + ' / 고점 ' + num(s.peak);
     document.getElementById('ddSpxFreq').textContent = 'S&P500 ' + ymd(s.from).slice(0, 4) + '년 이후 상위 ' + freqTxt(s.freq);
   } else if (ddHist[SPX] === null) {
     document.getElementById('ddSpx').textContent = 'S&P500 —';
